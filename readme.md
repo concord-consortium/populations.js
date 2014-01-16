@@ -3,21 +3,45 @@
 This library originally evolved from the [Evolution Readiness](http://concord.org/projects/evolution-readiness) project created by
 the [Concord Consortium](http://www.concord.org/)
 
-## Compiling Coffeecript
+## Running Locally
 
-The library is written in CoffeeScript, with JavaScript compiled to the /dist folder. To compile the src
-code, first install coffeescript via Node. This should also install cake. Then
+This project is built using Brunch.io, which compiles the CoffeeScript,
+stylesheets, and other assets.
 
-    cd populationsjs
-    cake compile
+### Depdendancies
 
-This will concatenate the source code and convert it to JS, and place the single file populations.js in the dist folder.
+* [Node](http://nodejs.org/) `brew install node`
+* [Brunch 1.4.5](http://brunch.io) `npm install -g brunch/brunch`
 
-To compile and minify in one step
+### Setup Brunch
 
-    cake build
+You'll need to install the plugins required for this project.
 
-This will place both populations.js and populations.min.js in the dist folder.
+```
+  npm install
+```
+
+### Starting the Server
+
+Run this command:
+
+```
+  npm start
+```
+
+Now open http://localhost:3333. Whenever you make a change to a file the
+browser will be automatically refreshed. Thanks
+[auto-reload-brunch](https://github.com/brunch/auto-reload-brunch).
+
+Your files will automatically be built into the /public directory
+whenever they change.
+
+## Libraries and Frameworks Used
+
+* [CoffeeScript](http://coffeescript.org/) - Making JavaScript suck less.
+* [Brunch](http://brunch.io) - Asset Compilation
+* [Node](http://nodejs.org/) - For Brunch
+* [Stylus](http://learnboost.github.com/stylus/) - CSS Templating
 
 ## License
 

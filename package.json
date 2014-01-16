@@ -1,0 +1,17 @@
+{
+  "name": "populations.js",
+  "author": "Sam Fentress",
+  "version": "0.0.1",
+  "repository": "",
+  "scripts": {
+    "start": "brunch watch --server",
+    "test": "brunch test"
+  },
+  "dependencies": {
+    "javascript-brunch": "~1.6.0",
+    "css-brunch": "~1.6.0",
+    "uglify-js-brunch": "~1.7.2",
+    "clean-css-brunch": "~1.6.0",
+    "coffee-script-brunch": "~1.7.2"
+  }
+}
