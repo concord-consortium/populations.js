@@ -1,3 +1,5 @@
+require '../populations'
+
 ###
   The base agent class
 ###
