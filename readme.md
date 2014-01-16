@@ -12,13 +12,16 @@ stylesheets, and other assets.
 
 * [Node](http://nodejs.org/) `brew install node`
 * [Brunch 1.4.5](http://brunch.io) `npm install -g brunch/brunch`
+* [Bower](http://bower.io/) `npm install -g bower`
 
-### Setup Brunch
+### Setup Brunch and Project Libraries
 
-You'll need to install the plugins required for this project.
+You'll need to install the plugins required for the brunch project, as well
+as libraries the project depends on.
 
 ```
   npm install
+  bower install
 ```
 
 ### Starting the Server

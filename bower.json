@@ -1,0 +1,9 @@
+{
+  "name": "populations.js",
+  "version": "0.0.1",
+  "main": "public/app.js",
+  "dependencies": {
+     "pixi.js": ">=1.4.1"
+    },
+  "overrides": {}
+}
