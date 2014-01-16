@@ -1,0 +1,3 @@
+src_files:
+  - dist/populations.js
+  - test/spec/*.js
