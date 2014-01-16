@@ -1,6 +1,6 @@
-require '../populations'
-
 ###
   The base agent class
 ###
-POP.agent = () ->
+module.exports = class Agent
+
+	constructor: ({@name}) ->
