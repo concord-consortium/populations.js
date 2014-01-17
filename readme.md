@@ -11,7 +11,6 @@ stylesheets, and other assets.
 ### Depdendancies
 
 * [Node](http://nodejs.org/) `brew install node`
-* [Brunch 1.4.5](http://brunch.io) `npm install -g brunch/brunch`
 * [Bower](http://bower.io/) `npm install -g bower`
 
 ### Setup Brunch and Project Libraries
