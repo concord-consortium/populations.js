@@ -9,7 +9,10 @@ module.exports = () ->
   
   document.body.appendChild(renderer.view)
 
-  env = new Environment(400, 300, "/images/environments/sun5levels.jpg")
+  env = new Environment
+    width:  580
+    height: 522
+    imgPath: "images/environments/sun5levels.jpg"
 
   env.getView().render(stage)
 

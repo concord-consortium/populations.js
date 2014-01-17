@@ -4,7 +4,7 @@ module.exports = class EnvironmentView
 
   render: (stage) ->
     # create a texture from an image path
-    texture = PIXI.Texture.fromImage("/images/environments/sun5levels.jpg")
+    texture = PIXI.Texture.fromImage @imgPath
     # create a new Sprite using the texture
     envSprite = new PIXI.Sprite(texture)
 
