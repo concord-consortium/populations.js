@@ -2,8 +2,8 @@ EnvironmentView = require 'views/environment-view'
 
 module.exports = class Environment
 
-  constructor: ({@width, @height, imgPath}) ->
-    @view = new EnvironmentView({@width, @height, imgPath})
+  constructor: ({@width, @height, @imgPath}) ->
+    @view = new EnvironmentView({environment: @})
 
   getView: ->
     return @view

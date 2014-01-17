@@ -1,10 +1,10 @@
 module.exports = class EnvironmentView
 
-  constructor: ({@width, @height, @imgPath}) ->
+  constructor: ({@environment}) ->
 
   render: (stage) ->
     # create a texture from an image path
-    texture = PIXI.Texture.fromImage @imgPath
+    texture = PIXI.Texture.fromImage @environment.imgPath
     # create a new Sprite using the texture
     envSprite = new PIXI.Sprite(texture)
 
