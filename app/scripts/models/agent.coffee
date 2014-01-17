@@ -3,7 +3,9 @@
 ###
 module.exports = class Agent
 
-	constructor: ({@name, @environment}) ->
+	constructor: ({@name, @environment, x, y}) ->
+    if x && y
+      @setLocation({x,y})
 
   setLocation: ({x, y}) ->
     # TODO When we support movement, we'll have to check if the results changed,
