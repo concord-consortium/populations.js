@@ -11,7 +11,7 @@ module.exports = class AgentView
     envSprite.anchor.x = 0
     envSprite.anchor.y = 0
 
-    envSprite.position.x = @agent.x
-    envSprite.position.y = @agent.y
+    envSprite.position.x = @agent._x
+    envSprite.position.y = @agent._y
 
     stage.addChild(envSprite)
