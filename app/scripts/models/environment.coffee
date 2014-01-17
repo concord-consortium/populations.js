@@ -1,6 +1,8 @@
 EnvironmentView = require 'views/environment-view'
 
 module.exports = class Environment
+  wrapEastWest: false
+  wrapNorthSouth: false
 
   constructor: ({@columns, @rows, @imgPath}) ->
     @width = @columns * @columnWidth
