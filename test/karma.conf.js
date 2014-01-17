@@ -70,14 +70,6 @@ module.exports = function(karma) {
     captureTimeout: 60000,
 
 
-    // Plugins to load
-    plugins: [
-      'karma-jasmine',
-      'karma-coffee-preprocessor',
-      'karma-chrome-launcher'
-    ],
-
-
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
     singleRun: false

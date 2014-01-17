@@ -55,6 +55,11 @@ A new Chrome window will open, and the results of the tests will be shown in you
 If you have the server running (`npm start`) then any time you update a file the tests will
 be re-run.
 
+#### Running the tests with PhantomJS
+
+* Install the latest version of Node (>= 0.10.11). You can use [Node Version Manager](https://github.com/creationix/nvm).
+* Edit the file test/karma.conf.js to change `browsers: ['Chrome']` to `browsers: ['PhantomJS']`
+* Run the tests with `npm test`
 
 ## Libraries and Frameworks Used
 
