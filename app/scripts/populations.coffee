@@ -7,8 +7,8 @@ module.exports = () ->
   # Putting this setup code in here for the moment
 
   env = new Environment
-    width:  580
-    height: 522
+    columns:  58
+    rows:     52
     imgPath: "images/environments/sun5levels.jpg"
 
   agent = new BasicPlant

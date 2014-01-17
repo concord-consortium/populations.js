@@ -2,9 +2,16 @@ EnvironmentView = require 'views/environment-view'
 
 module.exports = class Environment
 
-  constructor: ({@width, @height, @imgPath}) ->
+  constructor: ({@columns, @rows, @imgPath}) ->
+    @width = @columns * @columnWidth
+    @height = @rows * @rowHeight
     @view = new EnvironmentView({environment: @})
     @agents = []
+
+  ### Default properties ###
+
+  columnWidth: 10
+  rowHeight:   10
 
   getView: ->
     return @view
