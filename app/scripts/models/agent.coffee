@@ -3,4 +3,4 @@
 ###
 module.exports = class Agent
 
-	constructor: ({@name}) ->
+	constructor: ({@name, @environment}) ->
