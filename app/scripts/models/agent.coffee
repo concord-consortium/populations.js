@@ -4,7 +4,7 @@ AgentView = require 'views/agent-view'
 ###
 module.exports = class Agent
 
-	constructor: ({@name, @environment, x, y}) ->
+  constructor: ({@name, @environment, x, y}) ->
     @imgPath = "images/agents/plant-healthy-75.png"
     @view = new AgentView({agent: @})
     if x && y
