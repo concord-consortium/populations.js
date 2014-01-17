@@ -1,4 +1,6 @@
 Environment = require 'models/environment'
+BasicPlant = require 'models/basic-plant'
+require 'helpers'
 
 module.exports = () ->
 
@@ -13,6 +15,14 @@ module.exports = () ->
     width:  580
     height: 522
     imgPath: "images/environments/sun5levels.jpg"
+
+  agent = new BasicPlant
+    name: "plant1"
+    environment: env
+    x: ExtMath.randomInt env.width
+    y: ExtMath.randomInt env.height
+
+  env.addAgent(agent)
 
   env.getView().render(stage)
 

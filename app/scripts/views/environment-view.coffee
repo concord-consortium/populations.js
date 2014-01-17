@@ -15,3 +15,9 @@ module.exports = class EnvironmentView
     envSprite.position.y = 0
 
     stage.addChild(envSprite)
+
+    @renderAgents(stage)
+
+  renderAgents: (stage) ->
+    for agent in @environment.agents
+      agent.getView().render(stage)
