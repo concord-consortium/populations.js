@@ -5,18 +5,12 @@ module.exports = class Environment
   wrapNorthSouth: false
 
   constructor: ({@columns, @rows, @imgPath}) ->
-    @width = @columns * @columnWidth
-    @height = @rows * @rowHeight
-    @view = new EnvironmentView({environment: @})
+    @width = @columns * @_columnWidth
+    @height = @rows * @_rowHeight
+    @_view = new EnvironmentView({environment: @})
     @agents = []
 
-  ### Default properties ###
-
-  columnWidth: 10
-  rowHeight:   10
-
-  getView: ->
-    return @view
+  ### Public API ###
 
   addAgent: (agent)->
     @agents.push(agent) unless @agents.indexOf(agent) != -1
@@ -25,6 +19,24 @@ module.exports = class Environment
     x = if @wrapEastWest   then @_wrapSingleDimension(x,  @width) else @_bounceSingleDimension(x,  @width)
     y = if @wrapNorthSouth then @_wrapSingleDimension(y, @height) else @_bounceSingleDimension(y, @height)
     return {x,y}
+
+  ### Default properties ###
+
+  _columnWidth: 10
+  _rowHeight:   10
+
+  ### Getters and Setters ###
+
+  getView: ->
+    return @_view
+
+  setColumnWidth: (w) ->
+    @_columnWidth = w
+    @width = @columns * @_columnWidth
+
+  setRowHeight: (h) ->
+    @_rowHeight = h
+    @height = @rows * @_rowHeight
 
   _wrapSingleDimension: (p, max) ->
     if p < 0
