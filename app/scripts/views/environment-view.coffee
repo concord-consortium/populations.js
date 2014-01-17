@@ -3,6 +3,8 @@ module.exports = class EnvironmentView
   constructor: ({@environment}) ->
 
   render: (stage) ->
+    stage = new PIXI.Stage(0x66FF99)
+    renderer = PIXI.autoDetectRenderer(580, 522)
     # create a texture from an image path
     texture = PIXI.Texture.fromImage @environment.imgPath
     # create a new Sprite using the texture
@@ -17,6 +19,14 @@ module.exports = class EnvironmentView
     stage.addChild(envSprite)
 
     @renderAgents(stage)
+
+    animate = ->
+      requestAnimFrame( animate )
+      renderer.render(stage)
+
+    requestAnimFrame( animate )
+
+    return renderer.view
 
   renderAgents: (stage) ->
     for agent in @environment.agents
