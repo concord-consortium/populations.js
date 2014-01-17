@@ -4,9 +4,13 @@ module.exports = class Environment
 
   constructor: ({@width, @height, @imgPath}) ->
     @view = new EnvironmentView({environment: @})
+    @agents = []
 
   getView: ->
     return @view
+
+  addAgent: (agent)->
+    @agents.push(agent) unless @agents.indexOf(agent) != -1
 
   ensureValidLocation: ({x,y}) ->
     x = if @wrapEastWest   then @_wrapSingleDimension(x,  @width) else @_bounceSingleDimension(x,  @width)
