@@ -39,6 +39,23 @@ browser will be automatically refreshed. Thanks
 Your files will automatically be built into the /public directory
 whenever they change.
 
+You can also just run `brunch build` to simply build the files into /public without starting 
+the server.
+
+### Running the tests
+
+Run this command:
+
+```
+  npm test
+```
+
+A new Chrome window will open, and the results of the tests will be shown in your console.
+
+If you have the server running (`npm start`) then any time you update a file the tests will
+be re-run.
+
+
 ## Libraries and Frameworks Used
 
 * [CoffeeScript](http://coffeescript.org/) - Making JavaScript suck less.
