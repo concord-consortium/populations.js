@@ -66,6 +66,12 @@ module.exports = class Environment
     runloop = ->
       setTimeout ->
         env.step()
+
+  start: ->
+    @_isRunning = true
+    runloop = =>
+      setTimeout =>
+        @step()
         runloop() if @_isRunning
       , 200
 
