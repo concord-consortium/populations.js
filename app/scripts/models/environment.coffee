@@ -67,11 +67,23 @@ module.exports = class Environment
 
   _columnWidth: 10
   _rowHeight:   10
+  _rules: null
 
   ### Getters and Setters ###
 
   getView: ->
     return @_view
+
+  addRule: (rule)->
+    @_rules ||= []
+    @_rules.push(rule) unless @_rules.indexOf(rule) != -1
+
+  removeRule: (rule)->
+    @_rules ||= []
+    @_rules.removeObj rule
+
+  clearRules: ->
+    @_rules = []
 
   _wrapSingleDimension: (p, max) ->
     if p < 0
