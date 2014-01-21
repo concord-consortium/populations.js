@@ -8,7 +8,7 @@ the [Concord Consortium](http://www.concord.org/)
 This project is built using Brunch.io, which compiles the CoffeeScript,
 stylesheets, and other assets.
 
-### Depdendancies
+### Dependencies
 
 * [Node](http://nodejs.org/) `brew install node`
 * [Bower](http://bower.io/) `npm install -g bower`
