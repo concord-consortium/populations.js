@@ -41,3 +41,29 @@ describe 'A species', ->
 
     expect(plant.props["random"]).not.toBe plant2.props["random"]
 
+  it 'can define images to be used for specific traits', ->
+    plantSpecies = new Species
+      agentClass: Agent
+      traits: [
+        new Trait {name: "leaves", min: 0, max: 1}
+      ]
+      imageRules: [
+        {
+          url: "no-leaves.png"
+          useIf: (props) -> props.leaves == 0
+        }
+        {
+          url: "one-leaf.png"
+          useIf: (props) -> props.leaves == 1
+        }
+      ]
+
+    plant = plantSpecies.createAgent()
+
+    plant.props.leaves = 0
+    expect(plant.getImagePath()).toBe "no-leaves.png"
+
+    plant.props.leaves = 1
+    expect(plant.getImagePath()).toBe "one-leaf.png"
+
+

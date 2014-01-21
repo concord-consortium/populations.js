@@ -1,6 +1,8 @@
 Environment = require 'models/environment'
-BasicPlant = require 'models/basic-plant'
-Rule = require 'models/rule'
+Species     = require 'models/species'
+Agent       = require 'models/agent'
+Rule        = require 'models/rule'
+Trait       = require 'models/trait'
 
 require 'helpers'
 
@@ -13,13 +15,35 @@ module.exports = () ->
     rows:     52
     imgPath: "images/environments/sun5levels.jpg"
 
-  agent = new BasicPlant
-    name: "plant1"
-    environment: env
-    x: ExtMath.randomInt env.width
-    y: ExtMath.randomInt env.height
+  env.wrapEastWest = true
+  env.wrapNorthSouth = true
 
-  env.addAgent(agent)
+  plantSpecies = new Species
+    agentClass: Agent
+    traits: [
+      new Trait {name: "size", min: 0, max: 2}
+    ]
+    imageRules: [
+      {
+        url: "images/agents/varied-plants/leaves10.png"
+        useIf: (props) -> props.size == 0
+      }
+      {
+        url: "images/agents/varied-plants/leaves5.png"
+        useIf: (props) -> props.size == 1
+      }
+      {
+        url: "images/agents/varied-plants/leaves1.png"
+        useIf: (props) -> props.size == 2
+      }
+    ]
+
+  for i in [0..10]
+    agent = plantSpecies.createAgent()
+    agent.environment = env
+    agent.setLocation x: ExtMath.randomInt(env.width), y: ExtMath.randomInt(env.height)
+
+    env.addAgent(agent)
 
   rule = new Rule
     test: ->

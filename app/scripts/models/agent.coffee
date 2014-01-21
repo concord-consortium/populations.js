@@ -4,9 +4,8 @@ AgentView = require 'views/agent-view'
 ###
 module.exports = class Agent
 
-  constructor: ({@name, @environment, x, y}) ->
+  constructor: ({@name, @environment, @species, x, y}) ->
     @props = {}
-    @imgPath = "images/agents/plant-healthy-75.png"
     @_view = new AgentView({agent: @})
     if x? && y?
       @setLocation({x,y})
@@ -27,3 +26,6 @@ module.exports = class Agent
 
   setProperty: (name, value) ->
     @props[name] = value
+
+  getImagePath: ->
+    @species.getImage this
