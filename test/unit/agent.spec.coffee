@@ -47,8 +47,8 @@ describe 'Agent', ->
       expect(loc.x).not.toBeDefined()
       expect(loc.y).not.toBeDefined()
 
-    describe 'With Environments', ->
-      describe 'No boundary wrapping', ->
+    describe 'in Environments', ->
+      describe 'with no boundary wrapping', ->
         it 'should constrain the x location to the environment size', ->
           env = new Environment
             width: 100
@@ -82,7 +82,7 @@ describe 'Agent', ->
           expect(agent._x).toBe(24)
           expect(agent._y).toBe(84)
 
-      describe 'All boundary wrapping', ->
+      describe 'with all boundary wrapping', ->
         it 'should constrain the x location to the environment size', ->
           env = new Environment
             width: 100
@@ -122,7 +122,7 @@ describe 'Agent', ->
           expect(agent._x).toBe(75)
           expect(agent._y).toBe(15)
 
-      describe 'Mixed boundary wrapping', ->
+      describe 'with mixed boundary wrapping', ->
         it 'should constrain the x location to the environment size (wrapping)', ->
           env = new Environment
             width: 100
