@@ -4,11 +4,25 @@ module.exports = class Environment
   wrapEastWest: false
   wrapNorthSouth: false
 
-  constructor: ({@columns, @rows, @imgPath}) ->
-    @width = @columns * @_columnWidth
-    @height = @rows * @_rowHeight
-    @_view = new EnvironmentView({environment: @})
+  constructor: ({@columns, @rows, @height, @width, @imgPath}) ->
+    if @columns and @width
+      throw "You can set columns and rows, or width and height, but not both"
+    if @columns
+      @width = @columns * @_columnWidth
+      @height = @rows * @_rowHeight
+    if @width
+      if not (@width % @_columnWidth == 0)
+        throw "Width #{@width} is not evenly divisible by the column width #{@_columnWidth}"
+      if not (@height % @_rowHeight == 0)
+        throw "Height #{@height} is not evenly divisible by the row height #{@_rowHeight}"
+      @columns = @width / @_columnWidth
+      @rows = @height / @_rowHeight
+
+    @cells = []
+    @cells[col] = [] for col in [0..@columns]
     @agents = []
+
+    @_view = new EnvironmentView({environment: @})
 
   ### Public API ###
 
@@ -29,14 +43,6 @@ module.exports = class Environment
 
   getView: ->
     return @_view
-
-  setColumnWidth: (w) ->
-    @_columnWidth = w
-    @width = @columns * @_columnWidth
-
-  setRowHeight: (h) ->
-    @_rowHeight = h
-    @height = @rows * @_rowHeight
 
   _wrapSingleDimension: (p, max) ->
     if p < 0

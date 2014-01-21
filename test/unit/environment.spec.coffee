@@ -10,14 +10,11 @@ describe 'An Environment', ->
     expect(env.width).toBe 50
     expect(env.height).toBe 60
 
-  it 'can have its witdth and height changed', ->
+  it 'can be created with width and height', ->
     env = new Environment
-      columns: 5
-      rows: 6
+      width: 50
+      height: 60
 
-    env.setColumnWidth 1
-    env.setRowHeight 2
-    expect(env.width).toBe 5
-    expect(env.height).toBe 12
-
+    expect(env.columns).toBe 5
+    expect(env.rows).toBe 6
 
