@@ -201,3 +201,61 @@ describe 'Agent', ->
           expect(agent._x).toBe(75)
           expect(agent._y).toBe(84)
 
+      describe 'with barriers', ->
+
+        it 'should not be able to be placed on a barrier', ->
+          env = new Environment
+            width: 100
+            height: 100
+
+          env.addBarrier 20, 20, 10, 10
+
+          agent1 = new Agent
+            environment: env
+            x: 5
+            y: 5
+
+          retValue = env.addAgent agent1
+
+          expect(retValue).not.toBe false
+          expect(env.agents.length).toBe 1
+
+          agent2 = new Agent
+            environment: env
+            x: 25
+            y: 25
+
+          retValue2 = env.addAgent agent2
+
+          expect(retValue2).toBe false
+          expect(env.agents.length).toBe 1
+
+        it 'should respect wrapping', ->
+          env = new Environment
+            width: 100
+            height: 100
+          env.wrapEastWest = true
+          env.wrapNorthSouth = true
+
+          env.addBarrier 20, 20, 10, 10
+
+          agent1 = new Agent
+            environment: env
+            x: 105
+            y: 105
+
+          retValue = env.addAgent agent1
+
+          expect(retValue).not.toBe false
+          expect(env.agents.length).toBe 1
+
+          agent2 = new Agent
+            environment: env
+            x: 125
+            y: 125
+
+          retValue2 = env.addAgent agent2
+
+          expect(retValue2).toBe false
+          expect(env.agents.length).toBe 1
+

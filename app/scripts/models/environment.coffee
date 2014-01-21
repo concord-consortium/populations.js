@@ -20,6 +20,8 @@ module.exports = class Environment
 
     @cells = []
     @cells[col] = [] for col in [0..@columns]
+    @barriers = []
+
     @agents = []
 
     @_view = new EnvironmentView({environment: @})
@@ -27,11 +29,16 @@ module.exports = class Environment
   ### Public API ###
 
   addAgent: (agent)->
+    loc = agent.getLocation()
+    if @isInBarrier loc.x, loc.y
+      return false
+
     @agents.push(agent) unless @agents.indexOf(agent) != -1
 
   ensureValidLocation: ({x,y}) ->
     x = if @wrapEastWest   then @_wrapSingleDimension(x,  @width) else @_bounceSingleDimension(x,  @width)
     y = if @wrapNorthSouth then @_wrapSingleDimension(y, @height) else @_bounceSingleDimension(y, @height)
+
     return {x,y}
 
   setCellProperty: (x, y, prop, val) ->
@@ -45,6 +52,16 @@ module.exports = class Environment
       return null
 
     return @cells[x][y][prop]
+
+  addBarrier: (x, y, width, height) ->
+    @barriers.push new Barrier x, y, width, height
+
+  isInBarrier: (x, y) ->
+    for barrier in @barriers
+      if barrier.contains x, y
+        return true
+    return false
+
 
   ### Default properties ###
 
@@ -69,3 +86,11 @@ module.exports = class Environment
     else if p >= max
       p = max - (p - max) - 1
     return p
+
+class Barrier
+  constructor: (@x1, @y1, width, height) ->
+    @x2 = @x1 + width
+    @y2 = @y1 + height
+
+  contains: (x, y) ->
+    x > @x1 and x <= @x2 and y > @y1 and y <= @y2
