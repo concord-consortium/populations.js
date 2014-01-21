@@ -62,12 +62,31 @@ module.exports = class Environment
         return true
     return false
 
+  start: ->
+    runloop = ->
+      setTimeout ->
+        env.step()
+        runloop() if @_isRunning
+      , 200
+
+    runloop()
+
+  stop: ->
+    @_isRunning = false
+
+  step: ->
+    # Apply all of the rules
+    for r in @_rules
+      for a in @agents
+        r.execute(a)
 
   ### Default properties ###
 
   _columnWidth: 10
   _rowHeight:   10
   _rules: null
+
+  _isRunning: false
 
   ### Getters and Setters ###
 

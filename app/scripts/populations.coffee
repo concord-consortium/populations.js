@@ -21,3 +21,5 @@ module.exports = () ->
 
   envView = env.getView().render()
   document.body.appendChild(envView)
+
+  env.start()
