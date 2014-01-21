@@ -34,6 +34,18 @@ module.exports = class Environment
     y = if @wrapNorthSouth then @_wrapSingleDimension(y, @height) else @_bounceSingleDimension(y, @height)
     return {x,y}
 
+  setCellProperty: (x, y, prop, val) ->
+    if not @cells[x][y]
+      @cells[x][y] = {}
+
+    @cells[x][y][prop] = val
+
+  getCellProperty: (x, y, prop) ->
+    if not @cells[x][y]
+      return null
+
+    return @cells[x][y][prop]
+
   ### Default properties ###
 
   _columnWidth: 10

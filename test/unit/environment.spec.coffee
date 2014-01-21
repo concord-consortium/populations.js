@@ -18,3 +18,15 @@ describe 'An Environment', ->
     expect(env.columns).toBe 5
     expect(env.rows).toBe 6
 
+  describe 'has Cells which', ->
+
+    it 'have properties that can be set and read', ->
+      env = new Environment
+        columns: 5
+        rows: 5
+
+      env.setCellProperty 0, 0, "sunlight", 0.5
+
+      expect(env.getCellProperty(0, 0, "sunlight")).toBe 0.5
+
+
