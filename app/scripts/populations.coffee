@@ -1,5 +1,7 @@
 Environment = require 'models/environment'
 BasicPlant = require 'models/basic-plant'
+Rule = require 'models/rule'
+
 require 'helpers'
 
 module.exports = () ->
@@ -18,6 +20,15 @@ module.exports = () ->
     y: ExtMath.randomInt env.height
 
   env.addAgent(agent)
+
+  rule = new Rule
+    test: ->
+      return true
+    action: (a)->
+      loc = a.getLocation()
+      a.setLocation(x: loc.x + ExtMath.randomInt(3), y: loc.y + ExtMath.randomInt(3))
+      a.getView().rerender()
+  env.addRule rule
 
   envView = env.getView().render()
   document.body.appendChild(envView)
