@@ -6,12 +6,16 @@ module.exports = class AgentView
     # create a texture from an image path
     texture = PIXI.Texture.fromImage @agent.imgPath
     # create a new Sprite using the texture
-    envSprite = new PIXI.Sprite(texture)
+    @_envSprite = new PIXI.Sprite(texture)
 
-    envSprite.anchor.x = 0
-    envSprite.anchor.y = 0
+    @_envSprite.anchor.x = 0
+    @_envSprite.anchor.y = 0
 
-    envSprite.position.x = @agent._x
-    envSprite.position.y = @agent._y
+    @_envSprite.position.x = @agent._x
+    @_envSprite.position.y = @agent._y
 
-    stage.addChild(envSprite)
+    stage.addChild(@_envSprite)
+
+  rerender: (stage) ->
+    @_envSprite.position.x = @agent._x
+    @_envSprite.position.y = @agent._y
