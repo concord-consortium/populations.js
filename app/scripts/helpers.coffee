@@ -29,10 +29,16 @@ Array::shuffle = ->
       this[top] = tmp;
   return this;
 
+Array::randomElement = ->
+  return this[Math.floor Math.random() * @length]
+
 window.ExtMath = {}
 
 ExtMath.randomInt = (max) ->
   Math.floor Math.random() * max
+
+ExtMath.randomValue = (min, max) ->
+  min + Math.random() * (max - min)
 
 ExtMath.flip = ->
   ExtMath.randomInt(2)
