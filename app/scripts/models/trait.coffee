@@ -34,4 +34,4 @@ module.exports = class Trait
       if @float
         ExtMath.randomValue @min, @max
       else
-        Math.floor ExtMath.randomValue @min, @max
+        Math.floor ExtMath.randomValue @min, @max+1
