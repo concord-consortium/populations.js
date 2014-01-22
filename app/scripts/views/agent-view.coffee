@@ -23,8 +23,12 @@ module.exports = class AgentView
     @_envSprite.position.y = @agent._y
 
     stage.addChild(@_envSprite)
+    @_rendered = true
 
   rerender: (stage) ->
+    if !@_imagePath
+      @render stage
+      return
     # innefficient first impl
     newImagePath = @agent.getImagePath()
     if newImagePath != @_imagePath
