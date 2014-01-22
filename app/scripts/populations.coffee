@@ -26,15 +26,15 @@ module.exports = () ->
     imageRules: [
       {
         url: "images/agents/varied-plants/leaves10.png"
-        useIf: (props) -> props.size == 0
+        useIf: (agent) -> agent.get('size') == 0
       }
       {
         url: "images/agents/varied-plants/leaves5.png"
-        useIf: (props) -> props.size == 1
+        useIf: (agent) -> agent.get('size') == 1
       }
       {
         url: "images/agents/varied-plants/leaves1.png"
-        useIf: (props) -> props.size == 2
+        useIf: (agent) -> agent.get('size') == 2
       }
     ]
 
