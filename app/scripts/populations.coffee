@@ -19,6 +19,10 @@ module.exports = {
     env.wrapEastWest = true
     env.wrapNorthSouth = true
 
+    env.addBarrier 0, 0, 60, 520
+    env.addBarrier 0, 0, 580, 40
+    env.addBarrier 560, 0, 20, 580
+
     for col in [0..58]
       for row in [0..52]
         sunlight = switch
@@ -90,6 +94,7 @@ module.exports = {
       agent.environment = @env
       agent.setLocation x: ExtMath.randomInt(@env.width), y: ExtMath.randomInt(@env.height)
 
-      @env.addAgent(agent)
+      while !@env.addAgent(agent)
+        agent.setLocation x: ExtMath.randomInt(@env.width), y: ExtMath.randomInt(@env.height)
 
 }
