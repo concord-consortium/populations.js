@@ -29,6 +29,7 @@ module.exports = class Environment
   ### Public API ###
 
   addAgent: (agent)->
+    agent.environment = this
     loc = agent.getLocation()
     if @isInBarrier loc.x, loc.y
       return false
