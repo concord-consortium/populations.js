@@ -36,7 +36,7 @@ module.exports = {
           sunlight = agent.get 'sunlight'
           if size is 0 and sunlight is 5 or
              size is 1 and sunlight is 3 or
-             size is 2 and sunlight is 0
+             size is 2 and sunlight is 1
               return false
           return true
         action: (agent) ->
@@ -76,15 +76,20 @@ module.exports = {
         }
       ]
 
-    for i in [0..30]
-      agent = plantSpecies.createAgent()
-      agent.environment = env
-      agent.setLocation x: ExtMath.randomInt(env.width), y: ExtMath.randomInt(env.height)
-
-      env.addAgent(agent)
-
     envView = env.getView().render()
-    document.body.appendChild(envView)
+    document.getElementById('environment').appendChild(envView)
 
     env.start()
+
+    @env = env
+    @plantSpecies = plantSpecies
+
+  plant: ->
+    for i in [0...10]
+      agent = @plantSpecies.createAgent()
+      agent.environment = @env
+      agent.setLocation x: ExtMath.randomInt(@env.width), y: ExtMath.randomInt(@env.height)
+
+      @env.addAgent(agent)
+
 }

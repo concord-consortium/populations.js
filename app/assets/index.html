@@ -7,12 +7,14 @@
 	  <script src="js/app.js"></script>
 	  <script>
 	  	window.onload = function() {
-	  		populations = require('populations');
-	  		populations();
+	  		window.populationDemo = require('populations');
+	  		populationDemo.run();
 	  	}
 	  </script>
 	</head>
 	<body>
 	 	<h1>populations.js</h1>
+	 	<div id="environment"></div>
+	 	<button onclick="populationDemo.plant()">Plant 10 plants</button>
 	</body>
 </html>
