@@ -20,8 +20,10 @@ module.exports = class EnvironmentView
 
     @renderAgents(stage)
 
-    animate = ->
+    animate = =>
       requestAnimFrame( animate )
+      for agent in @environment.agents
+        agent.getView().rerender(stage)
       renderer.render(stage)
 
     requestAnimFrame( animate )
