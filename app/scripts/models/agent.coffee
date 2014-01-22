@@ -35,7 +35,7 @@ module.exports = class Agent
     return @_props
 
   getEnvironmentProperty: (prop) ->
-    @environment.getCellPropertyAt @_x, @_y, prop
+    @environment.getAt @_x, @_y, prop
 
   getImagePath: ->
     @species.getImage this

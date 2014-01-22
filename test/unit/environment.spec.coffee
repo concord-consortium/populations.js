@@ -25,8 +25,8 @@ describe 'An Environment', ->
         columns: 5
         rows: 5
 
-      env.setCellProperty 0, 0, "sunlight", 0.5
+      env.set 0, 0, "sunlight", 0.5
 
-      expect(env.getCellProperty(0, 0, "sunlight")).toBe 0.5
+      expect(env.get(0, 0, "sunlight")).toBe 0.5
 
 

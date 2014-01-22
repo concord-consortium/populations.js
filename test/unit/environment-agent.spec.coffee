@@ -14,7 +14,7 @@ describe 'An agent in an environment', ->
 
     for col in [0..5]
       for row in [0..5]
-        env.setCellProperty col, row, "sunlight", row
+        env.set col, row, "sunlight", row
 
     agent = new Agent environment: env
     agent.setLocation {x: 0, y: 5}
@@ -33,7 +33,7 @@ describe 'An agent in an environment', ->
 
         for col in [0..5]
           for row in [0..5]
-            env.setCellProperty col, row, "sunlight", row
+            env.set col, row, "sunlight", row
 
         env.addRule new Rule
             test: (agent) ->
