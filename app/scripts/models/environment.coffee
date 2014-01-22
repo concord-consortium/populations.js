@@ -41,17 +41,22 @@ module.exports = class Environment
 
     return {x,y}
 
-  setCellProperty: (x, y, prop, val) ->
-    if not @cells[x][y]
-      @cells[x][y] = {}
+  setCellProperty: (col, row, prop, val) ->
+    if not @cells[col][row]
+      @cells[col][row] = {}
 
-    @cells[x][y][prop] = val
+    @cells[col][row][prop] = val
 
-  getCellProperty: (x, y, prop) ->
-    if not @cells[x][y]
+  getCellProperty: (col, row, prop) ->
+    if not @cells[col][row]
       return null
 
-    return @cells[x][y][prop]
+    return @cells[col][row][prop]
+
+  getCellPropertyAt: (x, y, prop) ->
+    col = Math.floor x / @_columnWidth
+    row = Math.floor y / @_rowHeight
+    return @getCellProperty(col, row, prop)
 
   addBarrier: (x, y, width, height) ->
     @barriers.push new Barrier x, y, width, height
