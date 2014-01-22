@@ -19,8 +19,8 @@ describe 'A species', ->
 
     plant = plantSpecies.createAgent()
 
-    expect(plant.props["leaves"]).toEqual 5
-    expect(plant.props["color"]).toEqual "green"
+    expect(plant.get("leaves")).toEqual 5
+    expect(plant.get("color")).toEqual "green"
 
   it 'can create an agent with random properties', ->
     plantSpecies = new Species
@@ -33,13 +33,13 @@ describe 'A species', ->
 
     plant = plantSpecies.createAgent()
 
-    expect(plant.props["leaves"]).toBeGreaterThan -1
-    expect(plant.props["leaves"]).toBeLessThan 5
-    expect(plant.props["color"]).toBeOneOf ["green", "red"]
+    expect(plant.get("leaves")).toBeGreaterThan -1
+    expect(plant.get("leaves")).toBeLessThan 5
+    expect(plant.get("color")).toBeOneOf ["green", "red"]
 
     plant2 = plantSpecies.createAgent()
 
-    expect(plant.props["random"]).not.toBe plant2.props["random"]
+    expect(plant.get("random")).not.toBe plant2.get("random")
 
   it 'can define images to be used for specific traits', ->
     plantSpecies = new Species
@@ -50,20 +50,20 @@ describe 'A species', ->
       imageRules: [
         {
           url: "no-leaves.png"
-          useIf: (props) -> props.leaves == 0
+          useIf: (agent) -> agent.get('leaves') == 0
         }
         {
           url: "one-leaf.png"
-          useIf: (props) -> props.leaves == 1
+          useIf: (agent) -> agent.get('leaves') == 1
         }
       ]
 
     plant = plantSpecies.createAgent()
 
-    plant.props.leaves = 0
+    plant.set('leaves', 0)
     expect(plant.getImagePath()).toBe "no-leaves.png"
 
-    plant.props.leaves = 1
+    plant.set('leaves', 1)
     expect(plant.getImagePath()).toBe "one-leaf.png"
 
 

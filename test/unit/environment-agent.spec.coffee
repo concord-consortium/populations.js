@@ -39,24 +39,24 @@ describe 'An agent in an environment', ->
             test: (agent) ->
               return agent.getEnvironmentProperty('sunlight') >= 2
             action: (agent) ->
-              agent.setProperty 'health', 1
+              agent.set 'health', 1
 
         env.addRule new Rule
             test: (agent) ->
               return agent.getEnvironmentProperty('sunlight') < 2
             action: (agent) ->
-              agent.setProperty 'health', 0
+              agent.set 'health', 0
 
         agent = new Agent {}
         env.addAgent(agent)
-        debugger
+
         agent.setLocation {x: 0, y: 35}     # sunlight = 3
         env.step()
 
-        expect(agent.props.health).toEqual 1
+        expect(agent.get 'health').toEqual 1
 
         agent.setLocation {x: 0, y: 15}     # sunlight = 0
         env.step()
 
-        expect(agent.props.health).toEqual 0
+        expect(agent.get 'health').toEqual 0
 

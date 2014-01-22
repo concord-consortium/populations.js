@@ -5,7 +5,7 @@ AgentView = require 'views/agent-view'
 module.exports = class Agent
 
   constructor: ({@name, @environment, @species, x, y}) ->
-    @props = {}
+    @_props = {}
     @_view = new AgentView({agent: @})
     if x? && y?
       @setLocation({x,y})
@@ -24,8 +24,15 @@ module.exports = class Agent
   getLocation: ->
     {x: @_x, y: @_y}
 
-  setProperty: (name, value) ->
-    @props[name] = value
+  set: (prop, value) ->
+    @_props[prop] = value
+
+  get: (prop) ->
+    if @_props[prop]? then return @_props[prop]
+    else return @getEnvironmentProperty prop
+
+  getAllProperties: ->
+    return @_props
 
   getEnvironmentProperty: (prop) ->
     @environment.getCellPropertyAt @_x, @_y, prop
