@@ -20,3 +20,7 @@ module.exports = class Species
     for imageRule in @imageRules
       if imageRule.useIf agent
         return imageRule.image
+
+  getTrait: (traitName)->
+    for trait in @traits
+      return trait if trait.name is traitName
