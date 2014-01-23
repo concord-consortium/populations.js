@@ -48,6 +48,7 @@ describe 'An agent in an environment', ->
               agent.set 'health', 0
 
         agent = new Agent {}
+        agent.set('is immortal', true)
         env.addAgent(agent)
 
         agent.setLocation {x: 0, y: 35}     # sunlight = 3

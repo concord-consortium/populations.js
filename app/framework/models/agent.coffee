@@ -29,8 +29,11 @@ module.exports = class Agent
     @_props[prop] = value
 
   get: (prop) ->
-    if @_props[prop]? then return @_props[prop]
+    if @hasProp(prop) then return @_props[prop]
     else return @getEnvironmentProperty prop
+
+  hasProp: (prop) ->
+    return @_props[prop]?
 
   getAllProperties: ->
     return @_props
@@ -52,4 +55,27 @@ module.exports = class Agent
     @set('age', @get('age')+1)
 
   _checkSurvival: ->
-    # TODO
+    chance = if @hasProp('chance of survival') then @get('chance of survival') else @_getSurvivalChances()
+    @die() if Math.random() > chance
+
+  _getSurvivalChances: ->
+    return 1.0 if @get('is immortal')
+
+    age = @get('age')
+    ageMax = @species?.getTrait('age')?.max || 2000
+
+    agePct = 1 - (age/ageMax)
+
+    # TODO factor in HUNGER
+    # p2 = Math.pow(hungerPct, 2)
+
+    healthTrait = @species?.getTrait('health') || {min: 0, max: 100}
+    health =
+      value: @get('health')
+      min: healthTrait.min
+      max: healthTrait.max
+    healthPct = (health.value - health.min)/(health.max - health.min)
+
+    return agePct * healthPct
+
+

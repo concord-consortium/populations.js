@@ -266,6 +266,7 @@ describe 'Agent', ->
 
     it 'should increment age by 1 per step', ->
       agent = new Agent {}
+      agent.set('is immortal', true)
 
       agent.step()
       agent.step()
@@ -277,8 +278,9 @@ describe 'Agent', ->
       expect(agent.get('age')).toBe 5
 
     it 'should increment agent age when environment.step() is called', ->
-      env = new Environment {}
-      agent = new Agent {}
+      env = new Environment {columns: 5, rows: 5}
+      agent = new Agent {x: 0, y: 0}
+      agent.set('is immortal', true)
       env.addAgent agent
 
       env.step()
@@ -287,9 +289,11 @@ describe 'Agent', ->
       expect(agent.get('age')).toBe 3
 
     it 'should increment agent ages independently', ->
-      env = new Environment {}
-      agent1 = new Agent {}
-      agent2 = new Agent {}
+      env = new Environment {columns: 5, rows: 5}
+      agent1 = new Agent {x: 0, y: 0}
+      agent1.set('is immortal', true)
+      agent2 = new Agent {x: 0, y: 0}
+      agent2.set('is immortal', true)
       env.addAgent agent1
 
       env.step()

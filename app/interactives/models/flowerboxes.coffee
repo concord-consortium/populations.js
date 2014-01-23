@@ -46,7 +46,18 @@ window.model =
           health = agent.get 'health'
           agent.set 'health', health - 0.03
 
-    
+    env.addRule new Rule
+      test: (agent)->
+        agent.get('age') > 10 and agent.get('health') < 0.87 and agent.get('is immortal')
+      action: (agent)->
+        agent.set('is immortal', false)
+
+    env.addRule new Rule
+      test: (agent)->
+        (agent.get('age') < 10 or agent.get('health') >= 0.87) and not agent.get('is immortal')
+      action: (agent)->
+        agent.set('is immortal', true)
+
     envView = env.getView().render()
     document.getElementById('environment').appendChild(envView)
 
