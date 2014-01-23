@@ -49,11 +49,13 @@ describe 'A species', ->
       ]
       imageRules: [
         {
-          url: "no-leaves.png"
+          image:
+            path: "no-leaves.png"
           useIf: (agent) -> agent.get('leaves') == 0
         }
         {
-          url: "one-leaf.png"
+          image:
+            path: "one-leaf.png"
           useIf: (agent) -> agent.get('leaves') == 1
         }
       ]
@@ -61,9 +63,9 @@ describe 'A species', ->
     plant = plantSpecies.createAgent()
 
     plant.set('leaves', 0)
-    expect(plant.getImagePath()).toBe "no-leaves.png"
+    expect(plant.getImage().path).toBe "no-leaves.png"
 
     plant.set('leaves', 1)
-    expect(plant.getImagePath()).toBe "one-leaf.png"
+    expect(plant.getImage().path).toBe "one-leaf.png"
 
 

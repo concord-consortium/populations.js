@@ -37,5 +37,6 @@ module.exports = class Agent
   getEnvironmentProperty: (prop) ->
     @environment.getAt @_x, @_y, prop
 
-  getImagePath: ->
+  getImage: ->
     @species.getImage this
+

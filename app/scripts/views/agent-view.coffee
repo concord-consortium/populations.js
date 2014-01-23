@@ -2,22 +2,22 @@ module.exports = class AgentView
 
   constructor: ({@agent}) ->
 
-  _imagePath: null
+  _image: null
 
   render: (stage) ->
     # create a texture from an image path
-    @_imagePath = @agent.getImagePath()
-    texture = PIXI.Texture.fromImage @_imagePath
+    @_image = @agent.getImage()
+    texture = PIXI.Texture.fromImage @_image.path
 
     # create a new Sprite using the texture
     @_envSprite = new PIXI.Sprite(texture)
 
     # some random default values for the moment
-    @_envSprite.height = 100
-    @_envSprite.width = 100
+    @_envSprite.height = @_image.height || 100
+    @_envSprite.width = @_image.width || 100
 
-    @_envSprite.anchor.x = 0.5
-    @_envSprite.anchor.y = 0.5
+    @_envSprite.anchor.x = @_image.anchor?.x || 0.5
+    @_envSprite.anchor.y = @_image.anchor?.y || 0.5
 
     @_envSprite.position.x = @agent._x
     @_envSprite.position.y = @agent._y
@@ -26,15 +26,20 @@ module.exports = class AgentView
     @_rendered = true
 
   rerender: (stage) ->
-    if !@_imagePath
+    if !@_image
       @render stage
       return
     # innefficient first impl
-    newImagePath = @agent.getImagePath()
-    if newImagePath != @_imagePath
-      @_imagePath = newImagePath
-      texture = PIXI.Texture.fromImage @_imagePath
+    newImage = @agent.getImage()
+    if newImage.path != @_image.path
+      @_image = newImage
+      texture = PIXI.Texture.fromImage @_image.path
       @_envSprite.setTexture texture
+      @_envSprite.height = @_image.height || 100
+      @_envSprite.width = @_image.width || 100
+
+      @_envSprite.anchor.x = @_image.anchor?.x || 0.5
+      @_envSprite.anchor.y = @_image.anchor?.y || 0.5
 
     @_envSprite.position.x = @agent._x
     @_envSprite.position.y = @agent._y

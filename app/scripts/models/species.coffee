@@ -19,4 +19,4 @@ module.exports = class Species
     # simple implementation first, then we'll need to add layers
     for imageRule in @imageRules
       if imageRule.useIf agent
-        return imageRule.url
+        return imageRule.image

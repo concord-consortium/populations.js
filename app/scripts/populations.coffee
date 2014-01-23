@@ -55,27 +55,33 @@ module.exports = {
       ]
       imageRules: [
         {
-          url: "images/agents/varied-plants/leaves10.png"
+          image:
+            path: "images/agents/varied-plants/leaves10.png"
           useIf: (agent) -> agent.get('size') == 0 and agent.get('health') > 0.5
         }
         {
-          url: "images/agents/varied-plants/leaves_wilted10.png"
+          image:
+            path: "images/agents/varied-plants/leaves_wilted10.png"
           useIf: (agent) -> agent.get('size') == 0 and agent.get('health') <= 0.5
         }
         {
-          url: "images/agents/varied-plants/leaves5.png"
+          image:
+            path: "images/agents/varied-plants/leaves5.png"
           useIf: (agent) -> agent.get('size') == 1 and agent.get('health') > 0.5
         }
         {
-          url: "images/agents/varied-plants/leaves_wilted5.png"
+          image:
+            path: "images/agents/varied-plants/leaves_wilted5.png"
           useIf: (agent) -> agent.get('size') == 1 and agent.get('health') <= 0.5
         }
         {
-          url: "images/agents/varied-plants/leaves1.png"
+          image:
+            path: "images/agents/varied-plants/leaves1.png"
           useIf: (agent) -> agent.get('size') == 2 and agent.get('health') > 0.5
         }
         {
-          url: "images/agents/varied-plants/leaves_wilted1.png"
+          image:
+            path: "images/agents/varied-plants/leaves_wilted1.png"
           useIf: (agent) -> agent.get('size') == 2 and agent.get('health') <= 0.5
         }
       ]
