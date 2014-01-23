@@ -17,6 +17,7 @@
   "devDependencies": {
     "brunch": "*",
     "karma": "~0.9.4",
-    "karma-coffee-preprocessor": "~0.0.2"
+    "karma-coffee-preprocessor": "~0.0.2",
+    "after-brunch": "*"
   }
 }

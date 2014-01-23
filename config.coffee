@@ -16,3 +16,9 @@ exports.config =
 
   conventions:
     assets: /interactives(\/|\\)/
+
+  plugins:
+    afterBrunch: [
+      'find public/ -type f -name "*.coffee" -delete'
+      'coffee --compile --output public app/interactives/'
+    ]
