@@ -1,15 +1,14 @@
+require 'helpers'
+
 Environment = require 'models/environment'
 Species     = require 'models/species'
 Agent       = require 'models/agent'
 Rule        = require 'models/rule'
 Trait       = require 'models/trait'
 
-require 'helpers'
+plantSpecies = require 'species/varied-plants'
 
-module.exports = {
-
-  # Putting this setup code in here for the moment
-
+window.model = 
   run: ->
     env = new Environment
       columns:  58
@@ -47,52 +46,7 @@ module.exports = {
           health = agent.get 'health'
           agent.set 'health', health - 0.03
 
-    plantSpecies = new Species
-      agentClass: Agent
-      traits: [
-        new Trait {name: "size", min: 0, max: 2}
-        new Trait {name: "health", min: 0, max: 1, default: 1, float: true}
-      ]
-      imageRules: [
-        {
-          image:
-            path: "images/agents/varied-plants/seed.png"
-            width: 20
-            height: 20
-          useIf: (agent) -> agent.get('age') < 10
-        }
-        {
-          image:
-            path: "images/agents/varied-plants/leaves10.png"
-          useIf: (agent) -> agent.get('size') == 0 and agent.get('health') > 0.5
-        }
-        {
-          image:
-            path: "images/agents/varied-plants/leaves_wilted10.png"
-          useIf: (agent) -> agent.get('size') == 0 and agent.get('health') <= 0.5
-        }
-        {
-          image:
-            path: "images/agents/varied-plants/leaves5.png"
-          useIf: (agent) -> agent.get('size') == 1 and agent.get('health') > 0.5
-        }
-        {
-          image:
-            path: "images/agents/varied-plants/leaves_wilted5.png"
-          useIf: (agent) -> agent.get('size') == 1 and agent.get('health') <= 0.5
-        }
-        {
-          image:
-            path: "images/agents/varied-plants/leaves1.png"
-          useIf: (agent) -> agent.get('size') == 2 and agent.get('health') > 0.5
-        }
-        {
-          image:
-            path: "images/agents/varied-plants/leaves_wilted1.png"
-          useIf: (agent) -> agent.get('size') == 2 and agent.get('health') <= 0.5
-        }
-      ]
-
+    
     envView = env.getView().render()
     document.getElementById('environment').appendChild(envView)
 
@@ -110,4 +64,5 @@ module.exports = {
       while !@env.addAgent(agent)
         agent.setLocation x: ExtMath.randomInt(@env.width), y: ExtMath.randomInt(@env.height)
 
-}
+window.onload = ->
+  model.run()
