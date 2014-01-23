@@ -37,6 +37,9 @@ module.exports = class Environment
 
     @agents.push(agent) unless @agents.indexOf(agent) != -1
 
+  removeAgent: (agent)->
+    agent.getView().remove(@getView().stage) if @agents.removeObj(agent)
+
   ensureValidLocation: ({x,y}) ->
     x = if @wrapEastWest   then @_wrapSingleDimension(x,  @width) else @_bounceSingleDimension(x,  @width)
     y = if @wrapNorthSouth then @_wrapSingleDimension(y, @height) else @_bounceSingleDimension(y, @height)
@@ -70,11 +73,6 @@ module.exports = class Environment
     return false
 
   start: ->
-    runloop = ->
-      setTimeout ->
-        env.step()
-
-  start: ->
     @_isRunning = true
     runloop = =>
       setTimeout =>
@@ -94,6 +92,13 @@ module.exports = class Environment
         r.execute(a)
     for a in @agents
       a.step()
+    i = 0
+    while i < @agents.length
+      a = @agents[i]
+      if a.get('dead')
+        @removeAgent(a)
+      else
+        i++
 
   ### Default properties ###
 

@@ -41,6 +41,9 @@ module.exports = class Agent
   getImage: ->
     @species.getImage this
 
+  die: ->
+    @set('dead', true)
+
   step: ->
     @_incrementAge()
     @_checkSurvival()

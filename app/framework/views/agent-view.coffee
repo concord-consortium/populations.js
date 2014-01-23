@@ -43,3 +43,6 @@ module.exports = class AgentView
 
     @_envSprite.position.x = @agent._x
     @_envSprite.position.y = @agent._y
+
+  remove: (stage)->
+    stage?.removeChild(@_envSprite)
