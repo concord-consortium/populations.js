@@ -23,6 +23,7 @@ module.exports = class Environment
     @barriers = []
 
     @agents = []
+    @_rules = []
 
     @_view = new EnvironmentView({environment: @})
 
@@ -91,6 +92,8 @@ module.exports = class Environment
     for r in @_rules
       for a in @agents
         r.execute(a)
+    for a in @agents
+      a.step()
 
   ### Default properties ###
 

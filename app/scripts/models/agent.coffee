@@ -9,6 +9,7 @@ module.exports = class Agent
     @_view = new AgentView({agent: @})
     if x? && y?
       @setLocation({x,y})
+    @set('age', 0)
 
   getView: ->
     return @_view
@@ -40,3 +41,12 @@ module.exports = class Agent
   getImage: ->
     @species.getImage this
 
+  step: ->
+    @_incrementAge()
+    @_checkSurvival()
+
+  _incrementAge: ->
+    @set('age', @get('age')+1)
+
+  _checkSurvival: ->
+    # TODO

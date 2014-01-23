@@ -56,6 +56,13 @@ module.exports = {
       imageRules: [
         {
           image:
+            path: "images/agents/varied-plants/seed.png"
+            width: 20
+            height: 20
+          useIf: (agent) -> agent.get('age') < 10
+        }
+        {
+          image:
             path: "images/agents/varied-plants/leaves10.png"
           useIf: (agent) -> agent.get('size') == 0 and agent.get('health') > 0.5
         }

@@ -259,3 +259,42 @@ describe 'Agent', ->
           expect(retValue2).toBe false
           expect(env.agents.length).toBe 1
 
+  describe 'Aging', ->
+    it 'should have a default age of 0', ->
+      agent = new Agent {}
+      expect(agent.get('age')).toBe 0
+
+    it 'should increment age by 1 per step', ->
+      agent = new Agent {}
+
+      agent.step()
+      agent.step()
+      expect(agent.get('age')).toBe 2
+
+      agent.step()
+      agent.step()
+      agent.step()
+      expect(agent.get('age')).toBe 5
+
+    it 'should increment agent age when environment.step() is called', ->
+      env = new Environment {}
+      agent = new Agent {}
+      env.addAgent agent
+
+      env.step()
+      env.step()
+      env.step()
+      expect(agent.get('age')).toBe 3
+
+    it 'should increment agent ages independently', ->
+      env = new Environment {}
+      agent1 = new Agent {}
+      agent2 = new Agent {}
+      env.addAgent agent1
+
+      env.step()
+      env.step()
+      env.addAgent agent2
+      env.step()
+      expect(agent1.get('age')).toBe 3
+      expect(agent2.get('age')).toBe 1
