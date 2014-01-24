@@ -34,17 +34,12 @@ window.model =
         env.set col, row, "sunlight", sunlight
 
     env.addRule new Rule
-        test: (agent) ->
-          size     = agent.get 'size'
-          sunlight = agent.get 'sunlight'
-          if size is 0 and sunlight is 5 or
-             size is 1 and sunlight is 3 or
-             size is 2 and sunlight is 1
-              return false
-          return true
-        action: (agent) ->
-          health = agent.get 'health'
-          agent.set 'health', health - 0.03
+      action: (agent) ->
+        size     = agent.get 'size'
+        sunlight = agent.get 'sunlight'
+        diff = Math.abs((11 - size) - sunlight)
+        health = 1 - (diff /  20)
+        agent.set 'health', health
 
     env.addRule new Rule
       test: (agent)->

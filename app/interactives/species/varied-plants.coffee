@@ -7,7 +7,7 @@ require.register "species/varied-plants", (exports, require, module) ->
   module.exports = new Species
     agentClass: Agent
     traits: [
-      new Trait {name: "size", min: 0, max: 2}
+      new Trait {name: "size", possibleValues: [1, 5, 10]}
       new Trait {name: "health", min: 0, max: 1, default: 1, float: true}
     ]
     imageRules: [
@@ -21,31 +21,31 @@ require.register "species/varied-plants", (exports, require, module) ->
       {
         image:
           path: "images/agents/varied-plants/leaves10.png"
-        useIf: (agent) -> agent.get('size') == 0 and agent.get('health') > 0.5
-      }
-      {
-        image:
-          path: "images/agents/varied-plants/leaves_wilted10.png"
-        useIf: (agent) -> agent.get('size') == 0 and agent.get('health') <= 0.5
-      }
-      {
-        image:
-          path: "images/agents/varied-plants/leaves5.png"
         useIf: (agent) -> agent.get('size') == 1 and agent.get('health') > 0.5
       }
       {
         image:
-          path: "images/agents/varied-plants/leaves_wilted5.png"
+          path: "images/agents/varied-plants/leaves_wilted10.png"
         useIf: (agent) -> agent.get('size') == 1 and agent.get('health') <= 0.5
       }
       {
         image:
+          path: "images/agents/varied-plants/leaves5.png"
+        useIf: (agent) -> agent.get('size') == 5 and agent.get('health') > 0.5
+      }
+      {
+        image:
+          path: "images/agents/varied-plants/leaves_wilted5.png"
+        useIf: (agent) -> agent.get('size') == 5 and agent.get('health') <= 0.5
+      }
+      {
+        image:
           path: "images/agents/varied-plants/leaves1.png"
-        useIf: (agent) -> agent.get('size') == 2 and agent.get('health') > 0.5
+        useIf: (agent) -> agent.get('size') == 10 and agent.get('health') > 0.5
       }
       {
         image:
           path: "images/agents/varied-plants/leaves_wilted1.png"
-        useIf: (agent) -> agent.get('size') == 2 and agent.get('health') <= 0.5
+        useIf: (agent) -> agent.get('size') == 10 and agent.get('health') <= 0.5
       }
     ]
