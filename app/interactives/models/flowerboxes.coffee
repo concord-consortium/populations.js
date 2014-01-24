@@ -25,11 +25,11 @@ window.model =
     for col in [0..58]
       for row in [0..52]
         sunlight = switch
-          when row < 13 then 5
-          when row < 22 then 4
-          when row < 32 then 3
-          when row < 41 then 2
-          else 1
+          when row < 13 then 10
+          when row < 22 then 8
+          when row < 32 then 6
+          when row < 41 then 4
+          else 2
 
         env.set col, row, "sunlight", sunlight
 
@@ -42,22 +42,14 @@ window.model =
         agent.set 'health', health
 
     env.addRule new Rule
-      test: (agent)->
-        agent.get('age') > 10 and agent.get('health') < 0.87 and agent.get('is immortal')
       action: (agent)->
-        agent.set('is immortal', false)
+        immortal = agent.get('age') < 10 or agent.get('health') >= 0.87
+        agent.set('is immortal', immortal)
 
     env.addRule new Rule
-      test: (agent)->
-        (agent.get('age') < 10 or agent.get('health') >= 0.87) and not agent.get('is immortal')
       action: (agent)->
-        agent.set('is immortal', true)
-
-    env.addRule new Rule
-      test: (agent)->
-        agent.get('age') > 20 and agent.get('health') >= 0.95
-      action: (agent)->
-        agent.set('has flowers', true)
+        flowers = agent.get('age') > 20 and agent.get('health') >= 0.95
+        agent.set('has flowers', flowers)
 
     envView = env.getView().render()
     document.getElementById('environment').appendChild(envView)
