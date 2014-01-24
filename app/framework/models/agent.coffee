@@ -41,8 +41,8 @@ module.exports = class Agent
   getEnvironmentProperty: (prop) ->
     @environment.getAt @_x, @_y, prop
 
-  getImage: ->
-    @species.getImage this
+  getImages: ->
+    @species.getImages this
 
   die: ->
     @set('dead', true)

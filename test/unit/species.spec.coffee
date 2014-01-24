@@ -49,23 +49,132 @@ describe 'A species', ->
       ]
       imageRules: [
         {
-          image:
-            path: "no-leaves.png"
-          useIf: (agent) -> agent.get('leaves') == 0
-        }
-        {
-          image:
-            path: "one-leaf.png"
-          useIf: (agent) -> agent.get('leaves') == 1
+          name: 'layer1'
+          rules: [
+            {
+              image:
+                path: "no-leaves.png"
+              useIf: (agent) -> agent.get('leaves') == 0
+            }
+            {
+              image:
+                path: "one-leaf.png"
+              useIf: (agent) -> agent.get('leaves') == 1
+            }
+          ]
         }
       ]
 
     plant = plantSpecies.createAgent()
 
     plant.set('leaves', 0)
-    expect(plant.getImage().path).toBe "no-leaves.png"
+    expect(plant.getImages()[0].selectedImage.path).toBe "no-leaves.png"
 
     plant.set('leaves', 1)
-    expect(plant.getImage().path).toBe "one-leaf.png"
+    expect(plant.getImages()[0].selectedImage.path).toBe "one-leaf.png"
+
+  it 'can define layered images', ->
+    plantSpecies = new Species
+      agentClass: Agent
+      traits: [
+        new Trait {name: "leaves", min: 0, max: 1},
+        new Trait {name: "flowers", min: 0, max: 2}
+      ]
+      imageRules: [
+        {
+          name: 'layer1'
+          rules: [
+            {
+              image:
+                path: "no-leaves.png"
+              useIf: (agent) -> agent.get('leaves') == 0
+            }
+            {
+              image:
+                path: "one-leaf.png"
+              useIf: (agent) -> agent.get('leaves') == 1
+            }
+          ]
+        }
+        {
+          name: 'layer2'
+          rules: [
+            {
+              image:
+                path: "no-flowers.png"
+              useIf: (agent) -> agent.get('leaves') == 0
+            }
+            {
+              image:
+                path: "some-flowers.png"
+              useIf: (agent) -> agent.get('leaves') == 1
+            }
+          ]
+        }
+      ]
+
+    plant = plantSpecies.createAgent()
+
+    plant.set('leaves', 0)
+    plant.set('flowers', 0)
+    expect(plant.getImages()[0].selectedImage.path).toBe "no-leaves.png"
+    expect(plant.getImages()[1].selectedImage.path).toBe "no-flowers.png"
+
+    plant.set('leaves', 1)
+    plant.set('flowers', 1)
+    expect(plant.getImages()[0].selectedImage.path).toBe "one-leaf.png"
+    expect(plant.getImages()[1].selectedImage.path).toBe "some-flowers.png"
+
+  it 'will not include an image for a layer if none of the images match', ->
+    plantSpecies = new Species
+      agentClass: Agent
+      traits: [
+        new Trait {name: "leaves", min: 0, max: 1},
+        new Trait {name: "flowers", min: 0, max: 2}
+      ]
+      imageRules: [
+        {
+          name: 'layer1'
+          rules: [
+            {
+              image:
+                path: "no-leaves.png"
+              useIf: (agent) -> agent.get('leaves') == 0
+            }
+            {
+              image:
+                path: "one-leaf.png"
+              useIf: (agent) -> agent.get('leaves') == 1
+            }
+          ]
+        }
+        {
+          name: 'layer2'
+          rules: [
+            {
+              image:
+                path: "no-flowers.png"
+              useIf: (agent) -> agent.get('flowers') == 0
+            }
+            {
+              image:
+                path: "some-flowers.png"
+              useIf: (agent) -> agent.get('flowers') == 1
+            }
+          ]
+        }
+      ]
+
+    plant = plantSpecies.createAgent()
+
+    plant.set('leaves', 0)
+    plant.set('flowers', 0)
+    expect(plant.getImages()[0].selectedImage.path).toBe "no-leaves.png"
+    expect(plant.getImages()[1].selectedImage.path).toBe "no-flowers.png"
+
+    plant.set('leaves', 1)
+    plant.set('flowers', 2)
+    expect(plant.getImages()[0].selectedImage.path).toBe "one-leaf.png"
+    expect(plant.getImages().length).toBe 1
 
 

@@ -2,47 +2,69 @@ module.exports = class AgentView
 
   constructor: ({@agent}) ->
 
-  _image: null
+  _images: null
+  _sprites: null
+  _container: null
 
   render: (stage) ->
-    # create a texture from an image path
-    @_image = @agent.getImage()
-    texture = PIXI.Texture.fromImage @_image.path
+    @_container = new PIXI.DisplayObjectContainer
+    @_sprites = {}
+    # create a texture from set of image paths
+    @_images = @agent.getImages()
+    for layer in @_images
+      sprite = @_createSprite layer.selectedImage
+      @_sprites[layer.name] = sprite
+      @_container.addChild(sprite)
 
-    # create a new Sprite using the texture
-    @_envSprite = new PIXI.Sprite(texture)
+    @_container.position.x = @agent._x
+    @_container.position.y = @agent._y
 
-    # some random default values for the moment
-    @_envSprite.height = @_image.height || 100
-    @_envSprite.width = @_image.width || 100
-
-    @_envSprite.anchor.x = @_image.anchor?.x || 0.5
-    @_envSprite.anchor.y = @_image.anchor?.y || 0.5
-
-    @_envSprite.position.x = @agent._x
-    @_envSprite.position.y = @agent._y
-
-    stage.addChild(@_envSprite)
+    stage.addChild(@_container)
     @_rendered = true
 
   rerender: (stage) ->
-    if !@_image
+    if !@_images
       @render stage
       return
-    # innefficient first impl
-    newImage = @agent.getImage()
-    if newImage.path != @_image.path
-      @_image = newImage
-      texture = PIXI.Texture.fromImage @_image.path
-      @_envSprite.setTexture texture
-      @_envSprite.height = @_image.height || 100
-      @_envSprite.width = @_image.width || 100
+    newImages = @agent.getImages()
+    names = []
+    # update or create needed sprites
+    for layer,i in newImages
+      names.push layer.name
+      if not @_sprites[layer.name]?
+        sprite = @_createSprite layer.selectedImage
+        @_sprites[layer.name] = sprite
+        @_container.addChildAt(sprite,i)
+      else if layer.selectedImage.path != @_sprites[layer.name].texture.baseTexture.source.src
+        texture = PIXI.Texture.fromImage layer.selectedImage.path
+        sprite = @_sprites[layer.name]
+        sprite.setTexture texture
+        @_setSpriteProperties(sprite, layer.selectedImage)
 
-      @_envSprite.anchor.x = @_image.anchor?.x || 0.5
-      @_envSprite.anchor.y = @_image.anchor?.y || 0.5
+    # remove the no-longer-needed sprites
+    for own name,sprite of @_sprites
+      if names.indexOf(name) == -1
+        @_container.removeChild sprite
+        @_sprites[name] = null
 
-    @_envSprite.position.x = @agent._x
-    @_envSprite.position.y = @agent._y
+    @_container.position.x = @agent._x
+    @_container.position.y = @agent._y
 
   remove: (stage)->
-    stage?.removeChild(@_envSprite)
+    stage?.removeChild(@_container)
+
+  _createSprite: (image)->
+    # create a new Sprite using the texture
+    texture = PIXI.Texture.fromImage image.path
+    sprite = new PIXI.Sprite(texture)
+    @_setSpriteProperties(sprite, image)
+    return sprite
+
+  _setSpriteProperties: (sprite, image)->
+    # some random default values for the moment
+    sprite.height = image.height || 100
+    sprite.width = image.width || 100
+
+    sprite.anchor.x = image.anchor?.x || 0.5
+    sprite.anchor.y = image.anchor?.y || 0.5
+    return sprite

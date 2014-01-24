@@ -15,11 +15,17 @@ module.exports = class Species
       agent.set trait.name, trait.getDefaultValue()
     return agent
 
-  getImage: (agent) ->
-    # simple implementation first, then we'll need to add layers
-    for imageRule in @imageRules
-      if imageRule.useIf agent
-        return imageRule.image
+  getImages: (agent) ->
+    images = []
+    for layer in @imageRules
+      layer.selectedImage = null
+      for imageRule in layer.rules
+        if imageRule.useIf agent
+          layer.selectedImage = imageRule.image
+          break
+      images.push layer if layer.selectedImage?
+
+    return images
 
   getTrait: (traitName)->
     for trait in @traits
