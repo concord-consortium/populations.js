@@ -53,6 +53,12 @@ window.model =
       action: (agent)->
         agent.set('is immortal', true)
 
+    env.addRule new Rule
+      test: (agent)->
+        agent.get('age') > 20 and agent.get('health') >= 0.95
+      action: (agent)->
+        agent.set('has flowers', true)
+
     envView = env.getView().render()
     document.getElementById('environment').appendChild(envView)
 
