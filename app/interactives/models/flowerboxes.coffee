@@ -56,8 +56,6 @@ window.model =
 
     env.setDefaultAgentCreator plantSpecies, {size: 1}
 
-    env.start()
-
     @env = env
     @plantSpecies = plantSpecies
 
