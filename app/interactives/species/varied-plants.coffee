@@ -29,7 +29,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 1 and agent.get('health') > 0.5
+            useIf: (agent) -> agent.get('size') == 1 and agent.get('health') > 0.85
           }
           {
             image:
@@ -38,7 +38,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 1 and agent.get('health') <= 0.5
+            useIf: (agent) -> agent.get('size') == 1 and agent.get('health') <= 0.85
           }
           {
             image:
@@ -47,7 +47,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 5 and agent.get('health') > 0.5
+            useIf: (agent) -> agent.get('size') == 5 and agent.get('health') > 0.85
           }
           {
             image:
@@ -56,7 +56,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 5 and agent.get('health') <= 0.5
+            useIf: (agent) -> agent.get('size') == 5 and agent.get('health') <= 0.85
           }
           {
             image:
@@ -65,7 +65,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 10 and agent.get('health') > 0.5
+            useIf: (agent) -> agent.get('size') == 10 and agent.get('health') > 0.85
           }
           {
             image:
@@ -74,7 +74,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 10 and agent.get('health') <= 0.5
+            useIf: (agent) -> agent.get('size') == 10 and agent.get('health') <= 0.85
           }
         ]
       }

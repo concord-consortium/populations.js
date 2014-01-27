@@ -34,6 +34,8 @@ window.model =
         env.set col, row, "sunlight", sunlight
 
     env.addRule new Rule
+      test: (agent) ->
+        return agent.get('age') > (plantSpecies.defs.SPROUT_AGE + 4)
       action: (agent) ->
         size     = agent.get 'size'
         sunlight = agent.get 'sunlight'
@@ -43,7 +45,7 @@ window.model =
 
     env.addRule new Rule
       action: (agent)->
-        immortal = agent.get('age') < 10 or agent.get('health') >= 0.87
+        immortal = agent.get('age') < (plantSpecies.defs.SPROUT_AGE + 10) or agent.get('health') >= 0.87
         agent.set('is immortal', immortal)
 
     env.addRule new Rule
