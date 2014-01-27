@@ -61,10 +61,15 @@ module.exports = class AgentView
     return sprite
 
   _setSpriteProperties: (sprite, image)->
-    # some random default values for the moment
+    # default scale of 1 -- same size as the original image
     sprite.scale.x = image.scale || 1
     sprite.scale.y = image.scale || 1
 
+    # default anchor of 0.5 -- the image is centered on the container's position
     sprite.anchor.x = image.anchor?.x || 0.5
     sprite.anchor.y = image.anchor?.y || 0.5
+
+    # default position of 0 -- the image won't be shifted up/down or left/right
+    sprite.position.x = image.position?.x || 0
+    sprite.position.y = image.position?.y || 0
     return sprite
