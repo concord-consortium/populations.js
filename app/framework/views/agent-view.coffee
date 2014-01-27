@@ -62,8 +62,8 @@ module.exports = class AgentView
 
   _setSpriteProperties: (sprite, image)->
     # some random default values for the moment
-    sprite.height = image.height || 100
-    sprite.width = image.width || 100
+    sprite.scale.x = image.scale || 1
+    sprite.scale.y = image.scale || 1
 
     sprite.anchor.x = image.anchor?.x || 0.5
     sprite.anchor.y = image.anchor?.y || 0.5
