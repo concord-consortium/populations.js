@@ -37,16 +37,17 @@ describe 'Rule', ->
   it 'should evaluate action() on execution when test() returns true', ->
     testAction jasmine.createSpy("test spy").andReturn(true), true
 
+  it 'should evaluate action() on execution when test() does not exist', ->
+    rule = new Rule
+      action: jasmine.createSpy("action spy").andReturn(false)
+
+    rule.execute(null)
+    expect(rule._action).toHaveBeenCalled()
+
   it 'should not evaluate action() on execution when test() returns false', ->
     testAction jasmine.createSpy("test spy").andReturn(false), false
 
   describe 'invalid setup', ->
-    it 'should throw an error if test is not defined', ->
-      expect(->
-        rule = new Rule
-          action: ->
-            1 + 1
-      ).toThrow(new Error("test is not a function!"))
 
     it 'should throw an error if action is not defined', ->
       expect(->
@@ -54,14 +55,6 @@ describe 'Rule', ->
           test: ->
             return true
       ).toThrow(new Error("action is not a function!"))
-
-    it 'should throw an error if test is not a function', ->
-      expect(->
-        rule = new Rule
-          test: true
-          action: ->
-            1 + 1
-      ).toThrow(new Error("test is not a function!"))
 
     it 'should throw an error if action is not a function', ->
       expect(->
