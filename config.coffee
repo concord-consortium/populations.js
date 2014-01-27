@@ -15,7 +15,7 @@ exports.config =
       path.replace(/^app\/framework\//, '')
 
   conventions:
-    assets: /interactives(\/|\\)/
+    assets: [/interactives(\/|\\)/, /assets(\/|\\)/]
 
   plugins:
     afterBrunch: [
