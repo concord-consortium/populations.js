@@ -70,5 +70,8 @@ window.model =
       while !@env.addAgent(agent)
         agent.setLocation x: ExtMath.randomInt(@env.width), y: ExtMath.randomInt(@env.height)
 
+  plantManually: ->
+    @env.setState @env.UI_STATE.ADD_AGENTS
+
 window.onload = ->
   model.run()

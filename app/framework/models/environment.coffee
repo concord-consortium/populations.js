@@ -1,8 +1,6 @@
 EnvironmentView = require 'views/environment-view'
 StateMachine = require 'state-machine'
 
-ADD_AGENTS = "Add Agents"
-
 module.exports = class Environment extends StateMachine
   wrapEastWest: false
   wrapNorthSouth: false
@@ -29,10 +27,7 @@ module.exports = class Environment extends StateMachine
     @_rules = []
 
     # Add User Interaction states
-    @addState ADD_AGENTS, AddAgentsState
-
-    # For the moment, immediately set the current state to be ADD_AGENTS
-    @setState ADD_AGENTS
+    @addState @UI_STATE.ADD_AGENTS, AddAgentsState
 
     @_view = new EnvironmentView({environment: @})
 
@@ -163,6 +158,11 @@ module.exports = class Environment extends StateMachine
     else if p >= max
       p = max - (p - max) - 1
     return p
+
+  ### UI States ###
+
+  UI_STATE:
+    ADD_AGENTS: "Add Agents"
 
 class Barrier
   constructor: (@x1, @y1, width, height) ->
