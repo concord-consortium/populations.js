@@ -27,7 +27,10 @@ module.exports = class Environment extends StateMachine
     @_rules = []
 
     # Add User Interaction states
+    @addState @UI_STATE.NONE, EmptyState
     @addState @UI_STATE.ADD_AGENTS, AddAgentsState
+
+    @setState @UI_STATE.NONE
 
     @_view = new EnvironmentView({environment: @})
 
@@ -162,6 +165,7 @@ module.exports = class Environment extends StateMachine
   ### UI States ###
 
   UI_STATE:
+    NONE: "None"
     ADD_AGENTS: "Add Agents"
 
 class Barrier
@@ -177,6 +181,8 @@ class Barrier
 ###
       *** User Interaction States ***
 ###
+
+EmptyState = {}
 
 AddAgentsState =
   enter: ->
