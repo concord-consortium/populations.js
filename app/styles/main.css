@@ -66,6 +66,12 @@ body {
   background-position: 3px 3px;
 }
 
+#environment .toolbar .button .pause {
+  background-image: url('../ui/pause.png');
+  background-repeat:no-repeat;
+  background-position: 3px 3px;
+}
+
 #environment .toolbar .button div:active {
   background-position: 2px 2px;
 }
