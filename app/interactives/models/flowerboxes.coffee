@@ -54,7 +54,7 @@ window.model =
     envView = env.getView().render()
     document.getElementById('environment').appendChild(envView)
 
-    env.setDefaultAgentCreator plantSpecies
+    env.setDefaultAgentCreator plantSpecies, {size: 1}
 
     env.start()
 
