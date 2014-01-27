@@ -1,11 +1,12 @@
 module.exports = class Species
-  
+
   constructor: ({
       @speciesName
       @individualName
       @agentClass
       @traits
       @imageRules
+      @defs
       @reproductiveStrategy
       @mutationChance}) ->
 

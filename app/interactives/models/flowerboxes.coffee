@@ -48,7 +48,7 @@ window.model =
 
     env.addRule new Rule
       action: (agent)->
-        flowers = agent.get('age') > 20 and agent.get('health') >= 0.95
+        flowers = agent.get('age') > plantSpecies.defs.MATURITY_AGE and agent.get('health') >= 0.95
         agent.set('has flowers', flowers)
 
     environmentElement = document.getElementById('environment')
