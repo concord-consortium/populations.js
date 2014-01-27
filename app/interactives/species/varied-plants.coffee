@@ -85,7 +85,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               position:
                 x: -3
                 y: -51
-            useIf: (agent) -> agent.get('has flowers')
+            useIf: (agent) -> agent.get('size') == 10 and agent.get('has flowers')
           }
         ]
       }
@@ -97,9 +97,9 @@ require.register "species/varied-plants", (exports, require, module) ->
               path: "images/agents/varied-plants/flower4.png"
               scale: 0.2
               position:
-                x: 25
-                y: -25
-            useIf: (agent) -> agent.get('has flowers')
+                x: -3
+                y: -51
+            useIf: (agent) -> agent.get('size') == 5 and agent.get('has flowers')
           }
         ]
       }
@@ -111,9 +111,9 @@ require.register "species/varied-plants", (exports, require, module) ->
               path: "images/agents/varied-plants/flower9.png"
               scale: 0.2
               position:
-                x: -20
-                y: -35
-            useIf: (agent) -> agent.get('has flowers')
+                x: -3
+                y: -51
+            useIf: (agent) -> agent.get('size') == 1 and agent.get('has flowers')
           }
         ]
       }
