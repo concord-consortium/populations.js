@@ -3,7 +3,7 @@ module.exports = class EnvironmentView
   constructor: ({@environment}) ->
 
   render: (@stage) ->
-    @stage = new PIXI.Stage(0x66FF99) unless @stage?
+    @stage = new PIXI.Stage(0x66FF99, true) unless @stage?
     renderer = PIXI.autoDetectRenderer(@environment.width, @environment.height)
     # create a texture from an image path
     texture = PIXI.Texture.fromImage @environment.imgPath
@@ -28,8 +28,16 @@ module.exports = class EnvironmentView
 
     requestAnimFrame( animate )
 
-    return renderer.view
+    @view = renderer.view
+
+    @addMouseHandlers()
+
+    return @view
 
   renderAgents: (stage) ->
     for agent in @environment.agents
       agent.getView().render(stage)
+
+  addMouseHandlers: ->
+    @view.addEventListener 'click',  (evt) =>
+      @environment.send "click", evt

@@ -54,6 +54,8 @@ window.model =
     envView = env.getView().render()
     document.getElementById('environment').appendChild(envView)
 
+    env.setDefaultAgentCreator plantSpecies
+
     env.start()
 
     @env = env

@@ -1,6 +1,9 @@
 EnvironmentView = require 'views/environment-view'
+StateMachine = require 'state-machine'
 
-module.exports = class Environment
+ADD_AGENTS = "Add Agents"
+
+module.exports = class Environment extends StateMachine
   wrapEastWest: false
   wrapNorthSouth: false
 
@@ -24,6 +27,12 @@ module.exports = class Environment
 
     @agents = []
     @_rules = []
+
+    # Add User Interaction states
+    @addState ADD_AGENTS, AddAgentsState
+
+    # For the moment, immediately set the current state to be ADD_AGENTS
+    @setState ADD_AGENTS
 
     @_view = new EnvironmentView({environment: @})
 
@@ -71,6 +80,20 @@ module.exports = class Environment
       if barrier.contains x, y
         return true
     return false
+
+  # Used for setting the default species (and eventually
+  # properties) for creating and adding agents
+  setDefaultAgentCreator: (species) ->
+    @defaultSpecies = species
+
+  addDefaultAgent: (x, y) ->
+    return unless @defaultSpecies?
+    agent = @defaultSpecies.createAgent()
+    agent.environment = @
+    agent.setLocation x: x, y: y
+    @addAgent agent
+
+  ### Run Loop ###
 
   start: ->
     @_isRunning = true
@@ -145,3 +168,13 @@ class Barrier
 
   contains: (x, y) ->
     x > @x1 and x <= @x2 and y > @y1 and y <= @y2
+
+
+
+###
+      *** User Interaction States ***
+###
+
+AddAgentsState =
+  click: (evt) ->
+    @addDefaultAgent evt.layerX, evt.layerY
