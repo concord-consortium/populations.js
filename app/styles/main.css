@@ -72,6 +72,12 @@ body {
   background-position: 3px 3px;
 }
 
+#environment .toolbar .button .reset {
+  background-image: url('../ui/reset.png');
+  background-repeat:no-repeat;
+  background-position: 3px 3px;
+}
+
 #environment .toolbar .button div:active {
   background-position: 2px 2px;
 }

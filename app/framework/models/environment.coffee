@@ -124,6 +124,10 @@ module.exports = class Environment extends StateMachine
       else
         i++
 
+  reset: ->
+    i = @agents.length
+    @removeAgent @agents[--i] while i
+
   ### Default properties ###
 
   _columnWidth: 10

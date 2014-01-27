@@ -10,6 +10,9 @@ module.exports = class Toolbar
       "pause", (->
         env.stop())
 
+    @addButton "reset", ->
+      env.reset()
+
   addButton: (type, action) ->
     button = document.createElement 'div'
     button.classList.add 'button'
