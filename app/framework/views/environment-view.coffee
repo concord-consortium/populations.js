@@ -6,7 +6,7 @@ module.exports = class EnvironmentView
 
   constructor: ({@environment}) ->
 
-  render: (@stage) ->
+  render: (el) ->
     @stage = new PIXI.Stage(0x66FF99, true) unless @stage?
     renderer = PIXI.autoDetectRenderer(@environment.width, @environment.height)
     # create a texture from an image path
@@ -36,7 +36,7 @@ module.exports = class EnvironmentView
 
     @addMouseHandlers()
 
-    return @view
+    el.appendChild(@view)
 
   renderAgents: (stage) ->
     for agent in @environment.agents

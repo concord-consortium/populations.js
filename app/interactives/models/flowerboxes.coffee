@@ -51,8 +51,8 @@ window.model =
         flowers = agent.get('age') > 20 and agent.get('health') >= 0.95
         agent.set('has flowers', flowers)
 
-    envView = env.getView().render()
-    document.getElementById('environment').appendChild(envView)
+    environmentElement = document.getElementById('environment')
+    env.getView().render(environmentElement)
 
     env.setDefaultAgentCreator plantSpecies, {size: 1}
 
