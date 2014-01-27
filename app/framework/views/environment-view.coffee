@@ -1,3 +1,7 @@
+cursorsClasses = [
+  "add-agents"
+]
+
 module.exports = class EnvironmentView
 
   constructor: ({@environment}) ->
@@ -37,6 +41,12 @@ module.exports = class EnvironmentView
   renderAgents: (stage) ->
     for agent in @environment.agents
       agent.getView().render(stage)
+
+  setCursor: (name) ->
+    for cursorClass in cursorsClasses
+      @view.parentElement.classList.remove cursorClass
+
+    @view.parentElement.classList.add name
 
   addMouseHandlers: ->
     @view.addEventListener 'click',  (evt) =>

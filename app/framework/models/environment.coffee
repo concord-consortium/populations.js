@@ -179,5 +179,7 @@ class Barrier
 ###
 
 AddAgentsState =
+  enter: ->
+    @_view.setCursor "add-agents"
   click: (evt) ->
     @addDefaultAgent evt.layerX, evt.layerY
