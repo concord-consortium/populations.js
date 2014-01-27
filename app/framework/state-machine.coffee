@@ -31,7 +31,7 @@ module.exports = class StateMachine
 
     @currentState = currentState
     if @_states[@currentState].enter?
-      @_states[@currentState].enter()
+      @_states[@currentState].enter.apply @
 
   send: (evtName, evt) ->
     if !@currentState?
