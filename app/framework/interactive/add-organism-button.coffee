@@ -6,6 +6,12 @@ module.exports = class AddOrganismButton
     button = document.createElement 'div'
     button.classList.add 'button'
     button.addEventListener 'click', => @action()
+
+    for layer in @getButtonImages()
+      image = document.createElement 'img'
+      image.setAttribute 'src', layer.selectedImage.path
+      button.appendChild image
+
     return button
 
   action: ->
@@ -30,3 +36,7 @@ module.exports = class AddOrganismButton
   enterAddOrganismsMode: ->
     @environment.setDefaultAgentCreator @species
     @environment.setState @environment.UI_STATE.ADD_AGENTS
+
+  getButtonImages: ->
+    dummy = @species.createAgent()
+    @species.getImages dummy, {buttonImage: true}
