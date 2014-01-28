@@ -20,9 +20,8 @@ window.model =
           [0, 0, 580, 40]
           [560, 0, 20, 580]
         ]
-
-    env.wrapEastWest = true
-    env.wrapNorthSouth = true
+      wrapEastWest: true
+      wrapNorthSouth: true
 
     for col in [0..58]
       for row in [0..52]

@@ -9,10 +9,10 @@ defaultOptions =
  #height          :
   imgPath         : ""
   barriers        : []
+  wrapEastWest    : false
+  wrapNorthSouth  : false
 
 module.exports = class Environment extends StateMachine
-  wrapEastWest: false
-  wrapNorthSouth: false
 
   constructor: (opts) ->
     opts = helpers.setDefaults(opts, defaultOptions)

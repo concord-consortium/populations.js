@@ -87,8 +87,8 @@ describe 'Agent', ->
           env = new Environment
             width: 100
             height: 100
-          env.wrapEastWest = true
-          env.wrapNorthSouth = true
+            wrapEastWest: true
+            wrapNorthSouth: true
           agent = new Agent
             environment: env
             x: 105
@@ -100,8 +100,8 @@ describe 'Agent', ->
           env = new Environment
             width: 100
             height: 100
-          env.wrapEastWest = true
-          env.wrapNorthSouth = true
+            wrapEastWest: true
+            wrapNorthSouth: true
           agent = new Agent
             environment: env
             x: 85
@@ -113,8 +113,8 @@ describe 'Agent', ->
           env = new Environment
             width: 100
             height: 100
-          env.wrapEastWest = true
-          env.wrapNorthSouth = true
+            wrapEastWest: true
+            wrapNorthSouth: true
           agent = new Agent
             environment: env
             x: 175
@@ -127,8 +127,8 @@ describe 'Agent', ->
           env = new Environment
             width: 100
             height: 100
-          env.wrapEastWest = true
-          env.wrapNorthSouth = false
+            wrapEastWest: true
+            wrapNorthSouth: false
           agent = new Agent
             environment: env
             x: 105
@@ -140,8 +140,8 @@ describe 'Agent', ->
           env = new Environment
             width: 100
             height: 100
-          env.wrapEastWest = false
-          env.wrapNorthSouth = true
+            wrapEastWest: false
+            wrapNorthSouth: true
           agent = new Agent
             environment: env
             x: 105
@@ -153,8 +153,8 @@ describe 'Agent', ->
           env = new Environment
             width: 100
             height: 100
-          env.wrapEastWest = false
-          env.wrapNorthSouth = true
+            wrapEastWest: false
+            wrapNorthSouth: true
           agent = new Agent
             environment: env
             x: 85
@@ -166,8 +166,8 @@ describe 'Agent', ->
           env = new Environment
             width: 100
             height: 100
-          env.wrapEastWest = true
-          env.wrapNorthSouth = false
+            wrapEastWest: true
+            wrapNorthSouth: false
           agent = new Agent
             environment: env
             x: 85
@@ -179,8 +179,8 @@ describe 'Agent', ->
           env = new Environment
             width: 100
             height: 100
-          env.wrapEastWest = false
-          env.wrapNorthSouth = true
+            wrapEastWest: false
+            wrapNorthSouth: true
           agent = new Agent
             environment: env
             x: 175
@@ -192,8 +192,8 @@ describe 'Agent', ->
           env = new Environment
             width: 100
             height: 100
-          env.wrapEastWest = true
-          env.wrapNorthSouth = false
+            wrapEastWest: true
+            wrapNorthSouth: false
           agent = new Agent
             environment: env
             x: 175
@@ -234,8 +234,8 @@ describe 'Agent', ->
           env = new Environment
             width: 100
             height: 100
-          env.wrapEastWest = true
-          env.wrapNorthSouth = true
+            wrapEastWest: true
+            wrapNorthSouth: true
 
           env.addBarrier 20, 20, 10, 10
 
