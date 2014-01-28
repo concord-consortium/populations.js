@@ -113,6 +113,8 @@ window.model =
         title: 'Flowers'
         minValue: 0
         maxValue: 10
+        gridlines:
+          count: 6
       legend:
         position: 'none'
       width: 400
