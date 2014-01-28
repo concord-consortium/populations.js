@@ -6,6 +6,7 @@ Agent       = require 'models/agent'
 Rule        = require 'models/rule'
 Trait       = require 'models/trait'
 Interactive = require 'interactive/interactive'
+Events      = require 'events'
 
 plantSpecies = require 'species/varied-plants'
 
@@ -120,6 +121,29 @@ window.model =
     # Instantiate and draw our chart, passing in some options.
     @chart = new google.visualization.ColumnChart(document.getElementById('chart'));
     @chart.draw(@chartData, options);
+
+    Events.addEventListener Environment.EVENTS.STEP, =>
+      existingCounts =
+        1:  @chartData.getValue(0,1)
+        5:  @chartData.getValue(1,1)
+        10: @chartData.getValue(2,1)
+      counts =
+        1: 0
+        5: 0
+        10: 0
+      for agent in @env.agents
+        counts[agent.get('size')] += 1 if agent.get('has flowers')
+
+      changed = existingCounts[1]  isnt counts[1] or
+                existingCounts[5]  isnt counts[5] or
+                existingCounts[10] isnt counts[10]
+
+      if changed
+        @chartData.setValue(0, 1, counts[1])
+        @chartData.setValue(1, 1, counts[5])
+        @chartData.setValue(2, 1, counts[10])
+
+        @chart.draw(@chartData, options)
 
 window.onload = ->
   model.run()
