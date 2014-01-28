@@ -22,7 +22,7 @@ module.exports = class AddOrganismButton
 
   scatterOrganisms: ->
     for i in [0...@scatter]
-      agent = @species.createAgent()
+      agent = @species.createAgent(@traits)
       agent.environment = @environment
       agent.setLocation
         x: ExtMath.randomInt(@environment.width)
@@ -34,9 +34,9 @@ module.exports = class AddOrganismButton
           y: ExtMath.randomInt(@environment.height)
 
   enterAddOrganismsMode: ->
-    @environment.setDefaultAgentCreator @species
+    @environment.setDefaultAgentCreator @species, @traits
     @environment.setState @environment.UI_STATE.ADD_AGENTS
 
   getButtonImages: ->
-    dummy = @species.createAgent()
+    dummy = @species.createAgent(@traits)
     @species.getImages dummy, {buttonImage: true}

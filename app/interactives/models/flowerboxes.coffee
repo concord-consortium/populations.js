@@ -60,6 +60,9 @@ window.model =
         {
           species: plantSpecies
           scatter: 10
+          traits: [
+            new Trait {name: "size", possibleValues: [5, 10]}
+          ]
         }
         {
           species: plantSpecies
