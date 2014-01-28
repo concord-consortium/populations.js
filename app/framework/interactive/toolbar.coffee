@@ -1,3 +1,5 @@
+AddOrganismButton = require "interactive/add-organism-button"
+
 module.exports = class Toolbar
 
   constructor: (interactive) ->
@@ -12,6 +14,9 @@ module.exports = class Toolbar
           env.start()),
         "pause", (->
           env.stop())
+    for opts in interactive.addOrganismButtons
+      button = new AddOrganismButton env, opts
+      @view.appendChild button.getView()
 
     if interactive.showResetButton()
       @addButton "reset", ->

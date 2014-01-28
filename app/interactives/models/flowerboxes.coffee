@@ -56,25 +56,23 @@ window.model =
 
     interactive = new Interactive
       environment: env
+      addOrganismButtons: [
+        {
+          species: plantSpecies
+          scatter: 10
+        }
+        {
+          species: plantSpecies
+          traits: [
+            new Trait {name: "size", default: 1}
+          ]
+        }
+      ]
 
     document.getElementById('environment').appendChild interactive.getEnvironmentPane()
 
-    env.setDefaultAgentCreator plantSpecies, {size: 1}
-
     @env = env
     @plantSpecies = plantSpecies
-
-  plant: ->
-    for i in [0...10]
-      agent = @plantSpecies.createAgent()
-      agent.environment = @env
-      agent.setLocation x: ExtMath.randomInt(@env.width), y: ExtMath.randomInt(@env.height)
-
-      while !@env.addAgent(agent)
-        agent.setLocation x: ExtMath.randomInt(@env.width), y: ExtMath.randomInt(@env.height)
-
-  plantManually: ->
-    @env.setState @env.UI_STATE.ADD_AGENTS
 
 window.onload = ->
   model.run()

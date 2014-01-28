@@ -12,6 +12,7 @@ module.exports = class Interactive
   constructor: (options) ->
     @_opts = helpers.setDefaults(options, defaultOptions)
     @environment = @_opts.environment
+    @addOrganismButtons = @_opts.addOrganismButtons
 
   getEnvironmentPane: ->
     @view = document.createElement 'div'
