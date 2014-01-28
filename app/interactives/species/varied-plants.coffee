@@ -1,11 +1,11 @@
 require.register "species/varied-plants", (exports, require, module) ->
 
   Species = require 'models/species'
-  Agent   = require 'models/agent'
+  BasicPlant = require 'models/basic-plant'
   Trait   = require 'models/trait'
 
   module.exports = new Species
-    agentClass: Agent
+    agentClass: BasicPlant
     defs:
       SPROUT_AGE: 10
       MATURITY_AGE: 25
