@@ -1,11 +1,23 @@
 EnvironmentView = require 'views/environment-view'
 StateMachine = require 'state-machine'
+helpers = require "helpers"
+
+defaultOptions =
+ #columns         :   # not defined because it may conflict with width
+ #rows            :
+ #width           :   # not defined because it may conflict with columns
+ #height          :
+  imgPath         : ""
+  barriers        : []
 
 module.exports = class Environment extends StateMachine
   wrapEastWest: false
   wrapNorthSouth: false
 
-  constructor: ({@columns, @rows, @height, @width, @imgPath, barriers}) ->
+  constructor: (opts) ->
+    opts = helpers.setDefaults(opts, defaultOptions)
+    @[prop] = opts[prop] for prop of opts     # give us immediate access to @columns, @barriers, etc
+
     if @columns and @width
       throw "You can set columns and rows, or width and height, but not both"
     if @columns
@@ -22,6 +34,7 @@ module.exports = class Environment extends StateMachine
     @cells = []
     @cells[col] = [] for col in [0..@columns]
 
+    barriers = @barriers.slice()
     @barriers = []
     for barrier in (barriers || [])
       @addBarrier.apply this, barrier
