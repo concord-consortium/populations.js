@@ -44,6 +44,13 @@ module.exports = class Agent
   getImages: ->
     @species.getImages this
 
+  getSize: ->
+    if @species.defs.MATURITY_AGE
+      maturity = @get('age') / @species.defs.MATURITY_AGE
+      Math.min maturity, 1
+    else
+      1
+
   die: ->
     @set('dead', true)
 

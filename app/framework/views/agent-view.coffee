@@ -62,8 +62,11 @@ module.exports = class AgentView
 
   _setSpriteProperties: (sprite, image)->
     # default scale of 1 -- same size as the original image
-    sprite.scale.x = image.scale || 1
-    sprite.scale.y = image.scale || 1
+    scale = image.scale || 1
+    console.log @agent.getSize()
+    scale *= @agent.getSize()
+    sprite.scale.x = scale
+    sprite.scale.y = scale
 
     # default anchor of 0.5 -- the image is centered on the container's position
     sprite.anchor.x = image.anchor?.x || 0.5
