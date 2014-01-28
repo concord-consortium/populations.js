@@ -1,6 +1,3 @@
-### jslint debug: true ###
-
-
 # [a,b,c,d].remove(1) => [a,c,d]
 # [a,b,c,d].remove(0,2) => [d]
 Array::remove = (from, to) ->
@@ -42,3 +39,46 @@ ExtMath.randomValue = (min, max) ->
 
 ExtMath.flip = ->
   ExtMath.randomInt(2)
+
+module.exports =
+
+  ###
+    Given an object of default values:
+    defaultOptions = {
+      a: "a",
+      b: "b",
+      c: {
+        d: "d",
+        e: "e"
+      }
+    }
+
+    and an object of options
+    options = {
+      a: "A",
+      c: {
+        d: "D"
+        f: "F"
+      }
+    }
+
+    this will set defaults for any undefined values, included those
+    in nested objects:
+
+    setDefaults(options, defaultOptions) = {
+      a: "A",
+      b: "b",
+      c: {
+        d: "D",
+        e: "e",
+        f: "F"
+      }
+    }
+  ###
+  setDefaults: (opts, defaults) ->
+    for p of defaults
+      if (opts[p] is undefined)
+        opts[p] = defaults[p]
+      else if (typeof opts[p] is "object")
+        opts[p] = @setDefaults(opts[p], defaults[p]);
+    opts
