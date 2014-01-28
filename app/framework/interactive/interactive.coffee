@@ -1,5 +1,5 @@
 helpers = require "helpers"
-Toolbar = require "views/toolbar"
+Toolbar = require "interactive/toolbar"
 
 defaultOptions =
   environment : null
