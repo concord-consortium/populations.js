@@ -70,6 +70,18 @@ window.model =
             new Trait {name: "size", default: 1}
           ]
         }
+        {
+          species: plantSpecies
+          traits: [
+            new Trait {name: "size", default: 5}
+          ]
+        }
+        {
+          species: plantSpecies
+          traits: [
+            new Trait {name: "size", default: 10}
+          ]
+        }
       ]
 
     document.getElementById('environment').appendChild interactive.getEnvironmentPane()

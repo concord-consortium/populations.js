@@ -58,6 +58,14 @@ body
         &.reset
           background-image: url('../ui/reset.png')
 
+      &.modal:active
+      &.modal-active
+        box-shadow(inset, 0, 0, 5px, #333)
+        background-linear-gradient(top, #bbbbbb, 0%, #777777, 100%)
+
+        img
+          margin: -1px -1px
+
 
 #environment
   &.add-agents

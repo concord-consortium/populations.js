@@ -5,6 +5,8 @@ module.exports = class Toolbar
   constructor: (interactive) ->
     env = interactive.environment
 
+    @modalButtons = []
+
     @view = document.createElement 'div'
     @view.classList.add "toolbar"
     @view.setAttribute "style", "height: #{env.height}px;"
@@ -15,8 +17,8 @@ module.exports = class Toolbar
         "pause", (->
           env.stop())
     for opts in interactive.addOrganismButtons
-      button = new AddOrganismButton env, opts
-      @view.appendChild button.getView()
+      button = new AddOrganismButton env, this, opts
+      @view.appendChild button.render()
 
     if interactive.showResetButton()
       @addButton "reset", ->
@@ -45,6 +47,17 @@ module.exports = class Toolbar
     button2.addEventListener 'click', ->
       button1.style.display=""
       button2.style.display="none"
+
+  registerModalButton: (btn) ->
+    @modalButtons.push btn
+
+  activateModalButton: (btn) ->
+    console.log "Activate!"
+    btn.getView().classList.add 'modal-active'
+    for button in @modalButtons
+      unless button is btn
+        console.log "removing!"
+        button.getView().classList.remove 'modal-active'
 
   getView: ->
     @view
