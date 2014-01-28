@@ -79,7 +79,7 @@ require.register "species/varied-plants", (exports, require, module) ->
         ]
       }
       {
-        name: "flower1"
+        name: "flower"
         rules: [
           {
             image:
@@ -90,11 +90,6 @@ require.register "species/varied-plants", (exports, require, module) ->
                 y: -51
             useIf: (agent) -> agent.get('size') == 10 and agent.get('has flowers')
           }
-        ]
-      }
-      {
-        name: "flower2"
-        rules: [
           {
             image:
               path: "images/agents/varied-plants/flower4.png"
@@ -104,11 +99,6 @@ require.register "species/varied-plants", (exports, require, module) ->
                 y: -51
             useIf: (agent) -> agent.get('size') == 5 and agent.get('has flowers')
           }
-        ]
-      }
-      {
-        name: "flower3"
-        rules: [
           {
             image:
               path: "images/agents/varied-plants/flower9.png"
