@@ -1,6 +1,7 @@
 EnvironmentView = require 'views/environment-view'
 StateMachine = require 'state-machine'
 helpers = require "helpers"
+Events = require 'events'
 
 defaultOptions =
  #columns         :   # not defined because it may conflict with width
@@ -135,6 +136,7 @@ module.exports = class Environment extends StateMachine
         @removeAgent(a)
       else
         i++
+    Events.dispatchEvent(Environment.EVENTS.STEP, {})
 
   reset: ->
     i = @agents.length
@@ -177,6 +179,10 @@ module.exports = class Environment extends StateMachine
     else if p >= max
       p = max - (p - max) - 1
     return p
+
+  ### Events ###
+  @EVENTS:
+    STEP: "environment-step"
 
   ### UI States ###
 
