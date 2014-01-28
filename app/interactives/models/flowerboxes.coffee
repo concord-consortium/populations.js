@@ -15,13 +15,14 @@ window.model =
       columns:  58
       rows:     52
       imgPath: "images/environments/sun5levels.jpg"
+      barriers: [
+          [0, 0, 60, 520]
+          [0, 0, 580, 40]
+          [560, 0, 20, 580]
+        ]
 
     env.wrapEastWest = true
     env.wrapNorthSouth = true
-
-    env.addBarrier 0, 0, 60, 520
-    env.addBarrier 0, 0, 580, 40
-    env.addBarrier 560, 0, 20, 580
 
     for col in [0..58]
       for row in [0..52]

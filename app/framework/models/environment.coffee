@@ -5,7 +5,7 @@ module.exports = class Environment extends StateMachine
   wrapEastWest: false
   wrapNorthSouth: false
 
-  constructor: ({@columns, @rows, @height, @width, @imgPath}) ->
+  constructor: ({@columns, @rows, @height, @width, @imgPath, barriers}) ->
     if @columns and @width
       throw "You can set columns and rows, or width and height, but not both"
     if @columns
@@ -21,7 +21,10 @@ module.exports = class Environment extends StateMachine
 
     @cells = []
     @cells[col] = [] for col in [0..@columns]
+
     @barriers = []
+    for barrier in (barriers || [])
+      @addBarrier.apply this, barrier
 
     @agents = []
     @_rules = []
