@@ -16,9 +16,14 @@ module.exports = class Species
       agent.set trait.name, trait.getDefaultValue()
     return agent
 
-  getImages: (agent) ->
+  ###
+    opts.buttonImage (default = false)
+  ###
+  getImages: (agent, opts = {}) ->
     images = []
     for layer in @imageRules
+      if (opts.buttonImage != layer.buttonImage) then continue
+
       layer.selectedImage = null
       for imageRule in layer.rules
         if imageRule.useIf.call @, agent
