@@ -89,5 +89,39 @@ window.model =
     @env = env
     @plantSpecies = plantSpecies
 
+  chartData: null
+  chart: null
+  setupChart: ->
+    # setup chart data
+    @chartData = new google.visualization.DataTable()
+    @chartData.addColumn('string', 'Plant Type (Leaf Size)')
+    @chartData.addColumn('number', 'Flowers')
+    @chartData.addColumn({ type: 'string', role: 'style' })
+    @chartData.addRows [
+      ["1",  0, "color: #5942BF"]
+      ["5",  0, "color: #904078"]
+      ["10", 0, "color: #D34441"]
+    ]
+
+    # Set chart options
+    options =
+      title: 'Number of Flowers'
+      hAxis:
+        title: 'Plant Type (Leaf Size)'
+      vAxis:
+        title: 'Flowers'
+        minValue: 0
+        maxValue: 10
+      legend:
+        position: 'none'
+      width: 400
+      height: 400
+
+    # Instantiate and draw our chart, passing in some options.
+    @chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+    @chart.draw(@chartData, options);
+
 window.onload = ->
   model.run()
+
+  model.setupChart()
