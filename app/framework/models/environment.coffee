@@ -79,17 +79,13 @@ module.exports = class Environment extends StateMachine
         return true
     return false
 
-  # Used for setting the default species and properties for
-  # creating and adding agents. If we needed to make this more
-  # flexible, we could pass in Traits instead of props, or
-  # pass in an arbitrary onCreate function
-  setDefaultAgentCreator: (@defaultSpecies, @defaultProps) ->
+  # Used for setting the default species and traits for
+  # creating and adding agents.
+  setDefaultAgentCreator: (@defaultSpecies, @defaultTraits) ->
 
   addDefaultAgent: (x, y) ->
     return unless @defaultSpecies?
-    agent = @defaultSpecies.createAgent()
-    for own prop of @defaultProps
-      agent.set prop, @defaultProps[prop]
+    agent = @defaultSpecies.createAgent(@defaultTraits)
     agent.environment = @
     agent.setLocation x: x, y: y
     @addAgent agent

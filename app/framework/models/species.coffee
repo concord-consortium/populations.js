@@ -10,10 +10,18 @@ module.exports = class Species
       @reproductiveStrategy
       @mutationChance}) ->
 
-  createAgent: ->
+  ###
+    Create an agent of this species, with the traits defined in
+    the species. Optionally, add a second set of trait definitions.
+  ###
+  createAgent: (extraTraits={}) ->
     agent = new @agentClass {species: this}
+
     for trait in @traits
       agent.set trait.name, trait.getDefaultValue()
+    for trait in extraTraits
+      agent.set trait.name, trait.getDefaultValue()
+
     return agent
 
   ###
