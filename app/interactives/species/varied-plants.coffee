@@ -110,4 +110,35 @@ require.register "species/varied-plants", (exports, require, module) ->
           }
         ]
       }
+      {
+        name: "button seed packets"
+        buttonImage: true
+        rules: [
+          {
+            image:
+              path: "images/agents/varied-plants/buttons/seedpack_1.png"
+            useIf: (agent) -> agent.get('size') == 10
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/buttons/seedpack_2.png"
+            useIf: (agent) -> agent.get('size') == 9
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/buttons/seedpack_6.png"
+            useIf: (agent) -> 2 < agent.get('size') < 9
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/buttons/seedpack_9.png"
+            useIf: (agent) -> agent.get('size') == 2
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/buttons/seedpack_10.png"
+            useIf: (agent) -> agent.get('size') == 1
+          }
+        ]
+      }
     ]
