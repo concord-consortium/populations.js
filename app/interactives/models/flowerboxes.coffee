@@ -5,6 +5,7 @@ Species     = require 'models/species'
 Agent       = require 'models/agent'
 Rule        = require 'models/rule'
 Trait       = require 'models/trait'
+Interactive = require 'models/interactive'
 
 plantSpecies = require 'species/varied-plants'
 
@@ -53,8 +54,10 @@ window.model =
         flowers = agent.get('age') > plantSpecies.defs.MATURITY_AGE and agent.get('health') >= 0.95
         agent.set('has flowers', flowers)
 
-    environmentElement = document.getElementById('environment')
-    env.getView().render(environmentElement)
+    interactive = new Interactive
+      environment: env
+
+    document.getElementById('environment').appendChild interactive.getEnvironmentPane()
 
     env.setDefaultAgentCreator plantSpecies, {size: 1}
 

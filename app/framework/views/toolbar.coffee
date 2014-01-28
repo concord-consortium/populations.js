@@ -1,17 +1,21 @@
 module.exports = class Toolbar
 
-  constructor: (env) ->
+  constructor: (interactive) ->
+    env = interactive.environment
+
     @view = document.createElement 'div'
     @view.classList.add "toolbar"
     @view.setAttribute "style", "height: #{env.height}px;"
 
-    @addToggleButton "play", (->
-        env.start()),
-      "pause", (->
-        env.stop())
+    if interactive.showPlayButton()
+      @addToggleButton "play", (->
+          env.start()),
+        "pause", (->
+          env.stop())
 
-    @addButton "reset", ->
-      env.reset()
+    if interactive.showResetButton()
+      @addButton "reset", ->
+        env.reset()
 
   addButton: (type, action) ->
     button = document.createElement 'div'

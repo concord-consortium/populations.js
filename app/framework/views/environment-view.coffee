@@ -1,4 +1,3 @@
-Toolbar = require "views/toolbar"
 cursorsClasses = [
   "add-agents"
 ]
@@ -37,10 +36,7 @@ module.exports = class EnvironmentView
 
     @addMouseHandlers()
 
-    @toolbar = new Toolbar(@environment)
-
-    el.appendChild(@view)
-    el.appendChild(@toolbar.getView())
+    return @view
 
   renderAgents: (stage) ->
     for agent in @environment.agents
