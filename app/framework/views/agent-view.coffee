@@ -45,7 +45,7 @@ module.exports = class AgentView
     for own name,sprite of @_sprites
       if names.indexOf(name) == -1
         @_container.removeChild sprite
-        @_sprites[name] = null
+        delete @_sprites[name]
 
     @_container.position.x = @agent._x
     @_container.position.y = @agent._y
