@@ -22,3 +22,17 @@ module.exports = class BasicPlant extends Agent
       Math.min maturity, 1
     else
       1
+
+  step: ->
+    @_incrementAge()
+
+    if @species.defs.MATURITY_AGE
+      if @get('age') > @species.defs.MATURITY_AGE && Math.random() < @get('chanceOfSeeding')
+        minOffspring = @get 'minOffspring'
+        maxOffspring = @get 'maxOffspring'
+        numOffspring = minOffspring + ExtMath.randomInt(1 + maxOffspring - minOffspring)
+
+        for i in [0...numOffspring]
+         @reproduce()
+
+    @_checkSurvival()

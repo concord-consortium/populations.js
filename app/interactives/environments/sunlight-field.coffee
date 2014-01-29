@@ -36,7 +36,7 @@ env.addRule new Rule
 
 env.addRule new Rule
   action: (agent)->
-    immortal = agent.get('age') < (agent.species.defs.SPROUT_AGE + 10) or agent.get('health') >= 0.87
+    immortal = agent.get('age') < (agent.species.defs.SPROUT_AGE + 10)
     agent.set('is immortal', immortal)
 
 env.addRule new Rule
