@@ -1,5 +1,7 @@
 Agent = require 'models/agent'
 Environment = require 'models/environment'
+Species = require 'models/species'
+Trait   = require 'models/trait'
 
 describe 'Agent', ->
 
@@ -306,3 +308,44 @@ describe 'Agent', ->
       env.step()
       expect(agent1.get('age')).toBe 3
       expect(agent2.get('age')).toBe 1
+
+  describe 'can reproduce', ->
+
+    plant = null
+    beforeEach ->
+      plantSpecies = new Species
+        agentClass: Agent
+        traits: [
+          new Trait {name: "leaves", min: 1, max: 5}
+          new Trait {name: "height", min: 1, max: 10}
+        ]
+      plant = plantSpecies.createAgent([ new Trait {name: "leaves", default: 3} ])
+
+    it 'and create a newborn clone', ->
+      plant.set 'age', 100
+
+      offspring = plant.reproduce()
+
+      expect(offspring).toBeDefined()
+      expect(offspring).not.toBeNull()
+
+      expect(offspring.get('age')).toEqual 0
+      expect(offspring.get('leaves')).toEqual 3
+
+    it 'and add its offspring to the environment near itself', ->
+      env = new Environment {columns: 5, rows: 5}
+      env.addAgent plant
+      plant.setLocation x: 25, y: 25
+
+      minDist = plant.get 'minOffspringDistance'
+      maxDist = plant.get 'maxOffspringDistance'
+
+      for i in [0...10]
+        offspring = plant.reproduce()
+        loc = offspring.getLocation()
+        xSq = (loc.x - 25) * (loc.x - 25)
+        ySq = (loc.y - 25) * (loc.y - 25)
+        dist = Math.round Math.sqrt xSq + ySq
+
+        expect(dist).toBeGreaterThan minDist
+        expect(dist).toBeLessThan maxDist

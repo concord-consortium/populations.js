@@ -17,7 +17,7 @@ module.exports = class Agent
     @_view = new AgentView({agent: @})
     if x? && y?
       @setLocation({x,y})
-    @set('age', 0)
+    @makeNewborn()
 
   getView: ->
     return @_view
@@ -65,6 +65,45 @@ module.exports = class Agent
   step: ->
     @_incrementAge()
     @_checkSurvival()
+
+  makeNewborn: ->
+    @set('age', 0)
+
+  ###
+    Returns an offspring and places it in the environment
+
+    Only asexual reproduction for now
+  ###
+  reproduce: (mate) ->
+    offspring = @_clone()
+    offspring.makeNewborn()
+
+    if @environment
+      @environment.addAgent offspring
+      offspring.setLocation @_findOffspringLocation()
+
+    return offspring
+
+  _clone: ->
+    clone = @species.createAgent()
+    for prop of @_props
+      clone.set prop, @_props[prop]
+    return clone
+
+  _findOffspringLocation: () ->
+    loc = @getLocation()
+
+    minD = @get 'minOffspringDistance'
+    maxD = @get 'maxOffspringDistance'
+
+    distance = ExtMath.randomValue minD, maxD
+    angle    = Math.random() * 2 * Math.PI
+
+    xStep = Math.floor distance * Math.sin angle
+    yStep = Math.floor distance * Math.cos angle
+
+    return {x: loc.x + xStep, y: loc.y + yStep}
+
 
   _incrementAge: ->
     @set('age', @get('age')+1)

@@ -14,7 +14,7 @@ module.exports = class Species
     Create an agent of this species, with the traits defined in
     the species. Optionally, add a second set of trait definitions.
   ###
-  createAgent: (extraTraits={}) ->
+  createAgent: (extraTraits=[]) ->
     agent = new @agentClass {species: this}
 
     for trait in @traits
