@@ -3,6 +3,8 @@ StateMachine = require 'state-machine'
 helpers = require "helpers"
 Events = require 'events'
 
+SEASONS = ["spring", "summer", "fall", "winter"]
+
 defaultOptions =
  #columns         :   # not defined because it may conflict with width
  #rows            :
@@ -12,6 +14,11 @@ defaultOptions =
   barriers        : []
   wrapEastWest    : false
   wrapNorthSouth  : false
+  seasonLengths   : []      # optionally the lengths of [spring, summer, fall, winter]
+
+#Other options also accessible by @get
+# season          :   # set by seasonsLength
+# yearLength      :   # set by seasonsLength
 
 module.exports = class Environment extends StateMachine
 
@@ -42,6 +49,15 @@ module.exports = class Environment extends StateMachine
 
     @agents = []
     @_rules = []
+
+    # re-map seasonLenths into end-dates for efficient access later
+    @_totalSeasonLengths = [];
+    @_totalSeasonLengths[i] = length + (@_totalSeasonLengths[i-1] || 0) for length, i in @seasonLengths
+
+    @yearLength = @_totalSeasonLengths[3] || 0
+
+    @season = SEASONS[0]
+    @date   = 0
 
     # Add User Interaction states
     @addState @UI_STATE.NONE, EmptyState
@@ -77,6 +93,9 @@ module.exports = class Environment extends StateMachine
     @cells[col][row][prop] = val
 
   get: (col, row, prop) ->
+    # get global properties first
+    if @[prop]?
+      return @[prop]
     if not @cells[col][row]
       return null
 
@@ -123,6 +142,7 @@ module.exports = class Environment extends StateMachine
     @_isRunning = false
 
   step: ->
+    @_incrementDate()
     # Apply all of the rules
     for r in @_rules
       for a in @agents
@@ -165,6 +185,16 @@ module.exports = class Environment extends StateMachine
 
   clearRules: ->
     @_rules = []
+
+  _incrementDate: ->
+    @date++
+    if @_totalSeasonLengths.length == 4
+      yearDate = @date % @yearLength
+      for length, i in @_totalSeasonLengths
+        if yearDate < length
+          @season = SEASONS[i]; break
+
+
 
   _wrapSingleDimension: (p, max) ->
     if p < 0
