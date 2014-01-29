@@ -7,7 +7,7 @@ module.exports = class EnvironmentView
   constructor: ({@environment}) ->
 
   render: (el) ->
-    @stage = new PIXI.Stage(0x66FF99, true) unless @stage?
+    @stage = new PIXI.Stage(0xFFFFFF, true) unless @stage?
     renderer = PIXI.autoDetectRenderer(@environment.width, @environment.height)
     # create a texture from an image path
     texture = PIXI.Texture.fromImage @environment.imgPath
