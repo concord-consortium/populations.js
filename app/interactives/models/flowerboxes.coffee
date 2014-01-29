@@ -105,6 +105,10 @@ window.model =
         @chartData.setValue(1, 1, counts[5])
         @chartData.setValue(2, 1, counts[10])
 
+        if counts[1] > 10 or counts[5] > 10 or counts[10] > 10
+          options.vAxis.gridlines.count = -1
+
+
         @chart.draw(@chartData, options)
 
 window.onload = ->
