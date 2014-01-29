@@ -5,6 +5,7 @@ cursorsClasses = [
 module.exports = class EnvironmentView
 
   constructor: ({@environment}) ->
+    @showingWinter = false
     if @environment.winterImgPath?
       @winterImgSprite = new PIXI.Sprite PIXI.Texture.fromImage @environment.winterImgPath
       @winterImgSprite.anchor.x = 0
@@ -34,6 +35,8 @@ module.exports = class EnvironmentView
       requestAnimFrame( animate )
       for agent in @environment.agents
         agent.getView().rerender(@stage)
+      if @showingWinter
+        @stage.swapChildren @winterImgSprite, @stage.children[@stage.children.length-1]
       renderer.render(@stage)
 
     requestAnimFrame( animate )
@@ -55,9 +58,11 @@ module.exports = class EnvironmentView
     @view.parentElement.classList.add name
 
   addWinterImage: () ->
+    @showingWinter = true
     @stage.addChild(@winterImgSprite) unless !@winterImgSprite
 
   removeWinterImage: () ->
+    @showingWinter = false
     @stage.removeChild(@winterImgSprite) unless !@winterImgSprite
 
   addMouseHandlers: ->
