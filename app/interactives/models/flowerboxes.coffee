@@ -7,6 +7,7 @@ Rule        = require 'models/rule'
 Trait       = require 'models/trait'
 Interactive = require 'interactive/interactive'
 Events      = require 'events'
+ToolButton  = require 'interactive/tool-button'
 
 plantSpecies = require 'species/varied-plants'
 env          = require 'environments/sunlight-flowerboxes'
@@ -42,6 +43,11 @@ window.model =
           traits: [
             new Trait {name: "size", default: 10}
           ]
+        }
+      ]
+      toolButtons: [
+        {
+          type: ToolButton.INFO_TOOL
         }
       ]
 

@@ -1,5 +1,6 @@
 cursorsClasses = [
   "add-agents"
+  "info-tool"
 ]
 
 module.exports = class EnvironmentView

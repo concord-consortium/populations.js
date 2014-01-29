@@ -107,6 +107,12 @@ module.exports = class Environment extends StateMachine
     row = Math.floor y / @_rowHeight
     return @get(col, row, prop)
 
+  getAgentAt: (x,y)->
+    for agent in @agents
+      if agent.getView().contains(x,y)
+        return agent
+    return null
+
   addBarrier: (x, y, width, height) ->
     @barriers.push new Barrier x, y, width, height
 

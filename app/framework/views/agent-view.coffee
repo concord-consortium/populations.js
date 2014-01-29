@@ -6,21 +6,25 @@ module.exports = class AgentView
   _sprites: null
   _container: null
 
-  render: (stage) ->
-    @_container = new PIXI.DisplayObjectContainer
-    @_sprites = {}
+  render: (stage, storeForRerender=true) ->
+    container = new PIXI.DisplayObjectContainer
+    sprites = {}
     # create a texture from set of image paths
-    @_images = @agent.getImages({context: 'environment'})
-    for layer in @_images
+    images = @agent.getImages({context: 'environment'})
+    for layer in images
       sprite = @_createSprite layer.selectedImage
-      @_sprites[layer.name] = sprite
-      @_container.addChild(sprite)
+      sprites[layer.name] = sprite
+      container.addChild(sprite)
 
-    @_container.position.x = @agent._x
-    @_container.position.y = @agent._y
+    container.position.x = @agent._x
+    container.position.y = @agent._y
 
-    stage.addChild(@_container)
-    @_rendered = true
+    stage.addChild(container)
+    if storeForRerender
+      @_rendered = true
+      @_container = container
+      @_sprites = sprites
+      @_images = images
 
   rerender: (stage) ->
     if !@_images
@@ -52,6 +56,13 @@ module.exports = class AgentView
 
   remove: (stage)->
     stage?.removeChild(@_container)
+
+  contains: (x,y)->
+    intManager = new PIXI.InteractionManager()
+    return intManager.hitTest @_container,
+      global:
+        x: x
+        y: y
 
   _createSprite: (image)->
     # create a new Sprite using the texture

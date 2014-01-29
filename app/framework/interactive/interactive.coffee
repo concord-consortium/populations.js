@@ -6,6 +6,7 @@ defaultOptions =
   playButton  : true
   resetButton : true
   addOrganismButtons  : []
+  toolButtons: []
 
 module.exports = class Interactive
 
@@ -13,6 +14,7 @@ module.exports = class Interactive
     @_opts = helpers.setDefaults(options, defaultOptions)
     @environment = @_opts.environment
     @addOrganismButtons = @_opts.addOrganismButtons
+    @toolButtons = @_opts.toolButtons
 
   getEnvironmentPane: ->
     @view = document.createElement 'div'
