@@ -26,7 +26,7 @@ for col in [0..58]
 
 env.addRule new Rule
   test: (agent) ->
-    return agent.get('age') > (plantSpecies.defs.SPROUT_AGE + 4)
+    return agent.get('age') > (agent.species.defs.SPROUT_AGE + 4)
   action: (agent) ->
     size     = agent.get 'size'
     sunlight = agent.get 'sunlight'
@@ -36,12 +36,12 @@ env.addRule new Rule
 
 env.addRule new Rule
   action: (agent)->
-    immortal = agent.get('age') < (plantSpecies.defs.SPROUT_AGE + 10) or agent.get('health') >= 0.87
+    immortal = agent.get('age') < (agent.species.defs.SPROUT_AGE + 10) or agent.get('health') >= 0.87
     agent.set('is immortal', immortal)
 
 env.addRule new Rule
   action: (agent)->
-    flowers = agent.get('age') > plantSpecies.defs.MATURITY_AGE and agent.get('health') >= 0.95
+    flowers = agent.get('age') > agent.species.defs.MATURITY_AGE and agent.get('health') >= 0.95
     agent.set('has flowers', flowers)
 
 require.register "environments/sunlight-flowerboxes", (exports, require, module) ->
