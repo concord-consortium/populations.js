@@ -17,7 +17,6 @@ module.exports = class Interactive
   getEnvironmentPane: ->
     @view = document.createElement 'div'
 
-    @view.classList.add "woo"
     @view.setAttribute "style", "height: #{@environment.height}px;"
 
     @view.appendChild @environment.getView().render()
