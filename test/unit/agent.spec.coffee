@@ -1,4 +1,5 @@
 Agent = require 'models/agent'
+BasicPlant = require 'models/basic-plant'
 Environment = require 'models/environment'
 Species = require 'models/species'
 Trait   = require 'models/trait'
@@ -13,6 +14,11 @@ describe 'Agent', ->
   it 'should have default properties', ->
     agent = new Agent name: "myAgent"
     expect(agent.get('minOffspring')).toEqual 1
+
+  it 'should inherit and add new default properties', ->
+    agent = new BasicPlant name: "myAgent"
+    expect(agent.get('minOffspring')).toEqual 1
+    expect(agent.get('chanceOfSeeding')).toEqual 0.2
 
   describe 'Locations', ->
 
