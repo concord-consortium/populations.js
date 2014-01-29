@@ -82,3 +82,17 @@ module.exports =
       else if (typeof opts[p] is "object")
         opts[p] = @setDefaults(opts[p], defaults[p]);
     opts
+
+  ###
+    Deep-copy an object
+  ###
+  clone: (obj) ->
+    if not obj? or typeof obj isnt 'object'
+      return obj
+
+    cloneObj = new obj.constructor()
+
+    for key of obj
+      cloneObj[key] = @clone obj[key]
+
+    return cloneObj

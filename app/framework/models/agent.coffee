@@ -1,11 +1,19 @@
 AgentView = require 'views/agent-view'
+helpers   = require 'helpers'
+
+defaultProperties =
+  minOffspring: 1
+  maxOffspring: 3
+  minOffspringDistance: 10
+  maxOffspringDistance: 30
+
 ###
   The base agent class
 ###
 module.exports = class Agent
 
   constructor: ({@name, @environment, @species, x, y}) ->
-    @_props = {}
+    @_props = helpers.clone defaultProperties
     @_view = new AgentView({agent: @})
     if x? && y?
       @setLocation({x,y})

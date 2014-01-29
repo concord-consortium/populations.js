@@ -8,6 +8,10 @@ describe 'Agent', ->
     expect(agent).toBeDefined()
     expect(agent.name).toBe("myAgent")
 
+  it 'should have default properties', ->
+    agent = new Agent name: "myAgent"
+    expect(agent.get('minOffspring')).toEqual 1
+
   describe 'Locations', ->
 
     it 'should have a location when set in the constructor', ->
