@@ -52,11 +52,9 @@ module.exports = class Toolbar
     @modalButtons.push btn
 
   activateModalButton: (btn) ->
-    console.log "Activate!"
     btn.getView().classList.add 'modal-active'
     for button in @modalButtons
       unless button is btn
-        console.log "removing!"
         button.getView().classList.remove 'modal-active'
 
   getView: ->

@@ -63,7 +63,6 @@ module.exports = class AgentView
   _setSpriteProperties: (sprite, image)->
     # default scale of 1 -- same size as the original image
     scale = image.scale || 1
-    console.log @agent.getSize()
     scale *= @agent.getSize()
     sprite.scale.x = scale
     sprite.scale.y = scale
