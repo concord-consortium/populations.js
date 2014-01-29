@@ -45,4 +45,4 @@ module.exports = class AddOrganismButton
 
   getButtonImages: ->
     dummy = @species.createAgent(@traits)
-    @species.getImages dummy, {buttonImage: true}
+    @species.getImages dummy, {context: 'buttonImage'}

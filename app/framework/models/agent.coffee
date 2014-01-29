@@ -41,8 +41,8 @@ module.exports = class Agent
   getEnvironmentProperty: (prop) ->
     @environment.getAt @_x, @_y, prop
 
-  getImages: ->
-    @species.getImages this
+  getImages: (opts = {})->
+    @species.getImages this, opts
 
   getSize: ->
     if @species.defs.MATURITY_AGE

@@ -15,7 +15,8 @@ require.register "species/varied-plants", (exports, require, module) ->
     ]
     imageRules: [
       {
-        name: 'layer1'
+        name: 'plant'
+        contexts: ['environment']
         rules: [
           {
             image:
@@ -80,6 +81,7 @@ require.register "species/varied-plants", (exports, require, module) ->
       }
       {
         name: "flower"
+        contexts: ['environment']
         rules: [
           {
             image:
@@ -112,7 +114,7 @@ require.register "species/varied-plants", (exports, require, module) ->
       }
       {
         name: "button seed packets"
-        buttonImage: true
+        contexts: ['buttonImage']
         rules: [
           {
             image:

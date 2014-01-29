@@ -177,4 +177,120 @@ describe 'A species', ->
     expect(plant.getImages()[0].selectedImage.path).toBe "one-leaf.png"
     expect(plant.getImages().length).toBe 1
 
+  it 'will only include an image for a layer if the context matches', ->
+    plantSpecies = new Species
+      agentClass: Agent
+      traits: [
+        new Trait {name: "leaves", min: 0, max: 1},
+        new Trait {name: "flowers", min: 0, max: 2}
+      ]
+      imageRules: [
+        {
+          name: 'layer1'
+          contexts: ['info']
+          rules: [
+            {
+              image:
+                path: "no-layer1.png"
+              useIf: (agent) -> agent.get('flowers') == 0
+            }
+            {
+              image:
+                path: "some-layer1.png"
+              useIf: (agent) -> agent.get('flowers') == 1
+            }
+          ]
+        }
+        {
+          name: 'layer2'
+          contexts: ['view']
+          rules: [
+            {
+              image:
+                path: "no-layer2.png"
+              useIf: (agent) -> agent.get('flowers') == 0
+            }
+            {
+              image:
+                path: "some-layer2.png"
+              useIf: (agent) -> agent.get('flowers') == 1
+            }
+          ]
+        }
+        {
+          name: 'layer3'
+          contexts: ['info','view']
+          rules: [
+            {
+              image:
+                path: "no-layer3.png"
+              useIf: (agent) -> agent.get('flowers') == 0
+            }
+            {
+              image:
+                path: "some-layer3.png"
+              useIf: (agent) -> agent.get('flowers') == 1
+            }
+          ]
+        }
+        {
+          name: 'layer4'
+          contexts: []
+          rules: [
+            {
+              image:
+                path: "no-layer4.png"
+              useIf: (agent) -> agent.get('flowers') == 0
+            }
+            {
+              image:
+                path: "some-layer4.png"
+              useIf: (agent) -> agent.get('flowers') == 1
+            }
+          ]
+        }
+        {
+          name: 'layer5'
+          rules: [
+            {
+              image:
+                path: "no-layer5.png"
+              useIf: (agent) -> agent.get('flowers') == 0
+            }
+            {
+              image:
+                path: "some-layer5.png"
+              useIf: (agent) -> agent.get('flowers') == 1
+            }
+          ]
+        }
+      ]
+
+    plant = plantSpecies.createAgent()
+    plant.set('flowers', 0)
+
+    images = plant.getImages()
+    expect(images.length).toBe 5
+    expect(images[0].selectedImage.path).toBe "no-layer1.png"
+    expect(images[1].selectedImage.path).toBe "no-layer2.png"
+    expect(images[2].selectedImage.path).toBe "no-layer3.png"
+    expect(images[3].selectedImage.path).toBe "no-layer4.png"
+    expect(images[4].selectedImage.path).toBe "no-layer5.png"
+
+    plant.set('flowers', 1)
+    images = plant.getImages({context: 'info'})
+    expect(images.length).toBe 4
+    expect(images[0].selectedImage.path).toBe "some-layer1.png"
+    expect(images[1].selectedImage.path).toBe "some-layer3.png"
+    expect(images[2].selectedImage.path).toBe "some-layer4.png"
+    expect(images[3].selectedImage.path).toBe "some-layer5.png"
+
+    images = plant.getImages({context: 'view'})
+    expect(images.length).toBe 4
+    expect(images[0].selectedImage.path).toBe "some-layer2.png"
+    expect(images[1].selectedImage.path).toBe "some-layer3.png"
+    expect(images[2].selectedImage.path).toBe "some-layer4.png"
+    expect(images[3].selectedImage.path).toBe "some-layer5.png"
+
+
 

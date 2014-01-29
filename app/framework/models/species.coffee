@@ -30,7 +30,7 @@ module.exports = class Species
   getImages: (agent, opts = {}) ->
     images = []
     for layer in @imageRules
-      if (opts.buttonImage != layer.buttonImage) then continue
+      continue unless @_contextMatches(opts.context, layer.contexts)
 
       layer.selectedImage = null
       for imageRule in layer.rules
@@ -44,3 +44,9 @@ module.exports = class Species
   getTrait: (traitName)->
     for trait in @traits
       return trait if trait.name is traitName
+
+  _contextMatches: (context, validContexts)->
+    return true unless context?  # assume no context info means all contexts valid
+    return true unless validContexts? and validContexts.length > 0  # if no valid contexts are supplied, assume all contexts valid
+
+    return validContexts.indexOf(context) isnt -1

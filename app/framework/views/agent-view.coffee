@@ -10,7 +10,7 @@ module.exports = class AgentView
     @_container = new PIXI.DisplayObjectContainer
     @_sprites = {}
     # create a texture from set of image paths
-    @_images = @agent.getImages()
+    @_images = @agent.getImages({context: 'environment'})
     for layer in @_images
       sprite = @_createSprite layer.selectedImage
       @_sprites[layer.name] = sprite
@@ -26,7 +26,7 @@ module.exports = class AgentView
     if !@_images
       @render stage
       return
-    newImages = @agent.getImages()
+    newImages = @agent.getImages({context: 'environment'})
     names = []
     # update or create needed sprites
     for layer,i in newImages
