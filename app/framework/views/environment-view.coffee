@@ -5,6 +5,12 @@ cursorsClasses = [
 module.exports = class EnvironmentView
 
   constructor: ({@environment}) ->
+    if @environment.winterImgPath?
+      @winterImgSprite = new PIXI.Sprite PIXI.Texture.fromImage @environment.winterImgPath
+      @winterImgSprite.anchor.x = 0
+      @winterImgSprite.anchor.y = 0
+      @winterImgSprite.position.x = 0
+      @winterImgSprite.position.y = 0
 
   render: (el) ->
     @stage = new PIXI.Stage(0xFFFFFF, true) unless @stage?
@@ -47,6 +53,12 @@ module.exports = class EnvironmentView
       @view.parentElement.classList.remove cursorClass
 
     @view.parentElement.classList.add name
+
+  addWinterImage: () ->
+    @stage.addChild(@winterImgSprite) unless !@winterImgSprite
+
+  removeWinterImage: () ->
+    @stage.removeChild(@winterImgSprite) unless !@winterImgSprite
 
   addMouseHandlers: ->
     @view.addEventListener 'click',  (evt) =>

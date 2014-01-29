@@ -11,6 +11,7 @@ defaultOptions =
  #width           :   # not defined because it may conflict with columns
  #height          :
   imgPath         : ""
+  winterImgPath   : null
   barriers        : []
   wrapEastWest    : false
   wrapNorthSouth  : false
@@ -193,6 +194,11 @@ module.exports = class Environment extends StateMachine
       for length, i in @_totalSeasonLengths
         if yearDate < length
           @season = SEASONS[i]; break
+
+      if yearDate == @_totalSeasonLengths[2] # first day of winter
+        @_view.addWinterImage()
+      else if yearDate == @_totalSeasonLengths[3]-1 # last day of winter
+        @_view.removeWinterImage()
 
 
 
