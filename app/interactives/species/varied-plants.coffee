@@ -9,10 +9,13 @@ require.register "species/varied-plants", (exports, require, module) ->
     defs:
       SPROUT_AGE: 10
       MATURITY_AGE: 25
+      CAN_SEED: true
+      IS_ANNUAL: true
+      CHANCE_OF_FLOWERING: 0.2
+      CHANCE_OF_SEEDING: 0.6
     traits: [
       new Trait {name: "size", possibleValues: [1, 5, 10]}
       new Trait {name: "health", min: 0, max: 1, default: 1, float: true}
-      new Trait {name: "is annual", default: true}
     ]
     imageRules: [
       {

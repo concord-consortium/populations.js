@@ -3,12 +3,8 @@ helpers = require 'helpers'
 
 defaultProperties =
   'is seed': true
-  'sprout age': 10
-  'is annual': false
-  'chance of flowering': 0.2
   'can seed': true
   'has flowers': false
-  'chance of seeding': 0.6
 
 ###
 	The base class of a simple plant
@@ -51,22 +47,22 @@ module.exports = class BasicPlant extends Agent
     @_incrementAge()
 
     if @get 'is seed'
-      if age < @get 'sprout age'
+      if age < @species.defs.SPROUT_AGE
         return
       else
         @set 'is seed', false
 
-    if (!@_hasSeeded) and @get 'can seed'
-      if !@get('has flowers') and age > @species.defs.MATURITY_AGE and (!@get('is annual') || season isnt "fall")
-        if Math.random() < @get 'chance of flowering'
+    if (!@_hasSeeded) and @species.defs.CAN_SEED
+      if !@get('has flowers') and age > @species.defs.MATURITY_AGE and ((!@species.defs.IS_ANNUAL) || season isnt "fall")
+        if Math.random() < @species.defs.CHANCE_OF_FLOWERING
           @set 'has flowers', true
 
       if @get 'has flowers'
-        if @get('is annual')
-          if season is "fall" and Math.random() < @get('chance of seeding')
+        if @species.defs.IS_ANNUAL
+          if season is "fall" and Math.random() < @species.defs.CHANCE_OF_SEEDING
             @createSeeds()
         else
-          if Math.random() < @get('chance of seeding')
+          if Math.random() < @species.defs.CHANCE_OF_SEEDING
             @createSeeds()
 
     @_checkSurvival()

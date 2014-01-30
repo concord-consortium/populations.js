@@ -12,6 +12,8 @@ env          = require 'environments/sunlight-flowerboxes'
 
 window.model = 
   run: ->
+    plantSpecies.defs.CAN_SEED = false
+
     interactive = new Interactive
       environment: env
       addOrganismButtons: [
@@ -19,7 +21,6 @@ window.model =
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 1}
-            new Trait {name: "can seed", default: false}
           ]
         }
       ]
