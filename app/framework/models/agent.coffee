@@ -2,10 +2,10 @@ AgentView = require 'views/agent-view'
 helpers   = require 'helpers'
 
 defaultProperties =
-  minOffspring: 1
-  maxOffspring: 3
-  minOffspringDistance: 10
-  maxOffspringDistance: 30
+  'min offspring': 1
+  'max offspring': 3
+  'min offspring distance': 10
+  'max offspring distance': 30
 
 ###
   The base agent class
@@ -93,8 +93,8 @@ module.exports = class Agent
   _findOffspringLocation: () ->
     loc = @getLocation()
 
-    minD = @get 'minOffspringDistance'
-    maxD = @get 'maxOffspringDistance'
+    minD = @get 'min offspring distance'
+    maxD = @get 'max offspring distance'
 
     distance = ExtMath.randomValue minD, maxD
     angle    = Math.random() * 2 * Math.PI

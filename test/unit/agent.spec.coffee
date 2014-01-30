@@ -13,12 +13,12 @@ describe 'Agent', ->
 
   it 'should have default properties', ->
     agent = new Agent name: "myAgent"
-    expect(agent.get('minOffspring')).toEqual 1
+    expect(agent.get('min offspring')).toEqual 1
 
   it 'should inherit and add new default properties', ->
     agent = new BasicPlant name: "myAgent"
-    expect(agent.get('minOffspring')).toEqual 1
-    expect(agent.get('chanceOfSeeding')).toEqual 0.2
+    expect(agent.get('min offspring')).toEqual 1
+    expect(agent.get('chance of seeding')).toEqual 0.2
 
   describe 'Locations', ->
 
@@ -343,8 +343,8 @@ describe 'Agent', ->
       env.addAgent plant
       plant.setLocation x: 25, y: 25
 
-      minDist = plant.get 'minOffspringDistance'
-      maxDist = plant.get 'maxOffspringDistance'
+      minDist = plant.get 'min offspring distance'
+      maxDist = plant.get 'max offspring distance'
 
       for i in [0...10]
         offspring = plant.reproduce()
@@ -353,5 +353,5 @@ describe 'Agent', ->
         ySq = (loc.y - 25) * (loc.y - 25)
         dist = Math.round Math.sqrt xSq + ySq
 
-        expect(dist).toBeGreaterThan minDist
-        expect(dist).toBeLessThan maxDist
+        expect(dist).toBeGreaterThan minDist-1
+        expect(dist).toBeLessThan    maxDist+1
