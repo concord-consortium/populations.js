@@ -19,18 +19,21 @@ window.model =
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 1}
+            new Trait {name: "can seed", default: false}
           ]
         }
         {
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 5}
+            new Trait {name: "can seed", default: false}
           ]
         }
         {
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 10}
+            new Trait {name: "can seed", default: false}
           ]
         }
       ]

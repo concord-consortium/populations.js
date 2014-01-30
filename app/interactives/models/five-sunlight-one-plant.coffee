@@ -19,6 +19,7 @@ window.model =
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 1}
+            new Trait {name: "can seed", default: false}
           ]
         }
       ]

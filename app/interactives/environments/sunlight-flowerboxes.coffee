@@ -33,9 +33,6 @@ env.addRule new Rule
     diff = Math.abs((11 - size) - sunlight)
     health = 1 - (diff /  20)
     agent.set 'health', health
-    # hijack this rule to also prevent plants from seeding
-    agent.set 'min offspring', 0
-    agent.set 'max offspring', 0
 
 env.addRule new Rule
   action: (agent)->
