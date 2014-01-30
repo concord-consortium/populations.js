@@ -70,11 +70,27 @@ module.exports = class Agent
     @set('age', 0)
 
   ###
+    Creates one or more offspring, depending on the min- and max- offspring
+    properties, and places them in the environment.
+
+    Returns the array of offspring.
+
+    Only asexual for now
+  ###
+  reproduce: (mate) ->
+    minOffspring = @get 'min offspring'
+    maxOffspring = @get 'max offspring'
+    numOffspring = minOffspring + ExtMath.randomInt(1 + maxOffspring - minOffspring)
+
+    for i in [0...numOffspring]
+      @createOffspring(mate)
+
+  ###
     Returns an offspring and places it in the environment
 
     Only asexual reproduction for now
   ###
-  reproduce: (mate) ->
+  createOffspring: (mate) ->
     offspring = @_clone()
     offspring.makeNewborn()
 

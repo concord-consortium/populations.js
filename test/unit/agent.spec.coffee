@@ -18,7 +18,7 @@ describe 'Agent', ->
   it 'should inherit and add new default properties', ->
     agent = new BasicPlant name: "myAgent"
     expect(agent.get('min offspring')).toEqual 1
-    expect(agent.get('chance of seeding')).toEqual 0.2
+    expect(agent.get('chance of seeding')).toEqual 0.6
 
   describe 'Locations', ->
 
@@ -330,7 +330,7 @@ describe 'Agent', ->
     it 'and create a newborn clone', ->
       plant.set 'age', 100
 
-      offspring = plant.reproduce()
+      offspring = plant.createOffspring()
 
       expect(offspring).toBeDefined()
       expect(offspring).not.toBeNull()
@@ -347,7 +347,7 @@ describe 'Agent', ->
       maxDist = plant.get 'max offspring distance'
 
       for i in [0...10]
-        offspring = plant.reproduce()
+        offspring = plant.createOffspring()
         loc = offspring.getLocation()
         xSq = (loc.x - 25) * (loc.x - 25)
         ySq = (loc.y - 25) * (loc.y - 25)
