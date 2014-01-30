@@ -18,7 +18,7 @@ describe 'Agent', ->
   it 'should inherit and add new default properties', ->
     agent = new BasicPlant name: "myAgent"
     expect(agent.get('min offspring')).toEqual 1
-    expect(agent.get('chance of seeding')).toEqual 0.6
+    expect(agent.get('is seed')).toEqual true
 
   describe 'Locations', ->
 
