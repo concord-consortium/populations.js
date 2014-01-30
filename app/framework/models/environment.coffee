@@ -153,7 +153,7 @@ module.exports = class Environment extends StateMachine
     i = 0
     while i < @agents.length
       a = @agents[i]
-      if a.get('dead')
+      if a.isDead
         @removeAgent(a)
       else
         i++

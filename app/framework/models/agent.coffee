@@ -37,8 +37,11 @@ module.exports = class Agent
     @_props[prop] = value
 
   get: (prop) ->
-    if @hasProp(prop) then return @_props[prop]
-    else return @getEnvironmentProperty prop
+    if @hasProp(prop) then val = @_props[prop]
+    else val = @getEnvironmentProperty prop
+
+    if !val? then throw "Cannot find property "+prop
+    return val
 
   hasProp: (prop) ->
     return @_props[prop]?
@@ -59,8 +62,10 @@ module.exports = class Agent
     else
       1
 
+  isDead: false
+
   die: ->
-    @set('dead', true)
+    @isDead = true
 
   step: ->
     @_incrementAge()
