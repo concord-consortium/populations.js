@@ -1,3 +1,5 @@
+InfoView = require 'views/info-view'
+
 module.exports = class ToolButton
   @INFO_TOOL: 'info-tool'
   state: null
@@ -47,6 +49,15 @@ module.exports = class ToolButton
       enter: ->
         @_view.setCursor "info-tool"
       click: (evt) ->
+        # get clicked agent
         agent = @getAgentAt(evt.layerX, evt.layerY)
         return unless agent?
-        # TODO Display info pop-up
+        # Display info pop-up for that agent
+        if @infoPopup?
+          @infoPopup.setAgent(agent)
+        else
+          @infoPopup = new InfoView({agent})
+          document.getElementById('environment').appendChild @infoPopup.render()  # TODO We shouldn't be hard-coding the container...
+        @infoPopup.view.style.left = (evt.layerX - 225) + "px"
+        @infoPopup.view.style.top = (evt.layerY - 25) + "px "
+        @infoPopup.show()
