@@ -11,6 +11,7 @@ defaultProperties =
   The base agent class
 ###
 module.exports = class Agent
+  label: "organism"
 
   constructor: ({@name, @environment, @species, x, y}) ->
     @_props = helpers.clone defaultProperties

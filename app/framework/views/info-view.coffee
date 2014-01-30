@@ -33,7 +33,7 @@ module.exports = class InfoView
 
     title = document.createElement 'span'
     title.classList.add 'title'
-    title.innerHTML = "TITLE" # TODO
+    title.innerHTML = @agent.label.charAt(0).toUpperCase() + @agent.label.slice(1)
 
     closeButton = document.createElement 'span'
     closeButton.classList.add 'close'

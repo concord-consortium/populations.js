@@ -10,6 +10,7 @@ defaultProperties =
 	The base class of a simple plant
 ###
 module.exports = class BasicPlant extends Agent
+  label: 'plant'
 
   _hasSeeded: false
 
