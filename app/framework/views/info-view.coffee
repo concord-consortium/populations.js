@@ -37,7 +37,7 @@ module.exports = class InfoView
 
     closeButton = document.createElement 'span'
     closeButton.classList.add 'close'
-    closeButton.innerHTML = "[X]" # TODO
+    closeButton.innerHTML = "<i class='fa fa-times-circle-o'></i>"
     closeButton.addEventListener 'click', =>
       @hide()
 
