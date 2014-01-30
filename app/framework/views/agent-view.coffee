@@ -1,3 +1,5 @@
+helpers = require 'helpers'
+
 module.exports = class AgentView
 
   constructor: ({@agent}) ->
@@ -63,6 +65,32 @@ module.exports = class AgentView
       global:
         x: x
         y: y
+
+  defaultTextViewOptions:
+    leaves: true
+    roots: true
+
+  textView: (options = {})->
+    opts = helpers.setDefaults(options, @defaultTextViewOptions)
+    content = document.createElement 'div'
+
+    @_appendPropVals(content, 'Leaf Size:', 'size') if opts.leaves
+    @_appendPropVals(content, 'Root Size:', 'size') if opts.roots
+
+    return content
+
+  _appendPropVals: (container, propLabel, propKey)->
+    prop = document.createElement 'div'
+    prop.classList.add 'agent-property'
+    prop.innerHTML = propLabel
+
+    val = document.createElement 'div'
+    val.classList.add 'agent-property-value'
+    val.innerHTML = @agent.get propKey
+
+    container.appendChild(prop)
+    container.appendChild(val)
+    return container
 
   _createSprite: (image)->
     # create a new Sprite using the texture
