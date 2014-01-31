@@ -1,6 +1,51 @@
 <html>
   <head>
     <title>Populations.js Models</title>
+    <script>
+      var models = {
+        "five-sunlight-one-plant.html":       "1.1 Flowerpots with one plant",
+        "five-sunlight-three-plants.html":    "1.2 Flowerpots with three plants",
+        "flowerpots-demo.html":               "1.3 Flowerpots with graph",
+        "field-three-plants-breed-true.html": "2.1 Field, three plants, breed true"
+      }
+
+      var modelDivs = [];
+
+      window.onload = function() {
+        var modelCollection, i, ii, j, jj;
+
+        modelCollection = document.getElementsByClassName("model-collection")[0];
+        for (model in models) {
+          if (!models.hasOwnProperty(model)) continue;
+          createModelDiv(model, modelCollection);
+
+          if (modelDivs.length === 1) {
+            loadModel(model, modelDivs[0]);
+          }
+        }
+      }
+
+      createModelDiv = function(model, container) {
+        var el = document.createElement('div'),
+            linkDiv = document.createElement('div');
+        el.innerHTML = models[model];
+        container.appendChild(el);
+        linkDiv.classList.add("link");
+        linkDiv.innerHTML = "<a href="+model+">link</a>";
+        el.appendChild(linkDiv);
+        el.addEventListener('click', function(){loadModel(model, el)});
+        modelDivs.push(el);
+      }
+
+      loadModel = function(model, el) {
+        var iframe = document.getElementById("model-iframe");
+        for (j = 0, jj = modelDivs.length; j < jj; j++) {
+          modelDivs[j].classList.remove("active");
+        }
+        el.classList.add("active");
+        iframe.setAttribute("src", model);
+      }
+    </script>
     <style type="text/css">
       body {
         background-color: #DAEDD5;
@@ -80,40 +125,6 @@
         background-color: white;
       }
     </style>
-    <script>
-      var modelDivs;
-
-      window.onload = function() {
-        var modelCollections, i, ii, j, jj;
-
-        modelCollections = document.getElementsByClassName("model-collection");
-        for (i = 0, ii = modelCollections.length; i < ii; i++) {
-          modelDivs = modelCollections[i].children;
-          for (j = 0, jj = modelDivs.length; j < jj; j++) {
-            createModelDiv(modelDivs[j]);
-          }
-        }
-      }
-
-      createModelDiv = function(el) {
-        var linkDiv = document.createElement('div');
-        var modelUrl = el.dataset.model;
-        linkDiv.classList.add("link");
-        linkDiv.innerHTML = "<a href="+modelUrl+">link</a>";
-        el.appendChild(linkDiv);
-        el.addEventListener('click', function(){loadModel(el, modelUrl)});
-      }
-
-      loadModel = function(el, url) {
-        var modelUrl = el.dataset.model;
-        var iframe = document.getElementById("model-iframe");
-        for (j = 0, jj = modelDivs.length; j < jj; j++) {
-          modelDivs[j].classList.remove("active");
-        }
-        el.classList.add("active");
-        iframe.setAttribute("src", url);
-      }
-    </script>
   </head>
   <body>
     <div id="header">
@@ -128,10 +139,6 @@
     <div class="left-column">
       <h2>ITSI Models</h2>
       <div class="model-collection">
-        <div data-model="five-sunlight-one-plant.html">1.1 Flowerpots with one plant</div>
-        <div data-model="five-sunlight-three-plants.html">1.2 Flowerpots with three plants</div>
-        <div data-model="flowerpots-demo.html">1.3 Flowerpots with graph</div>
-        <div data-model="field-three-plants-breed-true.html">2.1 Field, three plants, breed true</div>
       </div>
     </div>
 
