@@ -58,6 +58,18 @@ module.exports = class ToolButton
         else
           @infoPopup = new InfoView({agent})
           document.getElementById('environment').appendChild @infoPopup.render()  # TODO We shouldn't be hard-coding the container...
-        @infoPopup.view.style.left = (evt.layerX - 225) + "px"
-        @infoPopup.view.style.top = (evt.layerY - 25) + "px "
+        for style in ['top','left','bottom','right']
+          @infoPopup.view.classList.remove style
+        if evt.layerX > @width/2
+          @infoPopup.view.classList.add 'right'
+          @infoPopup.view.style.left = (evt.layerX - 225) + "px"
+        else
+          @infoPopup.view.classList.add 'left'
+          @infoPopup.view.style.left = (evt.layerX + 35) + "px"
+        if evt.layerY > @height/2
+          @infoPopup.view.classList.add 'bottom'
+          @infoPopup.view.style.top = (evt.layerY - 162) + "px"
+        else
+          @infoPopup.view.classList.add 'top'
+          @infoPopup.view.style.top = (evt.layerY - 25) + "px"
         @infoPopup.show()
