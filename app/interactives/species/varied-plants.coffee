@@ -15,6 +15,7 @@ require.register "species/varied-plants", (exports, require, module) ->
       CHANCE_OF_SEEDING: 0.6
     traits: [
       new Trait {name: "size", possibleValues: [1, 5, 10]}
+      new Trait {name: "root size", possibleValues: [1, 5, 10]}
       new Trait {name: "health", min: 0, max: 1, default: 1, float: true}
     ]
     imageRules: [
@@ -80,6 +81,45 @@ require.register "species/varied-plants", (exports, require, module) ->
                 x: 0.5
                 y: 1
             useIf: (agent) -> agent.get('size') == 10 and agent.get('health') <= 0.85
+          }
+        ]
+      }
+      {
+        name: 'roots'
+        contexts: ['info-tool']
+        rules: [
+          {
+            image:
+              path: "images/agents/varied-plants/roots10.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 0
+              position:
+                y: -2
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 1 and agent.get('health') > 0.85
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/roots5.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 0
+              position:
+                y: -2
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 5 and agent.get('health') > 0.85
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/roots1.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 0
+              position:
+                y: -2
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 10 and agent.get('health') > 0.85
           }
         ]
       }

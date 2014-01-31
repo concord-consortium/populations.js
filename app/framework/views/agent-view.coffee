@@ -75,7 +75,7 @@ module.exports = class AgentView
     content = document.createElement 'div'
 
     @_appendPropVals(content, 'Leaf Size:', 'size') if opts.leaves
-    @_appendPropVals(content, 'Root Size:', 'size') if opts.roots
+    @_appendPropVals(content, 'Root Size:', 'root size') if opts.roots
 
     return content
 
