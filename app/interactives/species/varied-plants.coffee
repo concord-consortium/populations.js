@@ -14,6 +14,7 @@ require.register "species/varied-plants", (exports, require, module) ->
       CAN_SEED: true
       IS_ANNUAL: true
       CHANCE_OF_SEEDING: 0.6
+      CHANCE_OF_MUTATION: 0.2
     traits: [
       new Trait {name: "size", possibleValues: [1, 5, 10]}
       new Trait {name: "root size", possibleValues: [1, 5, 10]}

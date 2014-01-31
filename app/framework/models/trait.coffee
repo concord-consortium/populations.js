@@ -35,3 +35,25 @@ module.exports = class Trait
         ExtMath.randomValue @min, @max
       else
         Math.floor ExtMath.randomValue @min, @max+1
+
+  mutate: (val) ->
+    if (@possibleValues and @possibleValues.length > 1)
+      loop              # silly coffeescript do-while
+        newVal = @getRandomValue()
+        break if newVal isnt val
+      return newVal
+    else if @max
+      return @_mutateValueFromRange(val)
+    else
+      return val
+
+  _mutateValueFromRange: (val) ->
+    sign = if ExtMath.flip() then 1 else -1
+    diff  = if @float then 0.1 else 1
+    val += (diff * sign)
+
+    val = Math.max val, @min
+    val = Math.min val, @max
+
+    return val
+

@@ -100,6 +100,7 @@ module.exports = class Agent
   ###
   createOffspring: (mate) ->
     offspring = @_clone()
+    offspring._mutate();
     offspring.makeNewborn()
 
     if @environment
@@ -113,6 +114,13 @@ module.exports = class Agent
     for prop of @_props
       clone.set prop, @_props[prop]
     return clone
+
+  _mutate: ->
+    for trait in @species.traits
+      if Math.random() < @species.defs.CHANCE_OF_MUTATION
+        currentVal = @get trait.name
+        mutatedVal = trait.mutate currentVal
+        @set trait.name, mutatedVal
 
   _findOffspringLocation: () ->
     loc = @getLocation()

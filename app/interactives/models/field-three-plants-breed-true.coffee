@@ -12,6 +12,8 @@ env          = require 'environments/sunlight-field'
 
 window.model = 
   run: ->
+    plantSpecies.defs.CHANCE_OF_MUTATION = 0
+
     interactive = new Interactive
       environment: env
       addOrganismButtons: [
