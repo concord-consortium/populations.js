@@ -16,7 +16,7 @@ require.register "species/varied-plants", (exports, require, module) ->
       CHANCE_OF_SEEDING: 0.6
       CHANCE_OF_MUTATION: 0.2
     traits: [
-      new Trait {name: "size", possibleValues: [1, 5, 10]}
+      new Trait {name: "size", min: 1, max: 10}
       new Trait {name: "root size", possibleValues: [1, 5, 10]}
     ]
     imageRules: [
@@ -49,7 +49,61 @@ require.register "species/varied-plants", (exports, require, module) ->
           }
           {
             image:
-              path: "images/agents/varied-plants/leaves5.png"
+              path: "images/agents/varied-plants/leaves9.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 2 and agent.get('health') > 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves_wilted9.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 2 and agent.get('health') <= 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves8.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 3 and agent.get('health') > 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves_wilted8.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 3 and agent.get('health') <= 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves7.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 4 and agent.get('health') > 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves_wilted7.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 4 and agent.get('health') <= 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves6.png"
               scale: 0.2
               anchor:
                 x: 0.5
@@ -58,12 +112,84 @@ require.register "species/varied-plants", (exports, require, module) ->
           }
           {
             image:
-              path: "images/agents/varied-plants/leaves_wilted5.png"
+              path: "images/agents/varied-plants/leaves_wilted6.png"
               scale: 0.2
               anchor:
                 x: 0.5
                 y: 1
             useIf: (agent) -> agent.get('size') == 5 and agent.get('health') <= 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves5.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 6 and agent.get('health') > 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves_wilted5.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 6 and agent.get('health') <= 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves4.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 7 and agent.get('health') > 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves_wilted4.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 7 and agent.get('health') <= 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves3.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 8 and agent.get('health') > 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves_wilted3.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 8 and agent.get('health') <= 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves2.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 9 and agent.get('health') > 0.99
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/leaves_wilted2.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 1
+            useIf: (agent) -> agent.get('size') == 9 and agent.get('health') <= 0.99
           }
           {
             image:
@@ -139,7 +265,43 @@ require.register "species/varied-plants", (exports, require, module) ->
           }
           {
             image:
+              path: "images/agents/varied-plants/flower2.png"
+              scale: 0.2
+              position:
+                x: -3
+                y: -51
+            useIf: (agent) -> agent.get('size') == 9 and agent.get('has flowers')
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/flower3.png"
+              scale: 0.2
+              position:
+                x: -3
+                y: -51
+            useIf: (agent) -> agent.get('size') == 8 and agent.get('has flowers')
+          }
+          {
+            image:
               path: "images/agents/varied-plants/flower4.png"
+              scale: 0.2
+              position:
+                x: -3
+                y: -51
+            useIf: (agent) -> agent.get('size') == 7 and agent.get('has flowers')
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/flower5.png"
+              scale: 0.2
+              position:
+                x: -3
+                y: -51
+            useIf: (agent) -> agent.get('size') == 6 and agent.get('has flowers')
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/flower6.png"
               scale: 0.2
               position:
                 x: -3
@@ -148,7 +310,34 @@ require.register "species/varied-plants", (exports, require, module) ->
           }
           {
             image:
+              path: "images/agents/varied-plants/flower7.png"
+              scale: 0.2
+              position:
+                x: -3
+                y: -51
+            useIf: (agent) -> agent.get('size') == 4 and agent.get('has flowers')
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/flower8.png"
+              scale: 0.2
+              position:
+                x: -3
+                y: -51
+            useIf: (agent) -> agent.get('size') == 3 and agent.get('has flowers')
+          }
+          {
+            image:
               path: "images/agents/varied-plants/flower9.png"
+              scale: 0.2
+              position:
+                x: -3
+                y: -51
+            useIf: (agent) -> agent.get('size') == 2 and agent.get('has flowers')
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/flower10.png"
               scale: 0.2
               position:
                 x: -3
