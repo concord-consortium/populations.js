@@ -12,7 +12,7 @@ env          = require 'environments/sunlight-field'
 
 window.model = 
   run: ->
-    interactive = new Interactive
+    @interactive = new Interactive
       environment: env
       addOrganismButtons: [
         {
@@ -23,7 +23,7 @@ window.model =
         }
       ]
 
-    document.getElementById('environment').appendChild interactive.getEnvironmentPane()
+    document.getElementById('environment').appendChild @interactive.getEnvironmentPane()
 
     @env = env
     @plantSpecies = plantSpecies

@@ -14,7 +14,7 @@ window.model =
   run: ->
     plantSpecies.defs.CAN_SEED = false
 
-    interactive = new Interactive
+    @interactive = new Interactive
       environment: env
       addOrganismButtons: [
         {
@@ -37,7 +37,7 @@ window.model =
         }
       ]
 
-    document.getElementById('environment').appendChild interactive.getEnvironmentPane()
+    document.getElementById('environment').appendChild @interactive.getEnvironmentPane()
 
     @env = env
     @plantSpecies = plantSpecies

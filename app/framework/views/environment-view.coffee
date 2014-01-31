@@ -16,7 +16,7 @@ module.exports = class EnvironmentView
 
   render: (el) ->
     @stage = new PIXI.Stage(0xFFFFFF, true) unless @stage?
-    renderer = PIXI.autoDetectRenderer(@environment.width, @environment.height)
+    @renderer = PIXI.autoDetectRenderer(@environment.width, @environment.height)
     # create a texture from an image path
     texture = PIXI.Texture.fromImage @environment.imgPath
     # create a new Sprite using the texture
@@ -38,15 +38,18 @@ module.exports = class EnvironmentView
         agent.getView().rerender(@stage)
       if @showingWinter
         @stage.swapChildren @winterImgSprite, @stage.children[@stage.children.length-1]
-      renderer.render(@stage)
+      @renderer.render(@stage)
 
     requestAnimFrame( animate )
 
-    @view = renderer.view
+    @view = @renderer.view
 
     @addMouseHandlers()
 
     return @view
+
+  repaint: ->
+    @renderer.render @stage
 
   renderAgents: (stage) ->
     for agent in @environment.agents

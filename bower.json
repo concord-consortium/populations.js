@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "main": "public/app.js",
   "dependencies": {
-     "pixi.js": ">=1.4.1"
+     "pixi.js": ">=1.4.1",
+     "shutterbug": "git://github.com/concord-consortium/shutterbug.git"
     },
   "overrides": {}
 }

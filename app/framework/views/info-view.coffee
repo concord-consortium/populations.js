@@ -1,5 +1,10 @@
 module.exports = class InfoView
+  @_instances: []
+  @instances: ()->
+    return InfoView._instances
+
   constructor: ({@agent})->
+    InfoView._instances.push @
 
   view: null
   setAgent: (@agent)->
@@ -78,3 +83,6 @@ module.exports = class InfoView
     @view.classList.remove 'hidden'
     @_showing = true
     @_redraw()
+
+  repaint: ->
+    @_renderer.render @_stage
