@@ -60,6 +60,19 @@ be re-run.
 * Edit the file test/karma.conf.js to change `browsers: ['Chrome']` to `browsers: ['PhantomJS']`
 * Run the tests with `npm test`
 
+### Running the model integration tests
+
+Run this command:
+
+```
+  ./test-models.sh
+```
+
+A new Chrome window will open, and the results of the tests will be shown in your console.
+
+The model test files can be found in /test/models/
+
+
 ## Libraries and Frameworks Used
 
 * [CoffeeScript](http://coffeescript.org/) - Making JavaScript suck less.
