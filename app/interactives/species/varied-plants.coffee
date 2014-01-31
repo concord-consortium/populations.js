@@ -20,7 +20,7 @@ require.register "species/varied-plants", (exports, require, module) ->
     imageRules: [
       {
         name: 'plant'
-        contexts: ['environment']
+        contexts: ['environment','info-tool']
         rules: [
           {
             image:
@@ -85,7 +85,7 @@ require.register "species/varied-plants", (exports, require, module) ->
       }
       {
         name: "flower"
-        contexts: ['environment']
+        contexts: ['environment','info-tool']
         rules: [
           {
             image:

@@ -8,11 +8,11 @@ module.exports = class AgentView
   _sprites: null
   _container: null
 
-  render: (stage, storeForRerender=true) ->
+  render: (stage, context='environment') ->
     container = new PIXI.DisplayObjectContainer
     sprites = {}
     # create a texture from set of image paths
-    images = @agent.getImages({context: 'environment'})
+    images = @agent.getImages({context: context})
     for layer in images
       sprite = @_createSprite layer.selectedImage
       sprites[layer.name] = sprite
@@ -22,7 +22,7 @@ module.exports = class AgentView
     container.position.y = @agent._y
 
     stage.addChild(container)
-    if storeForRerender
+    if context is 'environment'
       @_rendered = true
       @_container = container
       @_sprites = sprites

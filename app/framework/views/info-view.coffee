@@ -5,7 +5,7 @@ module.exports = class InfoView
   setAgent: (@agent)->
     while @_container.children.length > 0
       @_container.removeChild @_container.children[0]
-    @agent.getView().render(@_container, false)
+    @agent.getView().render(@_container, 'info-tool')
     @_repositionAgent()
 
     if @_details.firstChild?
