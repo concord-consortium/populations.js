@@ -107,10 +107,10 @@ module.exports = class AgentView
     sprite.scale.y = scale
 
     # default anchor of 0.5 -- the image is centered on the container's position
-    sprite.anchor.x = image.anchor?.x || 0.5
-    sprite.anchor.y = image.anchor?.y || 0.5
+    sprite.anchor.x = if image.anchor?.x? then image.anchor.x else 0.5
+    sprite.anchor.y = if image.anchor?.y? then image.anchor.y else 0.5
 
     # default position of 0 -- the image won't be shifted up/down or left/right
-    sprite.position.x = image.position?.x || 0
-    sprite.position.y = image.position?.y || 0
+    sprite.position.x = if image.position?.x? then image.position.x else 0
+    sprite.position.y = if image.position?.y? then image.position.y else 0
     return sprite
