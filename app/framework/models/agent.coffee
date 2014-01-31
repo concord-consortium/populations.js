@@ -6,6 +6,8 @@ defaultProperties =
   'max offspring': 3
   'min offspring distance': 10
   'max offspring distance': 30
+  'health': 1
+  'is immortal': false
 
 ###
   The base agent class
@@ -138,14 +140,14 @@ module.exports = class Agent
     return 1.0 if @get('is immortal')
 
     age = @get('age')
-    ageMax = @species?.getTrait('age')?.max || 2000
+    ageMax = @species.defs.AGE_LIMIT || 2000
 
     agePct = 1 - (age/ageMax)
 
     # TODO factor in HUNGER
     # p2 = Math.pow(hungerPct, 2)
 
-    healthTrait = @species?.getTrait('health') || {min: 0, max: 100}
+    healthTrait = @species?.getTrait('health') || {min: 0, max: 1}
     health =
       value: @get('health')
       min: healthTrait.min
