@@ -141,7 +141,7 @@ module.exports = class Environment extends StateMachine
       setTimeout =>
         @step()
         runloop() if @_isRunning
-      , 200
+      , 60
 
     runloop()
 
