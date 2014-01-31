@@ -140,19 +140,13 @@ module.exports = class Agent
     return 1.0 if @get('is immortal')
 
     age = @get('age')
-    ageMax = @species.defs.AGE_LIMIT || 2000
+    ageMax = @species.defs.MAX_AGE || 2000
 
     agePct = 1 - (age/ageMax)
 
     # TODO factor in HUNGER
     # p2 = Math.pow(hungerPct, 2)
-
-    healthTrait = @species?.getTrait('health') || {min: 0, max: 1}
-    health =
-      value: @get('health')
-      min: healthTrait.min
-      max: healthTrait.max
-    healthPct = (health.value - health.min)/(health.max - health.min)
+    healthPct = @get('health')/@species.defs.MAX_HEALTH
 
     return agePct * healthPct
 
