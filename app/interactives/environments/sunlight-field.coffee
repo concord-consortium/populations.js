@@ -6,7 +6,7 @@ env = new Environment
   rows:     62
   imgPath: "images/environments/sun10levels.png"
   winterImgPath: "images/environments/snow.png"
-  seasonLengths: [20, 10, 5, 20]
+  seasonLengths: [30, 30, 15, 10]
   barriers: [
       [0, 0, 60, 520]
     ]
@@ -15,18 +15,12 @@ env = new Environment
 
 for col in [0..58]
   for row in [0..62]
-    sunlight = switch
-      when row < 13 then 2
-      when row < 22 then 4
-      when row < 40 then 6
-      when row < 52 then 8
-      else 10
+    sunlight = Math.ceil row/6.2
 
     env.set col, row, "sunlight", sunlight
 
+# Health depends on size and sunlight
 env.addRule new Rule
-  test: (agent) ->
-    return agent.get('age') > (agent.species.defs.SPROUT_AGE + 4)
   action: (agent) ->
     size     = agent.get 'size'
     sunlight = agent.get 'sunlight'
@@ -34,10 +28,26 @@ env.addRule new Rule
     health = 1 - (diff /  20)
     agent.set 'health', health
 
+# No withered plant can flower
 env.addRule new Rule
-  action: (agent)->
-    immortal = agent.get('age') < (agent.species.defs.SPROUT_AGE + 10)
-    agent.set('is immortal', immortal)
+  test: (agent) ->
+    agent.get('health') <= 0.99
+  action: (agent) ->
+    agent.set 'chance of flowering', 0
+
+# Healthy and withered plants are immortal until fall
+env.addRule new Rule
+  test: (agent) ->
+    season = agent.get 'season'
+    agent.get('health') > 0.9 and (season is "spring" or season is "summer")
+  action: (agent) ->
+    agent.set 'is immortal', true
+
+env.addRule new Rule
+  test: (agent) ->
+    agent.get('season') is "fall"
+  action: (agent) ->
+    agent.set 'is immortal', false
 
 require.register "environments/sunlight-field", (exports, require, module) ->
   module.exports = env

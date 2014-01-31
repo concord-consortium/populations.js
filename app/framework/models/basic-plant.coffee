@@ -5,6 +5,7 @@ defaultProperties =
   'is seed': true
   'can seed': true
   'has flowers': false
+  'chance of flowering': 1
 
 ###
 	The base class of a simple plant
@@ -55,7 +56,7 @@ module.exports = class BasicPlant extends Agent
 
     if (!@_hasSeeded) and @species.defs.CAN_SEED
       if !@get('has flowers') and age > @species.defs.MATURITY_AGE and ((!@species.defs.IS_ANNUAL) || season isnt "fall")
-        if Math.random() < @species.defs.CHANCE_OF_FLOWERING
+        if Math.random() < @get 'chance of flowering'
           @set 'has flowers', true
 
       if @get 'has flowers'
@@ -65,5 +66,9 @@ module.exports = class BasicPlant extends Agent
         else
           if Math.random() < @species.defs.CHANCE_OF_SEEDING
             @createSeeds()
+
+    if season is 'winter' and !@get 'is immortal'
+      health = @get 'health'
+      @set 'health', health * 0.5
 
     @_checkSurvival()

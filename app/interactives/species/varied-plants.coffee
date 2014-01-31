@@ -7,11 +7,11 @@ require.register "species/varied-plants", (exports, require, module) ->
   module.exports = new Species
     agentClass: BasicPlant
     defs:
+      AGE_LIMIT: 10000
       SPROUT_AGE: 10
       MATURITY_AGE: 25
       CAN_SEED: true
       IS_ANNUAL: true
-      CHANCE_OF_FLOWERING: 0.2
       CHANCE_OF_SEEDING: 0.6
     traits: [
       new Trait {name: "size", possibleValues: [1, 5, 10]}
@@ -35,7 +35,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 1 and agent.get('health') > 0.85
+            useIf: (agent) -> agent.get('size') == 1 and agent.get('health') > 0.99
           }
           {
             image:
@@ -44,7 +44,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 1 and agent.get('health') <= 0.85
+            useIf: (agent) -> agent.get('size') == 1 and agent.get('health') <= 0.99
           }
           {
             image:
@@ -53,7 +53,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 5 and agent.get('health') > 0.85
+            useIf: (agent) -> agent.get('size') == 5 and agent.get('health') > 0.99
           }
           {
             image:
@@ -62,7 +62,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 5 and agent.get('health') <= 0.85
+            useIf: (agent) -> agent.get('size') == 5 and agent.get('health') <= 0.99
           }
           {
             image:
@@ -71,7 +71,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 10 and agent.get('health') > 0.85
+            useIf: (agent) -> agent.get('size') == 10 and agent.get('health') > 0.99
           }
           {
             image:
@@ -80,7 +80,7 @@ require.register "species/varied-plants", (exports, require, module) ->
               anchor:
                 x: 0.5
                 y: 1
-            useIf: (agent) -> agent.get('size') == 10 and agent.get('health') <= 0.85
+            useIf: (agent) -> agent.get('size') == 10 and agent.get('health') <= 0.99
           }
         ]
       }
