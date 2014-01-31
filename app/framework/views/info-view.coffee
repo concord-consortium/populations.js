@@ -14,8 +14,8 @@ module.exports = class InfoView
       @_details.appendChild @agent.getView().textView()
 
   _repositionAgent: ->
-    @_container.children[0].position.x = 62
-    @_container.children[0].position.y = 80
+    @_container.children[0].position.x = 52
+    @_container.children[0].position.y = 70
 
   _redraw: ->
     if @_showing then requestAnimFrame => @_redraw()
@@ -52,6 +52,8 @@ module.exports = class InfoView
     @_stage = new PIXI.Stage(0xFFFFFF, true)
     @_renderer = new PIXI.CanvasRenderer(125, 160)
     @_container = new PIXI.DisplayObjectContainer()
+    @_container.scale.x = 1.25
+    @_container.scale.y = 1.25
     @_stage.addChild @_container
     @setAgent @agent
     @_redraw()
