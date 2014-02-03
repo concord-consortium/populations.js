@@ -15,31 +15,21 @@ module.exports = class ToolButton
     @button.addEventListener 'click', => @action()
     @button.classList.add 'modal'
 
-    for layer in @getButtonImages()
-      image = document.createElement 'img'
-      image.setAttribute 'src', layer.selectedImage.path
-      @button.appendChild image
+    image = document.createElement 'img'
+    image.setAttribute 'src', @_getButtonImage()
+    @button.appendChild image
 
     return @button
 
   getView: -> @button
 
   action: ->
-    switch @type
-      when ToolButton.INFO_TOOL
-        @enterToolMode()
-      else
-        console.warn("Invalid tool button type: " + @type)
-
-  enterToolMode: ->
     @toolbar.activateModalButton this
     @environment.setState @type
 
-  getButtonImages: ->
-    [
-      selectedImage:
-        path: 'ui/info-tool.png'
-    ]
+  _getButtonImage: ->
+    switch @type
+      when 'info-tool'  then 'ui/info-tool.png'
 
   _getState: ->
     return @_states[@type]
