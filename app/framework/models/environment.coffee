@@ -135,13 +135,23 @@ module.exports = class Environment extends StateMachine
 
   ### Run Loop ###
 
+  # Speed is a value between 0 and 100, 0 being slow and 100 being fast.
+  # The default is 50.
+  setSpeed: (speed)->
+    @_speed = speed
+    # fps curve that looks like this:
+    # http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIoLTEvKCh4LTE0MSkvNDAwMCkpLTI3LjMiLCJjb2xvciI6IiMwMDAwMDAifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIwIiwiMTAwIiwiMCIsIjgwIl19XQ--
+    fps = (-1/((speed-141)/4000))-27.3
+    delay = 1000/fps
+    @_runLoopDelay = delay
+
   start: ->
     @_isRunning = true
     runloop = =>
       setTimeout =>
         @step()
         runloop() if @_isRunning
-      , 60
+      , @_runLoopDelay
 
     runloop()
 
@@ -174,6 +184,8 @@ module.exports = class Environment extends StateMachine
   _columnWidth: 10
   _rowHeight:   10
   _rules: null
+  _speed: 50
+  _runLoopDelay: 54.5
 
   _isRunning: false
 
