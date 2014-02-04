@@ -74,7 +74,6 @@ module.exports = class EnvironmentView
 
     # draw each barrier
     for b,i in @environment.barriers
-      console.log("drawing barrier")
       @barrierGraphics.drawRect(b.x1, b.y1, b.x2-b.x1, b.y2-b.y1)
       text = new PIXI.Text(""+i)
       text.position = {x: b.x1+5, y: b.y1+5}
