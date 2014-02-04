@@ -16,6 +16,7 @@ window.model =
 
     @interactive = new Interactive
       environment: env
+      speedSlider: true
       addOrganismButtons: [
         {
           species: plantSpecies
