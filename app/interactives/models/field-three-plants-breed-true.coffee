@@ -33,7 +33,7 @@ window.model =
         {
           species: plantSpecies
           traits: [
-            new Trait {name: "size", default: 10}
+            new Trait {name: "size", default: 9}
           ]
         }
       ]
