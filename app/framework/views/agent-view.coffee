@@ -22,17 +22,18 @@ module.exports = class AgentView
     container.position.y = @agent._y
 
     stage.addChild(container)
-    if context is 'environment'
+
+    if context is 'environment' or context is 'carry-tool'
       @_rendered = true
       @_container = container
       @_sprites = sprites
       @_images = images
 
-  rerender: (stage) ->
-    if !@_images
-      @render stage
+  rerender: (stage, context='environment') ->
+    if !@_rendered
+      @render stage, context
       return
-    newImages = @agent.getImages({context: 'environment'})
+    newImages = @agent.getImages({context: context})
     names = []
     # update or create needed sprites
     for layer,i in newImages
@@ -58,6 +59,7 @@ module.exports = class AgentView
 
   remove: (stage)->
     stage?.removeChild(@_container)
+    @_rendered = false
 
   contains: (x,y)->
     intManager = new PIXI.InteractionManager()
