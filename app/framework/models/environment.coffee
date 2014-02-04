@@ -51,6 +51,8 @@ module.exports = class Environment extends StateMachine
     @agents = []
     @_rules = []
 
+    @carriedAgent = null
+
     # re-map seasonLenths into end-dates for efficient access later
     @_totalSeasonLengths = [];
     @_totalSeasonLengths[i] = length + (@_totalSeasonLengths[i-1] || 0) for length, i in @seasonLengths
@@ -109,7 +111,7 @@ module.exports = class Environment extends StateMachine
 
   getAgentAt: (x,y)->
     for agent in @agents
-      if agent.getView().contains(x,y)
+      if agent.getView().contains(x,y,@_view.stage)
         return agent
     return null
 
@@ -121,6 +123,15 @@ module.exports = class Environment extends StateMachine
       if barrier.contains x, y
         return true
     return false
+
+  pickUpAgent: (agent) ->
+    @removeAgent(agent)
+    @carriedAgent = agent
+
+  dropCarriedAgent: ->
+    @addAgent @carriedAgent
+    @carriedAgent = null
+
 
   # Used for setting the default species and traits for
   # creating and adding agents.
@@ -265,3 +276,5 @@ AddAgentsState =
     @_view.setCursor "add-agents"
   click: (evt) ->
     @addDefaultAgent evt.layerX, evt.layerY
+
+## more states added by interactive/tool-button

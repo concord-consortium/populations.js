@@ -1,6 +1,7 @@
 cursorsClasses = [
   "add-agents"
   "info-tool"
+  "carry-tool"
 ]
 
 module.exports = class EnvironmentView
@@ -36,6 +37,10 @@ module.exports = class EnvironmentView
       requestAnimFrame( animate )
       for agent in @environment.agents
         agent.getView().rerender(@stage)
+
+      if @environment.carriedAgent
+        @environment.carriedAgent.getView().rerender(@stage, 'carry-tool')
+
       if @showingWinter
         @stage.swapChildren @winterImgSprite, @stage.children[@stage.children.length-1]
       @renderer.render(@stage)

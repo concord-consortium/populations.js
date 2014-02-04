@@ -2,6 +2,7 @@ InfoView = require 'views/info-view'
 
 module.exports = class ToolButton
   @INFO_TOOL: 'info-tool'
+  @CARRY_TOOL: 'carry-tool'
   state: null
 
   constructor: (@environment, @toolbar, {@type}) ->
@@ -30,6 +31,7 @@ module.exports = class ToolButton
   _getButtonImage: ->
     switch @type
       when 'info-tool'  then 'ui/info-tool.png'
+      when 'carry-tool' then 'ui/carry-plant.png'
 
   _getState: ->
     return @_states[@type]
@@ -63,3 +65,26 @@ module.exports = class ToolButton
           @infoPopup.view.classList.add 'top'
           @infoPopup.view.style.top = (evt.layerY - 25) + "px"
         @infoPopup.show()
+
+    'carry-tool':
+      _agent: null
+      _origin: null
+      _agentOrigin: null
+      enter: ->
+        @_view.setCursor "carry-tool"
+      mousedown: (evt) ->
+        agent = @getAgentAt(evt.layerX, evt.layerY)
+        return unless agent?
+        @pickUpAgent agent
+        @_agent = agent
+        @_origin = {x: evt.layerX, y: evt.layerY}
+        @_agentOrigin = agent.getLocation()
+      mousemove: (evt) ->
+        return unless @_agent?
+        dX = evt.layerX - @_origin.x
+        dY = evt.layerY - @_origin.y
+        @_agent.setLocation({x: @_agentOrigin.x + dX, y: @_agentOrigin.y + dY})
+      mouseup: (evt) ->
+        return unless @_agent?
+        @dropCarriedAgent()
+        @_agent = null
