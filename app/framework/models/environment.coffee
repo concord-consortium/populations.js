@@ -78,7 +78,9 @@ module.exports = class Environment extends StateMachine
     if @isInBarrier loc.x, loc.y
       return false
 
-    @agents.push(agent) unless @agents.indexOf(agent) != -1
+    unless @agents.indexOf(agent) != -1
+      @agents.push(agent)
+      Events.dispatchEvent(Environment.EVENTS.AGENT_ADDED, {agent: agent})
 
   removeAgent: (agent)->
     agent.getView().remove(@getView().stage) if @agents.removeObj(agent)
@@ -249,6 +251,7 @@ module.exports = class Environment extends StateMachine
   ### Events ###
   @EVENTS:
     STEP: "environment-step"
+    AGENT_ADDED: "agent-added"
 
   ### UI States ###
 
