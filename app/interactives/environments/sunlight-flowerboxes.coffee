@@ -6,9 +6,14 @@ env = new Environment
   rows:     52
   imgPath: "images/environments/sun5levels.jpg"
   barriers: [
-      [0, 0, 60, 520]
-      [0, 0, 580, 40]
-      [560, 0, 20, 580]
+      [0, 0, 95, 520]     # East
+      [540, 0, 40, 580]   # West
+      [0, 0, 580, 60]     # Top
+      [0, 105, 580, 50]   # Rows
+      [0, 200, 580, 45]
+      [0, 295, 580, 45]
+      [0, 390, 580, 40]
+      [0, 470, 580, 50]
     ]
   wrapEastWest: true
   wrapNorthSouth: true
