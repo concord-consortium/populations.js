@@ -50,6 +50,9 @@ window.model =
         {
           type: ToolButton.INFO_TOOL
         }
+        {
+          type: ToolButton.CARRY_TOOL
+        }
       ]
 
     document.getElementById('environment').appendChild @interactive.getEnvironmentPane()
