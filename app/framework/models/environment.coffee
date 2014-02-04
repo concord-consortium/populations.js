@@ -261,7 +261,7 @@ class Barrier
     @y2 = @y1 + height
 
   contains: (x, y) ->
-    x > @x1 and x <= @x2 and y > @y1 and y <= @y2
+    @x2 >= x >= @x1 and @y2 >= y >= @y1
 
 
 
