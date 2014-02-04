@@ -70,5 +70,6 @@ module.exports = class EnvironmentView
     @stage.removeChild(@winterImgSprite) unless !@winterImgSprite
 
   addMouseHandlers: ->
-    @view.addEventListener 'click',  (evt) =>
-      @environment.send "click", evt
+    for eventName in ["click", "mousedown", "mouseup", "mousemove"]
+      @view.addEventListener eventName,  (evt) =>
+        @environment.send evt.type, evt
