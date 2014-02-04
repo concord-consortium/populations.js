@@ -66,9 +66,9 @@ module.exports = class Environment extends StateMachine
     @addState @UI_STATE.NONE, EmptyState
     @addState @UI_STATE.ADD_AGENTS, AddAgentsState
 
-    @setState @UI_STATE.NONE
-
     @_view = new EnvironmentView({environment: @})
+
+    @setState @UI_STATE.NONE
 
   ### Public API ###
 
@@ -269,7 +269,9 @@ class Barrier
       *** User Interaction States ***
 ###
 
-EmptyState = {}
+EmptyState =
+  enter: ->
+    @_view.setCursor "default-cursor"
 
 AddAgentsState =
   enter: ->

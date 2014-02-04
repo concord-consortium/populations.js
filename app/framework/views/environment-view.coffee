@@ -84,6 +84,7 @@ module.exports = class EnvironmentView
     stage.addChild(@barrierGraphics)
 
   setCursor: (name) ->
+    return unless @view
     for cursorClass in cursorsClasses
       @view.parentElement.classList.remove cursorClass
 
