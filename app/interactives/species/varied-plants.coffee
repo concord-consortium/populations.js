@@ -22,7 +22,7 @@ require.register "species/varied-plants", (exports, require, module) ->
     imageRules: [
       {
         name: 'plant'
-        contexts: ['environment','info-tool']
+        contexts: ['environment','info-tool','carry-tool']
         rules: [
           {
             image:
@@ -213,7 +213,7 @@ require.register "species/varied-plants", (exports, require, module) ->
       }
       {
         name: 'roots'
-        contexts: ['info-tool']
+        contexts: ['info-tool','carry-tool']
         rules: [
           {
             image:
@@ -252,7 +252,7 @@ require.register "species/varied-plants", (exports, require, module) ->
       }
       {
         name: "flower"
-        contexts: ['environment','info-tool']
+        contexts: ['environment','info-tool','carry-tool']
         rules: [
           {
             image:
