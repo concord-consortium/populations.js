@@ -26,24 +26,28 @@ window.model =
           traits: [
             new Trait {name: "size", possibleValues: [5, 10]}
           ]
+          limit: 40
         }
         {
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 1}
           ]
+          limit: 20
         }
         {
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 5}
           ]
+          limit: 20
         }
         {
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 9}
           ]
+          limit: 20
         }
       ]
       toolButtons: [

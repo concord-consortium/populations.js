@@ -23,7 +23,6 @@ module.exports = class AddOrganismButton
   _disabled: false
 
   disable: ->
-    console.log "disable!"
     @_disabled = true
     @button.classList.add 'disabled'
 

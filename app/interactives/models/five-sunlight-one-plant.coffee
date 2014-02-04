@@ -22,6 +22,7 @@ window.model =
           traits: [
             new Trait {name: "size", default: 1}
           ]
+          limit: 20
         }
       ]
 
