@@ -23,3 +23,7 @@ background-linear-gradient(startPoint, startColor, startInterval, endColor, endI
   background-image -ms-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
   background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
   background-image linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+
+opacity(n)
+  opacity n
+  filter unquote('progid:DXImageTransform.Microsoft.Alpha(Opacity=' + round(n * 100) + ')')

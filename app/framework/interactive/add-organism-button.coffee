@@ -1,6 +1,6 @@
 module.exports = class AddOrganismButton
 
-  constructor: (@environment, @toolbar, {@species, @traits, @scatter}) ->
+  constructor: (@environment, @toolbar, {@species, @traits, @scatter, @limit}) ->
     if !@scatter
       @toolbar.registerModalButton this
 
@@ -19,7 +19,21 @@ module.exports = class AddOrganismButton
 
   getView: -> @button
 
+  _count: 0
+  _disabled: false
+
+  disable: ->
+    console.log "disable!"
+    @_disabled = true
+    @button.classList.add 'disabled'
+
+  reset: ->
+    @_count = 0
+    @_disabled = false
+    @button.classList.remove 'disabled'
+
   action: ->
+    return if @_disabled
     if @scatter
       @scatterOrganisms()
     else
@@ -27,6 +41,10 @@ module.exports = class AddOrganismButton
 
   scatterOrganisms: ->
     for i in [0...@scatter]
+      if @limit and ++@_count > @limit
+        @disable()
+        return
+
       agent = @species.createAgent(@traits)
       agent.environment = @environment
       agent.setLocation
@@ -40,7 +58,12 @@ module.exports = class AddOrganismButton
 
   enterAddOrganismsMode: ->
     @toolbar.activateModalButton this
-    @environment.setDefaultAgentCreator @species, @traits
+    @environment.setDefaultAgentCreator @species, @traits, =>
+      if @limit and ++@_count >= @limit
+        @environment.setDefaultAgentCreator null
+        @environment.setState @environment.UI_STATE.NONE
+        @disable()
+
     @environment.setState @environment.UI_STATE.ADD_AGENTS
 
   getButtonImages: ->

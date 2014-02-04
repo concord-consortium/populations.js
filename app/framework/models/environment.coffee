@@ -135,14 +135,15 @@ module.exports = class Environment extends StateMachine
 
   # Used for setting the default species and traits for
   # creating and adding agents.
-  setDefaultAgentCreator: (@defaultSpecies, @defaultTraits) ->
+  setDefaultAgentCreator: (@defaultSpecies, @defaultTraits, @agentAdderCallback) ->
 
   addDefaultAgent: (x, y) ->
     return unless @defaultSpecies?
     agent = @defaultSpecies.createAgent(@defaultTraits)
     agent.environment = @
     agent.setLocation x: x, y: y
-    @addAgent agent
+    success = @addAgent agent
+    if success and @agentAdderCallback then @agentAdderCallback()
 
   ### Run Loop ###
 

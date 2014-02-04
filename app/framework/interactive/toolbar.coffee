@@ -3,30 +3,33 @@ ToolButton  = require 'interactive/tool-button'
 
 module.exports = class Toolbar
 
-  constructor: (interactive) ->
-    env = interactive.environment
+  constructor: (@interactive) ->
+    env = @interactive.environment
 
     @modalButtons = []
+    @organismButtons = []
 
     @view = document.createElement 'div'
     @view.classList.add "toolbar"
     @view.setAttribute "style", "height: #{env.height}px;"
 
-    if interactive.showPlayButton()
+    if @interactive.showPlayButton()
       @addToggleButton "play", (->
           env.start()),
         "pause", (->
           env.stop())
-    for opts in interactive.addOrganismButtons
+    for opts in @interactive.addOrganismButtons
       button = new AddOrganismButton env, this, opts
       @view.appendChild button.render()
+      @organismButtons.push button
 
-    for opts in interactive.toolButtons
+    for opts in @interactive.toolButtons
       button = new ToolButton env, this, opts
       @view.appendChild button.render()
 
-    if interactive.showResetButton()
-      @addButton "reset", ->
+    if @interactive.showResetButton()
+      @addButton "reset", =>
+        @reset()
         env.reset()
 
   addButton: (type, action) ->
@@ -61,6 +64,16 @@ module.exports = class Toolbar
     for button in @modalButtons
       unless button is btn
         button.getView().classList.remove 'modal-active'
+
+  reset: ->
+    for button in @modalButtons
+      button.getView().classList.remove 'modal-active'
+    for button in @organismButtons
+      button.reset()
+    env = @interactive.environment
+    env.setState env.UI_STATE.NONE
+
+
 
   getView: ->
     @view
