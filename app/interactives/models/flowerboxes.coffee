@@ -8,7 +8,7 @@ Trait       = require 'models/trait'
 Interactive = require 'interactive/interactive'
 Events      = require 'events'
 ToolButton  = require 'interactive/tool-button'
-PPSlider    = require 'views/ppslider'
+PPSlider    = require 'interactive/ppslider'
 
 plantSpecies = require 'species/varied-plants'
 env          = require 'environments/sunlight-flowerboxes'

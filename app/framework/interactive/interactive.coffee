@@ -1,6 +1,6 @@
 helpers = require "helpers"
 Toolbar = require "interactive/toolbar"
-InfoView = require "views/info-view"
+InfoView = require "interactive/info-view"
 
 defaultOptions =
   environment : null
