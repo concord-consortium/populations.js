@@ -8,7 +8,7 @@
 module.exports = class Events
   @dispatchEvent: (type, data)->
     if document.dispatchEvent?
-      evt = new CustomEvent type, data
+      evt = new CustomEvent type, {detail: data}
       document.dispatchEvent evt
     else
       console.warn("document doesn't support dispatchEvent!")
