@@ -5,6 +5,7 @@ cursorsClasses = [
 ]
 
 module.exports = class EnvironmentView
+  showingBarriers: false
 
   constructor: ({@environment}) ->
     @showingWinter = false
@@ -31,6 +32,8 @@ module.exports = class EnvironmentView
 
     @stage.addChild(envSprite)
 
+    @renderBarriers(@stage)
+
     @renderAgents(@stage)
 
     animate = =>
@@ -43,6 +46,8 @@ module.exports = class EnvironmentView
 
       if @showingWinter
         @stage.swapChildren @winterImgSprite, @stage.children[@stage.children.length-1]
+
+      @barrierGraphics.visible = @showingBarriers
       @renderer.render(@stage)
 
     requestAnimFrame( animate )
@@ -59,6 +64,25 @@ module.exports = class EnvironmentView
   renderAgents: (stage) ->
     for agent in @environment.agents
       agent.getView().render(stage)
+
+  renderBarriers: (stage) ->
+    @barrierGraphics = new PIXI.Graphics()
+
+    # set a fill and line style
+    @barrierGraphics.beginFill(0xFF3300, 0.5)
+    @barrierGraphics.lineStyle(1, 0xffd900, 0.5)
+
+    # draw each barrier
+    for b,i in @environment.barriers
+      console.log("drawing barrier")
+      @barrierGraphics.drawRect(b.x1, b.y1, b.x2-b.x1, b.y2-b.y1)
+      text = new PIXI.Text(""+i)
+      text.position = {x: b.x1+5, y: b.y1+5}
+      @barrierGraphics.addChild text
+
+    @barrierGraphics.endFill()
+    @barrierGraphics.visible = @showingBarriers
+    stage.addChild(@barrierGraphics)
 
   setCursor: (name) ->
     for cursorClass in cursorsClasses
