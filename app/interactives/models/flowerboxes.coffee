@@ -8,7 +8,6 @@ Trait       = require 'models/trait'
 Interactive = require 'interactive/interactive'
 Events      = require 'events'
 ToolButton  = require 'interactive/tool-button'
-PPSlider    = require 'interactive/ppslider'
 
 plantSpecies = require 'species/varied-plants'
 env          = require 'environments/sunlight-flowerboxes'
@@ -19,6 +18,7 @@ window.model =
 
     @interactive = new Interactive
       environment: env
+      speedSlider: true
       addOrganismButtons: [
         {
           species: plantSpecies
@@ -56,13 +56,6 @@ window.model =
       ]
 
     document.getElementById('environment').appendChild @interactive.getEnvironmentPane()
-
-    # TODO Remove jQuery once we're no longer relying on it.
-    $( document ).ready ->
-      $('#speed-slider').change ->
-        env.setSpeed(parseInt($(@).val()))
-
-      $("#speed-slider").PPSlider({width: env.width})
 
     @env = env
     @plantSpecies = plantSpecies

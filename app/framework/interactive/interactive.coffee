@@ -1,11 +1,13 @@
 helpers = require "helpers"
 Toolbar = require "interactive/toolbar"
 InfoView = require "interactive/info-view"
+SpeedSlider = require "interactive/speed-slider"
 
 defaultOptions =
   environment : null
   playButton  : true
   resetButton : true
+  speedSlider : false
   addOrganismButtons  : []
   toolButtons: []
 
@@ -33,6 +35,10 @@ module.exports = class Interactive
     @view = document.createElement 'div'
 
     @view.setAttribute "style", "height: #{@environment.height}px;"
+
+    if @_opts.speedSlider
+      speedSlider = new SpeedSlider(@environment)
+      @view.appendChild speedSlider.getView()
 
     @view.appendChild @environment.getView().render()
 
