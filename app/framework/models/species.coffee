@@ -1,3 +1,10 @@
+helpers   = require 'helpers'
+
+defaultDefs =
+  MAX_AGE: 1000
+  MAX_HEALTH: 1
+  CHANCE_OF_MUTATION: 0.2
+
 module.exports = class Species
 
   constructor: ({
@@ -9,6 +16,7 @@ module.exports = class Species
       @defs
       @reproductiveStrategy
       @mutationChance}) ->
+    @defs = helpers.setDefaults(@defs || {}, defaultDefs)
 
   ###
     Create an agent of this species, with the traits defined in
