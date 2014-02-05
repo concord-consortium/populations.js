@@ -97,7 +97,7 @@ module.exports =
 
     return cloneObj
 
-  showMessage: (message, element) ->
+  showMessage: (message, element, callback) ->
     oldBox.remove() for oldBox in document.getElementsByClassName("message-box")
 
     top   = element.offsetTop + 50
@@ -120,6 +120,7 @@ module.exports =
     button.innerHTML = "Ok"
     button.addEventListener 'click', ->
       element.removeChild box
+      if callback then callback()
     box.appendChild button
 
     element.appendChild box
