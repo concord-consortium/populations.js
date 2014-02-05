@@ -5,7 +5,7 @@ defaultProperties =
   'min offspring': 1
   'max offspring': 3
   'min offspring distance': 10
-  'max offspring distance': 30
+  'max offspring distance': 40
   'health': 1
   'is immortal': false
 
@@ -104,8 +104,8 @@ module.exports = class Agent
     offspring.makeNewborn()
 
     if @environment
-      @environment.addAgent offspring
       offspring.setLocation @_findOffspringLocation()
+      @environment.addAgent offspring
 
     return offspring
 
