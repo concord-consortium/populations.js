@@ -2,20 +2,20 @@ Environment = require 'models/environment'
 Rule        = require 'models/rule'
 
 env = new Environment
-  columns:  58
-  rows:     62
+  columns:  60
+  rows:     70
   imgPath: "images/environments/sun10levels.png"
   winterImgPath: "images/environments/snow.png"
   seasonLengths: [30, 30, 15, 10]
   barriers: [
-      [0, 0, 60, 520]
+      [0, 0, 70, 700]
     ]
   wrapEastWest: true
   wrapNorthSouth: true
 
-for col in [0..58]
-  for row in [0..62]
-    sunlight = Math.ceil row/6.2
+for col in [0..60]
+  for row in [0..70]
+    sunlight = Math.ceil row/7
 
     env.set col, row, "sunlight", sunlight
 
@@ -25,7 +25,11 @@ env.addRule new Rule
     size     = agent.get 'size'
     sunlight = agent.get 'sunlight'
     diff = Math.abs((11 - size) - sunlight)
-    health = 1 - (diff /  20)
+    healthAtOneUnitDiff = 0.98
+    a = 0.2 - 0.25*healthAtOneUnitDiff
+    b =1.25*healthAtOneUnitDiff-1.2
+    c = 1
+    health = Math.max 0, ((a*diff*diff + b*diff + c))
     agent.set 'health', health
 
 # No withered plant can flower
