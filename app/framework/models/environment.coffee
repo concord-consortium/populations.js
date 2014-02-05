@@ -283,6 +283,6 @@ AddAgentsState =
   enter: ->
     @_view.setCursor "add-agents"
   click: (evt) ->
-    @addDefaultAgent evt.layerX, evt.layerY
+    @addDefaultAgent evt.envX, evt.envY
 
 ## more states added by interactive/tool-button

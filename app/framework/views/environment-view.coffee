@@ -101,4 +101,7 @@ module.exports = class EnvironmentView
   addMouseHandlers: ->
     for eventName in ["click", "mousedown", "mouseup", "mousemove"]
       @view.addEventListener eventName,  (evt) =>
+        # use page+offset location, which remain correct after iframe zoom
+        evt.envX = evt.pageX - @view.offsetLeft
+        evt.envY = evt.pageY - @view.offsetTop
         @environment.send evt.type, evt

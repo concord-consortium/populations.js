@@ -42,7 +42,7 @@ module.exports = class ToolButton
         @_view.setCursor "info-tool"
       click: (evt) ->
         # get clicked agent
-        agent = @getAgentAt(evt.layerX, evt.layerY)
+        agent = @getAgentAt(evt.envX, evt.envY)
         return unless agent?
         # Display info pop-up for that agent
         if @infoPopup?
@@ -52,18 +52,18 @@ module.exports = class ToolButton
           document.getElementById('environment').appendChild @infoPopup.render()  # TODO We shouldn't be hard-coding the container...
         for style in ['top','left','bottom','right']
           @infoPopup.view.classList.remove style
-        if evt.layerX > @width/2
+        if evt.envX > @width/2
           @infoPopup.view.classList.add 'right'
-          @infoPopup.view.style.left = (evt.layerX - 225) + "px"
+          @infoPopup.view.style.left = (evt.envX - 225) + "px"
         else
           @infoPopup.view.classList.add 'left'
-          @infoPopup.view.style.left = (evt.layerX + 35) + "px"
-        if evt.layerY > @height/2
+          @infoPopup.view.style.left = (evt.envX + 35) + "px"
+        if evt.envY > @height/2
           @infoPopup.view.classList.add 'bottom'
-          @infoPopup.view.style.top = (evt.layerY - 162) + "px"
+          @infoPopup.view.style.top = (evt.envY - 162) + "px"
         else
           @infoPopup.view.classList.add 'top'
-          @infoPopup.view.style.top = (evt.layerY - 25) + "px"
+          @infoPopup.view.style.top = (evt.envY - 25) + "px"
         @infoPopup.show()
 
     'carry-tool':
@@ -73,16 +73,16 @@ module.exports = class ToolButton
       enter: ->
         @_view.setCursor "carry-tool"
       mousedown: (evt) ->
-        agent = @getAgentAt(evt.layerX, evt.layerY)
+        agent = @getAgentAt(evt.envX, evt.envY)
         return unless agent?
         @pickUpAgent agent
         @_agent = agent
-        @_origin = {x: evt.layerX, y: evt.layerY}
+        @_origin = {x: evt.envX, y: evt.envY}
         @_agentOrigin = agent.getLocation()
       mousemove: (evt) ->
         return unless @_agent?
-        dX = evt.layerX - @_origin.x
-        dY = evt.layerY - @_origin.y
+        dX = evt.envX - @_origin.x
+        dY = evt.envY - @_origin.y
         @_agent.setLocation({x: @_agentOrigin.x + dX, y: @_agentOrigin.y + dY})
       mouseup: (evt) ->
         return unless @_agent?
