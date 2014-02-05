@@ -22,14 +22,6 @@ window.model =
       addOrganismButtons: [
         {
           species: plantSpecies
-          scatter: 10
-          traits: [
-            new Trait {name: "size", possibleValues: [5, 10]}
-          ]
-          limit: 40
-        }
-        {
-          species: plantSpecies
           traits: [
             new Trait {name: "size", default: 1}
           ]
@@ -50,14 +42,6 @@ window.model =
           limit: 20
         }
       ]
-      toolButtons: [
-        {
-          type: ToolButton.INFO_TOOL
-        }
-        {
-          type: ToolButton.CARRY_TOOL
-        }
-      ]
 
     document.getElementById('environment').appendChild @interactive.getEnvironmentPane()
 
@@ -74,7 +58,14 @@ window.model =
     @chartData.addColumn({ type: 'string', role: 'style' })
     @chartData.addRows [
       ["1",  0, "color: #5942BF"]
+      ["2",  0, "color: #904078"]
+      ["3",  0, "color: #904078"]
+      ["4",  0, "color: #904078"]
       ["5",  0, "color: #904078"]
+      ["6",  0, "color: #904078"]
+      ["7",  0, "color: #904078"]
+      ["8",  0, "color: #904078"]
+      ["9",  0, "color: #D34441"]
       ["10", 0, "color: #D34441"]
     ]
 
@@ -91,7 +82,7 @@ window.model =
           count: 6
       legend:
         position: 'none'
-      width: 400
+      width: 500
       height: 400
 
     # Instantiate and draw our chart, passing in some options.
@@ -101,25 +92,25 @@ window.model =
     Events.addEventListener Environment.EVENTS.STEP, =>
       existingCounts =
         1:  @chartData.getValue(0,1)
-        5:  @chartData.getValue(1,1)
-        10: @chartData.getValue(2,1)
+        5:  @chartData.getValue(4,1)
+        9:  @chartData.getValue(8,1)
       counts =
         1: 0
         5: 0
-        10: 0
+        9: 0
       for agent in @env.agents
         counts[agent.get('size')] += 1 if agent.get('has flowers')
 
-      changed = existingCounts[1]  isnt counts[1] or
-                existingCounts[5]  isnt counts[5] or
-                existingCounts[10] isnt counts[10]
+      changed = existingCounts[1] isnt counts[1] or
+                existingCounts[5] isnt counts[5] or
+                existingCounts[9] isnt counts[9]
 
       if changed
         @chartData.setValue(0, 1, counts[1])
-        @chartData.setValue(1, 1, counts[5])
-        @chartData.setValue(2, 1, counts[10])
+        @chartData.setValue(4, 1, counts[5])
+        @chartData.setValue(8, 1, counts[9])
 
-        if counts[1] > 10 or counts[5] > 10 or counts[10] > 10
+        if counts[1] > 10 or counts[5] > 10 or counts[9] > 10
           options.vAxis.gridlines.count = -1
 
 
