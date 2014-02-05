@@ -10,8 +10,8 @@ env = new Environment
   barriers: [
       [0, 0, 70, 700]
     ]
-  wrapEastWest: true
-  wrapNorthSouth: true
+  wrapEastWest: false
+  wrapNorthSouth: false
 
 for col in [0..60]
   for row in [0..70]
