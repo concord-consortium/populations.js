@@ -15,7 +15,7 @@
       var modelDivs = [];
 
       window.onload = function() {
-        var modelCollection, i, ii, j, jj;
+        var modelCollection, i, ii, j, jj, zoom;
 
         modelCollection = document.getElementsByClassName("model-collection")[0];
         for (model in models) {
@@ -26,6 +26,17 @@
             loadModel(model, modelDivs[0]);
           }
         }
+
+
+        zoom = document.getElementById("zoom");
+        iframe = document.getElementById("model-iframe");
+        zoom.addEventListener('click', function(evt) {
+          if (zoom.checked) {
+            iframe.classList.add("zoom-out");
+          } else {
+            iframe.classList.remove("zoom-out");
+          }
+        });
       }
 
       createModelDiv = function(model, container) {
@@ -127,6 +138,26 @@
         border: 1px solid #BBB;
         background-color: white;
       }
+
+      #model-iframe.zoom-out {
+        -ms-zoom: 0.75;
+        -moz-transform: scale(0.75);
+        -moz-transform-origin: 0 0;
+        -o-transform: scale(0.75);
+        -o-transform-origin: 0 0;
+        -webkit-transform: scale(0.75);
+        -webkit-transform-origin: 0 0;
+        transform: scale(0.75);
+        transform-origin: 0 0;
+
+        width: 1267px;
+        height: 800px;
+      }
+
+      #zoom-check {
+        clear: both;
+        float: right;
+      }
     </style>
   </head>
   <body>
@@ -148,6 +179,11 @@
     <div class="model">
       <h1 id="model-title"></h1>
       <iframe id="model-iframe"></iframe>
+    </div>
+
+    <div id="zoom-check">
+      <input type="checkbox" name="checkbox" id="zoom">
+      <label for="zoom">Zoom out</label>
     </div>
   </body>
 </html>
