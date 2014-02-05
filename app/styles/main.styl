@@ -86,3 +86,29 @@ body
   display: inline-block
   width: 400px
   height: 400px
+
+.message-box
+  position: absolute
+  background-color: #FDF1D1
+  padding: 15px
+  border-radius(4px)
+  border: #FAE8B8 5px solid
+  box-shadow(0, 0, 50px, #000)
+  .button
+    width: 70px
+    padding: 2px
+    margin-left: 170px
+    margin-top: 30px
+    cursor: pointer
+    text-align: center
+    border-radius(7px)
+    box-shadow(0, 0, 5px)
+    background-linear-gradient(top, #ffffff, 0%, #cccccc, 100%)
+
+    &:hover
+      box-shadow(0, 0, 5px, #444)
+
+    &:active
+      box-shadow(0, 0, 5px, #FFF)
+      background-linear-gradient(top, #ffffff, 0%, #bbbbbb, 100%)
+

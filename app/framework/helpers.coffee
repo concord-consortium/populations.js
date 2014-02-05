@@ -96,3 +96,31 @@ module.exports =
       cloneObj[key] = @clone obj[key]
 
     return cloneObj
+
+  showMessage: (message, element) ->
+    oldBox.remove() for oldBox in document.getElementsByClassName("message-box")
+
+    top   = element.offsetTop + 50
+    width = 280
+    left  = element.offsetLeft + (element.offsetWidth/2) - (width/2)
+
+    box = document.createElement 'div'
+    box.classList.add 'message-box'
+    box.setAttribute "style",
+      """
+        top: #{top}px;
+        left: #{left}px;
+        width: #{width}px;
+      """
+
+    box.innerHTML = message
+
+    button = document.createElement 'div'
+    button.classList.add 'button'
+    button.innerHTML = "Ok"
+    button.addEventListener 'click', ->
+      element.removeChild box
+    box.appendChild button
+
+    element.appendChild box
+
