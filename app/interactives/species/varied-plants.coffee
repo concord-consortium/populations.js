@@ -224,7 +224,7 @@ require.register "species/varied-plants", (exports, require, module) ->
                 y: 0
               position:
                 y: -2
-            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 1 and agent.get('health') > 0.85
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 10
           }
           {
             image:
@@ -235,7 +235,7 @@ require.register "species/varied-plants", (exports, require, module) ->
                 y: 0
               position:
                 y: -2
-            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 5 and agent.get('health') > 0.85
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 5
           }
           {
             image:
@@ -246,7 +246,7 @@ require.register "species/varied-plants", (exports, require, module) ->
                 y: 0
               position:
                 y: -2
-            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 10 and agent.get('health') > 0.85
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 1
           }
         ]
       }
