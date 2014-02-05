@@ -10,7 +10,7 @@ module.exports = class EnvironmentView
   constructor: ({@environment}) ->
     @showingWinter = false
     if @environment.winterImgPath?
-      @winterImgSprite = new PIXI.Sprite PIXI.Texture.fromImage @environment.winterImgPath
+      @winterImgSprite = new PIXI.TilingSprite PIXI.Texture.fromImage(@environment.winterImgPath), @environment.width, @environment.height
       @winterImgSprite.anchor.x = 0
       @winterImgSprite.anchor.y = 0
       @winterImgSprite.position.x = 0
