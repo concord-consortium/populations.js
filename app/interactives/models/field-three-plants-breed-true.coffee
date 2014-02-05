@@ -1,4 +1,4 @@
-require 'helpers'
+helpers     = require 'helpers'
 
 Environment = require 'models/environment'
 Species     = require 'models/species'
@@ -43,6 +43,19 @@ window.model =
 
     @env = env
     @plantSpecies = plantSpecies
+
+    ### message script ###
+    shownWinterMessage = false
+    Events.addEventListener Environment.EVENTS.STEP, =>
+      if shownWinterMessage then return
+
+      if @env.get(0, 0, "season") is "winter"
+        @showMessage "Winter has come and snow has fallen. <br/><br/>
+                      All your plants have died. Boo hoo! <br/><br/>
+                      But if they've flowered and droped seeds maybe baby plants will grow.<br/>
+                      Click 'OK' and let's see what happens.", true
+        shownWinterMessage = true
+
 
   chartData: null
   chart: null
@@ -112,6 +125,11 @@ window.model =
 
 
         @chart.draw(@chartData, options)
+
+  showMessage: (message, pause=false) ->
+    if pause then @env.stop()
+    helpers.showMessage message, @env.getView().view.parentElement, =>
+      @env.start()
 
 window.onload = ->
   model.run()
