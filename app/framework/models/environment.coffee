@@ -75,6 +75,7 @@ module.exports = class Environment extends StateMachine
   addAgent: (agent)->
     agent.environment = this
     loc = @ensureValidLocation agent.getLocation()
+    agent.setLocation loc
     if @isInBarrier loc.x, loc.y
       return false
 
