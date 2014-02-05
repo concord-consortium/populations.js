@@ -17,7 +17,7 @@ require.register "species/varied-plants", (exports, require, module) ->
       CHANCE_OF_MUTATION: 0.2
     traits: [
       new Trait {name: "size", min: 1, max: 10}
-      new Trait {name: "root size", possibleValues: [1, 5, 10]}
+      new Trait {name: "root size",min: 1, max: 10}
     ]
     imageRules: [
       {
@@ -228,6 +228,17 @@ require.register "species/varied-plants", (exports, require, module) ->
           }
           {
             image:
+              path: "images/agents/varied-plants/roots9.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 0
+              position:
+                y: -2
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 9
+          }
+          {
+            image:
               path: "images/agents/varied-plants/roots5.png"
               scale: 0.2
               anchor:
@@ -236,6 +247,83 @@ require.register "species/varied-plants", (exports, require, module) ->
               position:
                 y: -2
             useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 5
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/roots8.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 0
+              position:
+                y: -2
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 8
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/roots7.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 0
+              position:
+                y: -2
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 7
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/roots6.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 0
+              position:
+                y: -2
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 6
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/roots5.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 0
+              position:
+                y: -2
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 5
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/roots4.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 0
+              position:
+                y: -2
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 4
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/roots3.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 0
+              position:
+                y: -2
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 3
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/roots2.png"
+              scale: 0.2
+              anchor:
+                x: 0.5
+                y: 0
+              position:
+                y: -2
+            useIf: (agent) -> agent.get('age') >= @defs.SPROUT_AGE and agent.get('root size') == 2
           }
           {
             image:
