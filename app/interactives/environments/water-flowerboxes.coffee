@@ -22,9 +22,9 @@ for col in [0..(env.columns)]
   for row in [0..(env.rows)]
     water = switch
       when col < 13 then 0.1
-      when row < 22 then 0.25
-      when row < 32 then 0.5
-      when row < 41 then 0.75
+      when col < 22 then 0.25
+      when col < 32 then 0.5
+      when col < 41 then 0.75
       else 1
 
     env.set col, row, "water", water
