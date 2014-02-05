@@ -192,6 +192,7 @@ module.exports = class Environment extends StateMachine
   reset: ->
     i = @agents.length
     @removeAgent @agents[--i] while i
+    Events.dispatchEvent(Environment.EVENTS.RESET, {})
 
   ### Default properties ###
 
@@ -250,7 +251,8 @@ module.exports = class Environment extends StateMachine
 
   ### Events ###
   @EVENTS:
-    STEP: "environment-step"
+    STEP:   "environment-step"
+    RESET:  "environment-reset"
     AGENT_ADDED: "agent-added"
 
   ### UI States ###
