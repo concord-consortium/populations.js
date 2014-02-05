@@ -18,7 +18,7 @@ module.exports = class EnvironmentView
 
   render: (el) ->
     @stage = new PIXI.Stage(0xFFFFFF, true) unless @stage?
-    @renderer = PIXI.autoDetectRenderer(@environment.width, @environment.height)
+    @renderer = new PIXI.CanvasRenderer(@environment.width, @environment.height)
     # create a texture from an image path
     texture = PIXI.Texture.fromImage @environment.imgPath
     # create a new Sprite using the texture
