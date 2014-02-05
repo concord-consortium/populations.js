@@ -49,7 +49,9 @@ window.model =
 
   chartData: null
   chart: null
+  startData: false
   setupChart: ->
+
     # setup chart data
     @chartData = new google.visualization.DataTable()
     @chartData.addColumn('string', 'Plant Type (Leaf Size)')
@@ -89,6 +91,7 @@ window.model =
     @chart.draw(@chartData, options);
 
     Events.addEventListener Environment.EVENTS.STEP, =>
+      return if !@startData
       existingCounts =
         1:  @chartData.getValue(0,1)
         5:  @chartData.getValue(4,1)
@@ -117,5 +120,7 @@ window.model =
 
 window.onload = ->
   model.run()
-
   model.setupChart()
+  makeGraphButton = document.getElementById('make-graph')
+  makeGraphButton.addEventListener 'click', ->
+    model.startData = true
