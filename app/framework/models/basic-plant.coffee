@@ -34,6 +34,10 @@ module.exports = class BasicPlant extends Agent
     @set 'has flowers', false
 
   createSeeds: ->
+    # quick addition to prevent over-popualtion. This could also be controlled
+    # by a species setting
+    if @get('num agents') > 2 then return
+
     @reproduce()
     @_hasSeeded = true
     @set 'has flowers', false

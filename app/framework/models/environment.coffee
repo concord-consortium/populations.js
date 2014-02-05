@@ -74,15 +74,32 @@ module.exports = class Environment extends StateMachine
 
   addAgent: (agent)->
     agent.environment = this
-    loc = agent.getLocation()
+    loc = @ensureValidLocation agent.getLocation()
     if @isInBarrier loc.x, loc.y
       return false
+
+    col = Math.floor loc.x / @_columnWidth
+    row = Math.floor loc.y / @_rowHeight
+    agents = @get col, row, "num agents"
+    if !agents?
+      @set col, row, "num agents", 1
+    else
+      @set col, row, "num agents", agents+1
 
     unless @agents.indexOf(agent) != -1
       @agents.push(agent)
       Events.dispatchEvent(Environment.EVENTS.AGENT_ADDED, {agent: agent})
 
   removeAgent: (agent)->
+    loc = agent.getLocation()
+    col = Math.floor loc.x / @_columnWidth
+    row = Math.floor loc.y / @_rowHeight
+    agents = @get col, row, "num agents"
+    if !agents?
+      @set col, row, "num agents", 0
+    else
+      @set col, row, "num agents", agents-1
+
     agent.getView().remove(@getView().stage) if @agents.removeObj(agent)
 
   ensureValidLocation: ({x,y}) ->
