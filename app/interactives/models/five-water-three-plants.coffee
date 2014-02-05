@@ -24,6 +24,7 @@ window.model =
           traits: [
             new Trait {name: "root size", default: 1}
             new Trait {name: "size", default: 5}
+            new Trait {name: "mystery", default: 'X'}
           ]
         }
         {
@@ -31,6 +32,7 @@ window.model =
           traits: [
             new Trait {name: "root size", default: 5}
             new Trait {name: "size", default: 5}
+            new Trait {name: "mystery", default: 'Y'}
           ]
         }
         {
@@ -38,6 +40,7 @@ window.model =
           traits: [
             new Trait {name: "root size", default: 10}
             new Trait {name: "size", default: 5}
+            new Trait {name: "mystery", default: 'Z'}
           ]
         }
       ]

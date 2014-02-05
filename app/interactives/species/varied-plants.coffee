@@ -352,6 +352,21 @@ require.register "species/varied-plants", (exports, require, module) ->
         rules: [
           {
             image:
+              path: "images/agents/varied-plants/buttons/seedpack_x.png"
+            useIf: (agent) -> agent.get('mystery') is 'X'
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/buttons/seedpack_y.png"
+            useIf: (agent) -> agent.get('mystery') is 'Y'
+          }
+          {
+            image:
+              path: "images/agents/varied-plants/buttons/seedpack_z.png"
+            useIf: (agent) -> agent.get('mystery') is 'Z'
+          }
+          {
+            image:
               path: "images/agents/varied-plants/buttons/seedpack_1.png"
             useIf: (agent) -> agent.get('size') == 10
           }
