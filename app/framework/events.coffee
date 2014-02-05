@@ -20,14 +20,14 @@ module.exports = class Events
       console.warn("document doesn't support addEventListener!")
 
 (->
-  unless window.CustomEvent
-    CustomEvent = ( event, params )->
-      params = params || { bubbles: false, cancelable: false, detail: undefined }
-      evt = document.createEvent( 'CustomEvent' );
-      evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail )
-      return evt
-
-    CustomEvent.prototype = window.CustomEvent.prototype
+  unless (window.CustomEvent and typeof window.CustomEvent is 'function')
+    CustomEvent = ( type, eventInitDict ) ->
+      newEvent = document.createEvent('CustomEvent')
+      newEvent.initCustomEvent(type,
+        !!(eventInitDict && eventInitDict.bubbles),
+        !!(eventInitDict && eventInitDict.cancelable),
+        (if eventInitDict then eventInitDict.details else null))
+      return newEvent;
 
     window.CustomEvent = CustomEvent
 )()
