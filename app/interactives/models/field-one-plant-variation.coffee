@@ -7,6 +7,7 @@ Rule        = require 'models/rule'
 Trait       = require 'models/trait'
 Interactive = require 'interactive/interactive'
 Events      = require 'events'
+ToolButton  = require 'interactive/tool-button'
 
 plantSpecies = require 'species/varied-plants'
 env          = require 'environments/sunlight-field'
