@@ -325,6 +325,7 @@ describe 'Agent', ->
           new Trait {name: "leaves", min: 1, max: 5}
           new Trait {name: "height", min: 1, max: 10}
         ]
+      plantSpecies.defs.CHANCE_OF_MUTATION = 0
       plant = plantSpecies.createAgent([ new Trait {name: "leaves", default: 3} ])
 
     it 'and create a newborn clone', ->
@@ -340,8 +341,8 @@ describe 'Agent', ->
 
     it 'and add its offspring to the environment near itself', ->
       env = new Environment {columns: 5, rows: 5}
-      env.addAgent plant
       plant.setLocation x: 25, y: 25
+      env.addAgent plant
 
       minDist = plant.get 'min offspring distance'
       maxDist = plant.get 'max offspring distance'

@@ -49,9 +49,9 @@ describe 'An agent in an environment', ->
 
         agent = new Agent {}
         agent.set('is immortal', true)
+        agent.setLocation {x: 0, y: 35}     # sunlight = 3
         env.addAgent(agent)
 
-        agent.setLocation {x: 0, y: 35}     # sunlight = 3
         env.step()
 
         expect(agent.get 'health').toEqual 1
