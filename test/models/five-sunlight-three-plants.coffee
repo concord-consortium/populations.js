@@ -18,7 +18,6 @@ angular.scenario.dsl 'model', ->
 angular.scenario.dsl 'agent', ->
   return (num, property) ->
     return this.addFutureAction 'agent['+num+"] "+property, ($window, $document, done) ->
-      debugger
       agent = $window.model.env.agents[num]._props[property]
       done(null, agent);
 
@@ -61,7 +60,7 @@ describe 'The Five Flowerboxes Three Plants model', ->
     expect(model('env.agents.length')).toBe 0
 
     element(".button.modal:first").click()
-    clickInModel({x: 100, y: 100})
+    clickInModel({x: 150, y: 180})
     expect(model('env.agents.length')).toBe 1
 
     expect(agent(0, 'age')).toBe 0
@@ -69,14 +68,14 @@ describe 'The Five Flowerboxes Three Plants model', ->
     expect(agent(0, 'size')).toBe 1
 
     element(".button.modal:last").click()
-    clickInModel({x: 101, y: 101})
+    clickInModel({x: 160, y: 180})
     expect(model('env.agents.length')).toBe 2
 
-    expect(agent(1, 'size')).toBe 10
+    expect(agent(1, 'size')).toBe 9
 
   it 'should grow plants when the model runs', ->
     element(".button.modal:first").click()
-    clickInModel({x: 100, y: 100})
+    clickInModel({x: 150, y: 180})
     step(20)
 
     expect(agent(0, 'age')).toBe 20
