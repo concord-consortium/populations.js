@@ -5,7 +5,9 @@
   "repository": "",
   "scripts": {
     "start": "node_modules/.bin/brunch watch --server",
-    "test": "node_modules/.bin/karma start test/karma.conf.js"
+    "build": "node_modules/.bin/brunch build",
+    "test": "node_modules/.bin/karma start test/karma.conf.js --single-run",
+    "testwatch": "node_modules/.bin/karma start test/karma.conf.js"
   },
   "dependencies": {
     "javascript-brunch": "~1.6.0",
