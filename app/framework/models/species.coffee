@@ -49,9 +49,12 @@ module.exports = class Species
 
     return images
 
-  getTrait: (traitName)->
+  getTrait: (traitName) ->
     for trait in @traits
       return trait if trait.name is traitName
+
+  addTrait: (trait) ->
+    @traits.push trait
 
   _contextMatches: (context, validContexts)->
     return true unless context?  # assume no context info means all contexts valid
