@@ -14,6 +14,7 @@ defaultProperties =
 ###
 module.exports = class Agent
   label: "organism"
+  bred: false
 
   constructor: ({@name, @environment, @species, x, y}) ->
     @_props = helpers.clone defaultProperties
@@ -103,6 +104,7 @@ module.exports = class Agent
     offspring = @_clone()
     offspring._mutate();
     offspring.makeNewborn()
+    offspring.bred = true
 
     if @environment
       offspring.setLocation @_findOffspringLocation()

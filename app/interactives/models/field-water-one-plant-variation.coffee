@@ -52,7 +52,7 @@ window.model =
       updateMoney(startingMoney)
 
     Events.addEventListener Environment.EVENTS.AGENT_ADDED, (evt)->
-      updateMoney(moneyLeft-1)
+      updateMoney(moneyLeft-1) unless evt.detail.agent.bred
 
 window.onload = ->
   model.run()
