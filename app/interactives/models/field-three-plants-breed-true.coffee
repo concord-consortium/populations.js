@@ -21,6 +21,7 @@ window.model =
       addOrganismButtons: [
         {
           species: plantSpecies
+          imagePath: "images/agents/varied-plants/buttons/seedpack_6.png"
           traits: [
             new Trait {name: "size", default: 5}
             new Trait {name: "root size", default: 5}
@@ -28,6 +29,7 @@ window.model =
         }
         {
           species: plantSpecies
+          imagePath: "images/agents/varied-plants/buttons/seedpack_10.png"
           traits: [
             new Trait {name: "size", default: 1}
             new Trait {name: "root size", default: 5}
@@ -35,6 +37,7 @@ window.model =
         }
         {
           species: plantSpecies
+          imagePath: "images/agents/varied-plants/buttons/seedpack_2.png"
           traits: [
             new Trait {name: "size", default: 9}
             new Trait {name: "root size", default: 5}

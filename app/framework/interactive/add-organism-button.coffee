@@ -1,6 +1,6 @@
 module.exports = class AddOrganismButton
 
-  constructor: (@environment, @toolbar, {@species, @traits, @scatter, @limit}) ->
+  constructor: (@environment, @toolbar, {@species, @traits, @scatter, @limit, @imagePath}) ->
     if !@scatter
       @toolbar.registerModalButton this
 
@@ -10,10 +10,9 @@ module.exports = class AddOrganismButton
     @button.addEventListener 'click', => @action()
     if !@scatter then @button.classList.add 'modal'
 
-    for layer in @getButtonImages()
-      image = document.createElement 'img'
-      image.setAttribute 'src', layer.selectedImage.path
-      @button.appendChild image
+    image = document.createElement 'img'
+    image.setAttribute 'src', @imagePath
+    @button.appendChild image
 
     return @button
 
@@ -64,7 +63,3 @@ module.exports = class AddOrganismButton
         @disable()
 
     @environment.setState @environment.UI_STATE.ADD_AGENTS
-
-  getButtonImages: ->
-    dummy = @species.createAgent(@traits)
-    @species.getImages dummy, {context: 'buttonImage'}

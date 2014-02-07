@@ -20,6 +20,7 @@ window.model =
       addOrganismButtons: [
         {
           species: plantSpecies
+          imagePath: "images/agents/varied-plants/buttons/seedpack_10.png"
           traits: [
             new Trait {name: "size", default: 1}
           ]
