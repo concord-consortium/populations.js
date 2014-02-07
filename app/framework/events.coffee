@@ -26,7 +26,7 @@ module.exports = class Events
       newEvent.initCustomEvent(type,
         !!(eventInitDict && eventInitDict.bubbles),
         !!(eventInitDict && eventInitDict.cancelable),
-        (if eventInitDict then eventInitDict.details else null))
+        (if eventInitDict then eventInitDict.detail else null))
       return newEvent;
 
     window.CustomEvent = CustomEvent
