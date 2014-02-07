@@ -88,3 +88,12 @@ module.exports = class ToolButton
         return unless @_agent?
         @dropCarriedAgent()
         @_agent = null
+      touchstart: (evt) ->
+        evt.preventDefault()
+        @send 'mousedown', evt
+      touchmove: (evt) ->
+        evt.preventDefault()
+        @send 'mousemove', evt
+      touchend: (evt) ->
+        evt.preventDefault()
+        @send 'mouseup', evt
