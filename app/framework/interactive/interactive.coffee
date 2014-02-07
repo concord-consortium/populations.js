@@ -30,7 +30,6 @@ module.exports = class Interactive
       $(window).on 'shutterbug-saycheese', =>
         @repaint()
 
-
   getEnvironmentPane: ->
     @view = document.createElement 'div'
 
@@ -54,3 +53,8 @@ module.exports = class Interactive
     for view in InfoView.instances()
       view.repaint()
     @environment.getView().repaint()
+
+window.onerror = (msg, url, line)->
+  message = "<div>There was an error in the model!<br/><pre>" + msg + "</pre></div>"
+  message += "<div>source: " + url + ", line: " + line + "</div>"
+  helpers.showMessage message, document.body
