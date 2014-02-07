@@ -90,6 +90,8 @@ module.exports = class Environment extends StateMachine
     unless @agents.indexOf(agent) != -1
       @agents.push(agent)
       Events.dispatchEvent(Environment.EVENTS.AGENT_ADDED, {agent: agent})
+      return true
+    return false
 
   removeAgent: (agent)->
     loc = agent.getLocation()
@@ -149,7 +151,10 @@ module.exports = class Environment extends StateMachine
     @carriedAgent = agent
 
   dropCarriedAgent: ->
-    @addAgent @carriedAgent
+    unless @addAgent(@carriedAgent)
+      # drop the agent back on it's original location if addAgent returns false
+      @carriedAgent.setLocation @_agentOrigin
+      @addAgent(@carriedAgent)
     @carriedAgent = null
 
 
