@@ -43,8 +43,7 @@ module.exports = class Agent
     if @hasProp(prop) then val = @_props[prop]
     else val = @getEnvironmentProperty prop
 
-    # Throwing an exception is pretty harsh. Let's just make the missing property visible in the console
-    console.log("Cannot find property '" + prop + "'") unless val?
+    if !val? then throw "Cannot find property "+prop
     return val
 
   hasProp: (prop) ->
