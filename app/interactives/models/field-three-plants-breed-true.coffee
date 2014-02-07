@@ -58,7 +58,7 @@ window.model =
       if @env.get(0, 0, "season") is "winter"
         @showMessage "Winter has come and snow has fallen. <br/><br/>
                       All your plants have died. Boo hoo! <br/><br/>
-                      But if they've flowered and droped seeds maybe baby plants will grow.<br/>
+                      But if they've flowered and dropped seeds maybe baby plants will grow.<br/>
                       Click 'OK' and let's see what happens.", true
         shownWinterMessage = true
 
