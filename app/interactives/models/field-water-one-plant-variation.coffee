@@ -1,4 +1,4 @@
-require 'helpers'
+helpers     = require 'helpers'
 
 Environment = require 'models/environment'
 Species     = require 'models/species'
@@ -27,6 +27,7 @@ window.model =
             new Trait {name: "size", default: 5}
             new Trait {name: "root size", default: 1}
           ]
+          limit: 15
         }
       ]
       toolButtons: [
@@ -39,6 +40,18 @@ window.model =
 
     @env = env
     @plantSpecies = plantSpecies
+
+    startingMoney = 20
+    moneyLeft = 20
+    updateMoney = (val)->
+      moneyLeft = val
+      document.getElementById('money-value').innerHTML = "$"+val
+
+    Events.addEventListener Environment.EVENTS.RESET, ->
+      updateMoney(startingMoney)
+
+    Events.addEventListener Environment.EVENTS.AGENT_ADDED, (evt)->
+      updateMoney(moneyLeft-1)
 
 window.onload = ->
   model.run()
