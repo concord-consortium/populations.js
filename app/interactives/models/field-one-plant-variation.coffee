@@ -15,6 +15,7 @@ env          = require 'environments/sunlight-field'
 window.model = 
   run: ->
     plantSpecies.defs.CHANCE_OF_MUTATION = 0.3
+    plantSpecies.setMutatable 'root size', false
 
     @interactive = new Interactive
       environment: env

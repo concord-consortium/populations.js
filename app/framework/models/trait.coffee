@@ -21,7 +21,7 @@ require 'helpers'
 
 module.exports = class Trait
 
-  constructor: ({@name, @possibleValues, @min, @max, @default, @float}) ->
+  constructor: ({@name, @possibleValues, @min, @max, @default, @float, @mutatable}) ->
 
   getDefaultValue: ->
     if @default? then @default
@@ -37,6 +37,7 @@ module.exports = class Trait
         Math.floor ExtMath.randomValue @min, @max+1
 
   mutate: (val) ->
+    return val unless @mutatable
     if (@possibleValues and @possibleValues.length > 1)
       loop              # silly coffeescript do-while
         newVal = @getRandomValue()

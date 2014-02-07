@@ -16,8 +16,8 @@ require.register "species/varied-plants", (exports, require, module) ->
       CHANCE_OF_SEEDING: 0.6
       CHANCE_OF_MUTATION: 0.2
     traits: [
-      new Trait {name: "size", min: 1, max: 10}
-      new Trait {name: "root size",min: 1, max: 10}
+      new Trait {name: "size", min: 1, max: 10, mutatable: true}
+      new Trait {name: "root size",min: 1, max: 10, mutatable: true}
     ]
     imageRules: [
       {

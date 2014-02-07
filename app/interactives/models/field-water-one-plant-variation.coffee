@@ -15,6 +15,7 @@ env          = require 'environments/water-field'
 window.model =
   run: ->
     plantSpecies.defs.CHANCE_OF_MUTATION = 0.3
+    plantSpecies.setMutatable 'size', false
 
     @interactive = new Interactive
       environment: env

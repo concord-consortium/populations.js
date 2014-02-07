@@ -52,9 +52,15 @@ module.exports = class Species
   getTrait: (traitName) ->
     for trait in @traits
       return trait if trait.name is traitName
+    return null
 
   addTrait: (trait) ->
     @traits.push trait
+
+  setMutatable: (traitName, mutatable) ->
+    trait = @getTrait traitName
+    if trait?
+      trait.mutatable = mutatable
 
   _contextMatches: (context, validContexts)->
     return true unless context?  # assume no context info means all contexts valid

@@ -118,7 +118,7 @@ module.exports = class Agent
 
   _mutate: ->
     for trait in @species.traits
-      if Math.random() < @species.defs.CHANCE_OF_MUTATION
+      if trait.mutatable and Math.random() < @species.defs.CHANCE_OF_MUTATION
         currentVal = @get trait.name
         mutatedVal = trait.mutate currentVal
         @set trait.name, mutatedVal
