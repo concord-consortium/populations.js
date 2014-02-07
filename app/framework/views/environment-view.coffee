@@ -99,9 +99,14 @@ module.exports = class EnvironmentView
     @stage.removeChild(@winterImgSprite) unless !@winterImgSprite
 
   addMouseHandlers: ->
-    for eventName in ["click", "mousedown", "mouseup", "mousemove"]
+    for eventName in ["click", "mousedown", "mouseup", "mousemove", "touchstart", "touchmove", "touchend"]
       @view.addEventListener eventName,  (evt) =>
-        # use page+offset location, which remain correct after iframe zoom
-        evt.envX = evt.pageX - @view.offsetLeft
-        evt.envY = evt.pageY - @view.offsetTop
+        if evt instanceof TouchEvent
+          # touch events get their coordinates from a different place
+          evt.envX = evt.changedTouches[0].pageX - @view.offsetLeft
+          evt.envY = evt.changedTouches[0].pageY - @view.offsetTop
+        else
+          # use page+offset location, which remain correct after iframe zoom
+          evt.envX = evt.pageX - @view.offsetLeft
+          evt.envY = evt.pageY - @view.offsetTop
         @environment.send evt.type, evt
