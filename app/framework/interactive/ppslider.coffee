@@ -105,18 +105,23 @@ var PPSliderClass;
 
     var moving = function (e) {
       if(isMouseDown){
+        if (e.originalEvent && e.originalEvent instanceof TouchEvent) {
+          e.preventDefault();
+        }
         updatePosition(e);
         return false;
       }
     };
 
     var dropCallback = function (e) {
-      isMouseDown = false;
-      element.val(currentVal);
-      element.trigger("change");
-      // if(typeof element.options != 'undefined' && typeof element.options.onChanged == 'function'){
-      //   element.options.onChanged.call(this, null);
-      // }
+      if (isMouseDown) {
+        if (e.originalEvent && e.originalEvent instanceof TouchEvent) {
+          e.preventDefault();
+        }
+        isMouseDown = false;
+        element.val(currentVal);
+        element.trigger("change");
+      }
 
     };
 
@@ -126,10 +131,10 @@ var PPSliderClass;
     container.find('.pp-slider-button').bind('touchstart',startSlide);
 
     $(document).mousemove(function(e) { moving(e); });
-    $(document).on('touchmove', function(e) { e.preventDefault(); moving(e); });
+    $(document).on('touchmove', function(e) { moving(e); });
 
     $(document).mouseup(function(e){ dropCallback(e); });
-    $(document).on('touchend', function(e){ e.preventDefault(); dropCallback(e); });
+    $(document).on('touchend', function(e){ dropCallback(e); });
 
   };
 
