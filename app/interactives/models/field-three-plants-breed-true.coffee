@@ -23,18 +23,21 @@ window.model =
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 5}
+            new Trait {name: "root size", default: 5}
           ]
         }
         {
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 1}
+            new Trait {name: "root size", default: 5}
           ]
         }
         {
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 9}
+            new Trait {name: "root size", default: 5}
           ]
         }
       ]

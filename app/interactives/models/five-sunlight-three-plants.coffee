@@ -21,6 +21,7 @@ window.model =
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 1}
+            new Trait {name: "root size", default: 5}
           ]
           limit: 20
         }
@@ -28,6 +29,7 @@ window.model =
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 5}
+            new Trait {name: "root size", default: 5}
           ]
           limit: 20
         }
@@ -35,6 +37,7 @@ window.model =
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 9}
+            new Trait {name: "root size", default: 5}
           ]
           limit: 20
         }

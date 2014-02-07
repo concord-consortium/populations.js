@@ -24,6 +24,7 @@ window.model =
           species: plantSpecies
           traits: [
             new Trait {name: "size", default: 5}
+            new Trait {name: "root size", default: 5}
           ]
         }
       ]
