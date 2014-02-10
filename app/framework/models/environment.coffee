@@ -257,7 +257,10 @@ module.exports = class Environment extends StateMachine
       yearDate = @date % @yearLength
       for length, i in @_totalSeasonLengths
         if yearDate < length
-          @season = SEASONS[i]; break
+          if @season isnt SEASONS[i]
+            @season = SEASONS[i]
+            Events.dispatchEvent(Environment.EVENTS.SEASON_CHANGED, {season: @season})
+          break
 
       if yearDate == @_totalSeasonLengths[2] # first day of winter
         @_view.addWinterImage()
@@ -295,6 +298,7 @@ module.exports = class Environment extends StateMachine
     STEP:   "environment-step"
     RESET:  "environment-reset"
     AGENT_ADDED: "agent-added"
+    SEASON_CHANGED: "season-changed"
 
   ### UI States ###
 
