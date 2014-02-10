@@ -5,6 +5,7 @@ env = new Environment
   columns:  58
   rows:     49
   imgPath: "images/environments/sun3levels.png"
+  seasonLengths: [30, 30, 15, 10]
   barriers: [
       [0, 0, 95, 490]     # East
       [545, 0, 40, 490]   # West
