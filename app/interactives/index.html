@@ -44,14 +44,16 @@
 
       createModelDiv = function(model, container) {
         var el = document.createElement('div'),
+            title = document.createElement('div'),
             linkDiv = document.createElement('div');
-        el.innerHTML = models[model];
-        container.appendChild(el);
+        title.innerHTML = models[model];
         linkDiv.classList.add("link");
         linkDiv.innerHTML = "<a href="+model+">link</a>";
         el.appendChild(linkDiv);
+        el.appendChild(title);
         el.addEventListener('click', function(){loadModel(model, el)});
         modelDivs.push(el);
+        container.appendChild(el);
       }
 
       loadModel = function(model, el) {
@@ -98,15 +100,16 @@
         float: left;
       }
 
-      .model-collection div {
+      .model-collection > div,
+      .model-collection .link {
         padding: 7px;
         background-color: #F1F1F1;
         border: #FFF 1px solid;
         cursor: pointer;
       }
 
-      .model-collection div:hover,
-      .model-collection div.active {
+      .model-collection > div:hover,
+      .model-collection > div.active {
         background-color: #DDD;
       }
 
