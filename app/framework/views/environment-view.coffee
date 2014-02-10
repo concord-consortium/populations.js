@@ -44,7 +44,7 @@ module.exports = class EnvironmentView
       if @environment.carriedAgent
         @environment.carriedAgent.getView().rerender(@stage, 'carry-tool')
 
-      if @showingWinter
+      if @showingWinter and @winterImgSprite?
         @stage.swapChildren @winterImgSprite, @stage.children[@stage.children.length-1]
 
       @barrierGraphics.visible = @showingBarriers
