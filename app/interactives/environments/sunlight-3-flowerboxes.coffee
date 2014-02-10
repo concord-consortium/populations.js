@@ -7,7 +7,7 @@ env = new Environment
   imgPath: "images/environments/sun3levels.png"
   barriers: [
       [0, 0, 95, 490]     # East
-      [535, 0, 40, 490]   # West
+      [545, 0, 40, 490]   # West
       [0, 0, 580, 65]     # Top
       [0, 130, 580, 70]   # Rows
       [0, 260, 580, 70]
