@@ -53,11 +53,7 @@ module.exports = class Environment extends StateMachine
 
     @carriedAgent = null
 
-    # re-map seasonLenths into end-dates for efficient access later
-    @_totalSeasonLengths = [];
-    @_totalSeasonLengths[i] = length + (@_totalSeasonLengths[i-1] || 0) for length, i in @seasonLengths
-
-    @yearLength = @_totalSeasonLengths[3] || 0
+    @_remapSeasonLengths()
 
     @season = SEASONS[0]
     @date   = 0
@@ -139,6 +135,18 @@ module.exports = class Environment extends StateMachine
 
   addBarrier: (x, y, width, height) ->
     @barriers.push new Barrier x, y, width, height
+
+  setSeasonLength: (season, length)->
+    idx = -1
+    switch season
+      when "spring",0 then idx = 0
+      when "summer",1 then idx = 1
+      when "fall",2 then idx = 2
+      when "winter",3 then idx = 3
+      else throw "Invalid season '" + season + "'"
+
+    @seasonLengths[idx] = length
+    @_remapSeasonLengths()
 
   isInBarrier: (x, y) ->
     for barrier in @barriers
@@ -245,7 +253,7 @@ module.exports = class Environment extends StateMachine
 
   _incrementDate: ->
     @date++
-    if @_totalSeasonLengths.length == 4
+    if @usingSeasons and @_totalSeasonLengths.length == 4
       yearDate = @date % @yearLength
       for length, i in @_totalSeasonLengths
         if yearDate < length
@@ -271,6 +279,16 @@ module.exports = class Environment extends StateMachine
     else if p >= max
       p = max - (p - max) - 1
     return p
+
+  _remapSeasonLengths: ->
+    # re-map seasonLenths into end-dates for efficient access later
+    @_totalSeasonLengths = [];
+    @_totalSeasonLengths[i] = length + (@_totalSeasonLengths[i-1] || 0) for length, i in @seasonLengths
+
+    @usingSeasons = @_totalSeasonLengths.length > 0
+
+    @yearLength = @_totalSeasonLengths[3] || 0
+
 
   ### Events ###
   @EVENTS:
