@@ -97,6 +97,8 @@ window.model =
                 "It won't make a flower and it won't drop any seeds.")
                 shownWiltedMessage = true
               waitingForMessage3 = true
+            else if season is "winter" and waitingForMessage3
+              firstAgent.set('is immortal', false)
           else if season is "fall" and firstAgent.get('has flowers')
             readyToMakeSeeds = true
         else if firstAgent.get("gen") is 2 and !firstAgent.get("complete")            # second generation
