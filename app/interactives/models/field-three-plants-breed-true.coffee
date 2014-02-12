@@ -44,6 +44,11 @@ window.model =
           ]
         }
       ]
+      toolButtons: [
+        {
+          type: ToolButton.INFO_TOOL
+        }
+      ]
 
     document.getElementById('environment').appendChild @interactive.getEnvironmentPane()
 
