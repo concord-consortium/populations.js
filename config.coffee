@@ -1,5 +1,7 @@
 exports.config =
   # See http://brunch.io/#documentation for docs.
+  paths:
+    watched: ['app','interactives','vendor']
   files:
     javascripts:
       joinTo:
@@ -15,10 +17,10 @@ exports.config =
       path.replace(/^app\/framework\//, '')
 
   conventions:
-    assets: /(interactives|assets)(\/|\\)/
+    assets: /assets(\/|\\)/
 
   plugins:
     afterBrunch: [
       'find public/ -type f -name "*.coffee" -delete'
-      'coffee --compile --output public app/interactives/'
+      'coffee --compile --output public interactives/'
     ]
