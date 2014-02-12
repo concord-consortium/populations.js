@@ -5,7 +5,7 @@ exports.config =
   files:
     javascripts:
       joinTo:
-        'js/app.js': /^app(\/|\\)framework/
+        'js/app.js': /^app/
         'js/vendor.js': /^(bower_components)/
 
     stylesheets:
@@ -14,7 +14,7 @@ exports.config =
 
   modules:
     nameCleaner: (path) ->
-      path.replace(/^app\/framework\//, '')
+      path.replace(/^app\//, '')
 
   conventions:
     assets: /assets(\/|\\)/
