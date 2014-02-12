@@ -1,9 +1,10 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Populations.js Models</title>
-    <script src="DIGEST(js/vendor.js)"></script>
-    <script>
+doctype html
+html
+  head
+    include includes/shared-css
+    title Populations.js Models
+    script(src="js/vendor.js")
+    script.
       var models = {
         "five-sunlight-one-plant.html":           "1.1 Flowerpots with one plant (sunlight)",
         "five-sunlight-three-plants.html":        "1.2 Flowerpots with three plants (sunlight)",
@@ -48,7 +49,7 @@
             linkDiv = document.createElement('div');
         title.innerHTML = models[model];
         linkDiv.classList.add("link");
-        linkDiv.innerHTML = "<a href="+model+">link</a>";
+        linkDiv.innerHTML = "<a href="+model+">link";
         el.appendChild(linkDiv);
         el.appendChild(title);
         el.addEventListener('click', function(){loadModel(model, el)});
@@ -64,8 +65,8 @@
         el.classList.add("active");
         iframe.setAttribute("src", model);
       }
-    </script>
-    <style type="text/css">
+
+    style(type="text/css").
       body {
         background-color: #DAEDD5;
         font-family: 'Lato', georgia, times, "times new roman", serif;
@@ -164,32 +165,24 @@
         clear: both;
         float: right;
       }
-    </style>
-  </head>
-  <body>
-    <div id="header">
-      <h1>Evolution Readiness Models</h1>
-      <h2>&mdash; populations.js</h2>
-    </div>
 
-    <div id="credits">
-      <p>GitHub repository: <a href="https://github.com/concord-consortium/populations.js">github.com/concord-consortium/populations.js</a></p>
-    </div>
+  body
+    #header
+      h1 Evolution Readiness Models
+      h2 &mdash; populations.js
 
-    <div class="left-column">
-      <h2>ITSI Models</h2>
-      <div class="model-collection">
-      </div>
-    </div>
+    #credits
+      p GitHub repository:
+        a(href="https://github.com/concord-consortium/populations.js") github.com/concord-consortium/populations.js
 
-    <div class="model">
-      <h1 id="model-title"></h1>
-      <iframe id="model-iframe"></iframe>
-    </div>
+    .left-column
+      h2 ITSI Models
+      .model-collection
 
-    <div id="zoom-check">
-      <input type="checkbox" name="checkbox" id="zoom">
-      <label for="zoom">Zoom out</label>
-    </div>
-  </body>
-</html>
+    .model
+      h1#model-title
+      iframe#model-iframe
+
+    #zoom-check
+      input(type="checkbox", name="checkbox", id="zoom")
+      label(for="zoom") Zoom out

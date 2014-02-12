@@ -24,3 +24,7 @@ exports.config =
       'find public/ -type f -name "*.coffee" -delete'
       'coffee --compile --output public interactives/'
     ]
+    jaded:
+      jade:
+        pretty: true
+      staticPatterns: /^(app|interactives)(\/|\\)(.+)\.jade$/
