@@ -57,6 +57,10 @@ module.exports = class Agent
     return null unless @environment?
     @environment.getAt @_x, @_y, prop
 
+  setEnvironmentProperty: (prop, val) ->
+    return unless @environment?
+    @environment.setAt @_x, @_y, prop, val
+
   getImages: (opts = {})->
     @species.getImages this, opts
 
