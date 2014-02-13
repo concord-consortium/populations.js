@@ -17,6 +17,13 @@ defaultOptions =
   wrapNorthSouth  : false
   seasonLengths   : []      # optionally the lengths of [spring, summer, fall, winter]
 
+cellDefaults =
+  'food'               : 100
+  'food animals'       : 100
+  'food full'          : 100
+  'food low'           :  30
+  'food regrowth rate' :   3
+
 #Other options also accessible by @get
 # season          :   # set by seasonsLength
 # yearLength      :   # set by seasonsLength
@@ -42,6 +49,7 @@ module.exports = class Environment extends StateMachine
 
     @cells = []
     @cells[col] = [] for col in [0..@columns]
+    @_setCellDefaults()
 
     barriers = @barriers.slice()
     @barriers = []
@@ -215,7 +223,9 @@ module.exports = class Environment extends StateMachine
       for a in @agents
         r.execute(a)
     for a in @agents
+      a._consumeResources() if a._consumeResources?
       a.step()
+    @_replenishResources()
     i = 0
     while i < @agents.length
       a = @agents[i]
@@ -272,7 +282,19 @@ module.exports = class Environment extends StateMachine
       else if yearDate == @_totalSeasonLengths[3]-1 # last day of winter
         @_view.removeWinterImage()
 
+  _replenishResources: ->
+    for x in [0..@columns]
+      for y in [0..@rows]
+        cell = @cells[x][y]
+        growthRate = cell['food regrowth rate']
+        max = cell['food full']
+        food = cell['food']
+        if food < max
+          cell['food'] = Math.min(max, food+growthRate)
 
+        food = cell['food animals']
+        if food < max
+          cell['food animals'] = Math.min(max, food+growthRate)
 
   _wrapSingleDimension: (p, max) ->
     if p < 0
@@ -297,6 +319,10 @@ module.exports = class Environment extends StateMachine
 
     @yearLength = @_totalSeasonLengths[3] || 0
 
+  _setCellDefaults: ->
+    for x in [0..@columns]
+      for y in [0..@rows]
+        @cells[x][y] = helpers.clone cellDefaults
 
   ### Events ###
   @EVENTS:

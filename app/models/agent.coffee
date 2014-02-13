@@ -147,6 +147,8 @@ module.exports = class Agent
   _incrementAge: ->
     @set('age', @get('age')+1)
 
+  _consumeResources: ->
+
   _checkSurvival: ->
     chance = if @hasProp('chance of survival') then @get('chance of survival') else @_getSurvivalChances()
     @die() if Math.random() > chance
