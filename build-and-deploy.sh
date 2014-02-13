@@ -14,7 +14,7 @@ cd $(git rev-parse --show-toplevel)
 
 echo "Building application... "
 rm -rf public
-node_modules/.bin/brunch build
+node_modules/.bin/brunch build --production
 
 
 echo "Committing contents of public folder"

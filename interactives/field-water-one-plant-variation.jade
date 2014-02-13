@@ -1,3 +1,4 @@
+include includes/_helpers
 doctype html
 html
   head
@@ -6,9 +7,9 @@ html
     include includes/shared-js
 
     // model files here
-    script(src="species/varied-plants.js")
-    script(src="environments/water-field.js")
-    script(src="models/field-water-one-plant-variation.js")
+    +script(src="species/varied-plants.js")
+    +script(src="environments/water-field.js")
+    +script(src="models/field-water-one-plant-variation.js")
     style(type="text/css").
       #money {
         border: 3px solid black;

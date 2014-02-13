@@ -1,3 +1,4 @@
+include includes/_helpers
 doctype html
 html
   head
@@ -6,9 +7,9 @@ html
     include includes/shared-js
 
     // model files here
-    script(src="species/varied-plants.js")
-    script(src="environments/sunlight-flowerboxes.js")
-    script(src="models/five-sunlight-three-plants-graph.js")
+    +script(src="species/varied-plants.js")
+    +script(src="environments/sunlight-flowerboxes.js")
+    +script(src="models/five-sunlight-three-plants-graph.js")
 
   body
     #environment

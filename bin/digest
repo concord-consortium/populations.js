@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+var path = require('path');
+var fs = require('fs');
+
+try {
+  var localCli = path.join(path.resolve('.'), 'node_modules', 'digest-brunch', 'lib', 'index');
+  var Digest = require(localCli);
+  var d = new Digest({paths: {public: "public"}, env: ['production']});
+  d.onCompile();
+} catch (e) {
+  console.error(e);
+}

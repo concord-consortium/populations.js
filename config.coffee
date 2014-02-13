@@ -28,3 +28,11 @@ exports.config =
       jade:
         pretty: true
       staticPatterns: /^(app|interactives)(\/|\\)(.+)\.jade$/
+
+  overrides:
+    production:
+      plugins:
+        afterBrunch: [
+          'find public/ -type f -name "*.coffee" -delete'
+          'coffee --compile --output public interactives/ && ./bin/digest'
+        ]

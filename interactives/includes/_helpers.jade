@@ -1,0 +1,7 @@
+mixin script
+  - attributes.src = 'DIGEST(' + attributes.src + ')'
+  script(src=attributes.src)
+
+mixin stylesheet
+  - attributes.href = 'DIGEST(' + attributes.href + ')'
+  link(rel="stylesheet", href=attributes.href)
