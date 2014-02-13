@@ -34,6 +34,9 @@ window.ExtMath = {}
 ExtMath.randomInt = (max) ->
   Math.floor Math.random() * max
 
+ExtMath.randomFloat = (max=1) ->
+  Math.random() * max
+
 ExtMath.randomValue = (min, max) ->
   min + Math.random() * (max - min)
 
