@@ -73,6 +73,32 @@ describe 'A species', ->
     plant.set('leaves', 1)
     expect(plant.getImages()[0].selectedImage.path).toBe "one-leaf.png"
 
+  it 'can define images which are always used and do no specify a test', ->
+    plantSpecies = new Species
+      agentClass: Agent
+      traits: [
+        new Trait {name: "leaves", min: 0, max: 1}
+      ]
+      imageRules: [
+        {
+          name: 'layer1'
+          rules: [
+            {
+              image:
+                path: "one-leaf.png"
+            }
+          ]
+        }
+      ]
+
+    plant = plantSpecies.createAgent()
+
+    plant.set('leaves', 0)
+    expect(plant.getImages()[0].selectedImage.path).toBe "one-leaf.png"
+
+    plant.set('leaves', 1)
+    expect(plant.getImages()[0].selectedImage.path).toBe "one-leaf.png"
+
   it 'can define layered images', ->
     plantSpecies = new Species
       agentClass: Agent

@@ -42,7 +42,7 @@ module.exports = class Species
 
       layer.selectedImage = null
       for imageRule in layer.rules
-        if imageRule.useIf.call @, agent
+        if not imageRule.useIf? or imageRule.useIf.call @, agent
           layer.selectedImage = imageRule.image
           break
       images.push layer if layer.selectedImage?
