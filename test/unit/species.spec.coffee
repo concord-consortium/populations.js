@@ -102,12 +102,12 @@ describe 'A species', ->
             {
               image:
                 path: "no-flowers.png"
-              useIf: (agent) -> agent.get('leaves') == 0
+              useIf: (agent) -> agent.get('flowers') == 0
             }
             {
               image:
                 path: "some-flowers.png"
-              useIf: (agent) -> agent.get('leaves') == 1
+              useIf: (agent) -> agent.get('flowers') == 1
             }
           ]
         }
@@ -120,10 +120,15 @@ describe 'A species', ->
     expect(plant.getImages()[0].selectedImage.path).toBe "no-leaves.png"
     expect(plant.getImages()[1].selectedImage.path).toBe "no-flowers.png"
 
-    plant.set('leaves', 1)
+    plant.set('leaves', 0)
     plant.set('flowers', 1)
-    expect(plant.getImages()[0].selectedImage.path).toBe "one-leaf.png"
+    expect(plant.getImages()[0].selectedImage.path).toBe "no-leaves.png"
     expect(plant.getImages()[1].selectedImage.path).toBe "some-flowers.png"
+
+    plant.set('leaves', 1)
+    plant.set('flowers', 0)
+    expect(plant.getImages()[0].selectedImage.path).toBe "one-leaf.png"
+    expect(plant.getImages()[1].selectedImage.path).toBe "no-flowers.png"
 
   it 'will not include an image for a layer if none of the images match', ->
     plantSpecies = new Species
