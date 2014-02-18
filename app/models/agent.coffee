@@ -16,8 +16,9 @@ module.exports = class Agent
   label: "organism"
   bred: false
 
-  constructor: ({@name, @environment, @species, x, y}) ->
+  constructor: ({@name, @environment, @species, x, y, additionalDefaults}) ->
     @_props = helpers.clone defaultProperties
+    @_props = helpers.setDefaults(@_props, additionalDefaults) if additionalDefaults?
     @_view = new AgentView({agent: @})
     if x? && y?
       @setLocation({x,y})

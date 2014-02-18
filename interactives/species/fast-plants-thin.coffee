@@ -5,6 +5,7 @@ require.register "species/fast-plants-thin", (exports, require, module) ->
   Trait   = require 'models/trait'
 
   module.exports = new Species
+    speciesName: "fast plants"
     agentClass: FastPlant
     defs:
       CHANCE_OF_MUTATION: 0

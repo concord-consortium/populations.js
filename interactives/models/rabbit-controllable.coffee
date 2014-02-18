@@ -9,9 +9,9 @@ Interactive = require 'interactive/interactive'
 Events      = require 'events'
 ToolButton  = require 'interactive/tool-button'
 
-plantSpecies = require 'species/fast-plants-thin'
-# rabbitSpecies = requre 'species/white-rabbit'
-env          = require 'environments/grass-field'
+plantSpecies  = require 'species/fast-plants-thin'
+rabbitSpecies = require 'species/white-rabbits'
+env           = require 'environments/grass-field'
 
 window.model =
   setupEnvironment: ->
@@ -21,8 +21,14 @@ window.model =
       plant.set("max offspring distance", 200)
       plant.set("min offspring", 1)
       plant.set("max offspring", 2)
-      plant.setLocation(@env.randomLocation())
-      @env.addAgent(plant)
+      plant.setLocation @env.randomLocation()
+      @env.addAgent plant
+
+    rabbit = rabbitSpecies.createAgent()
+    rabbit.setLocation({x: 225, y: 225})
+    rabbit.set('is selected', true)
+    rabbit.set('is immortal', true)
+    @env.addAgent rabbit
 
   run: ->
     @interactive = new Interactive
@@ -35,7 +41,7 @@ window.model =
 
     @env = env
     @plantSpecies = plantSpecies
-    # @rabbitSpecies = rabbitSpecies
+    @rabbitSpecies = rabbitSpecies
 
     @setupEnvironment()
 

@@ -1,4 +1,6 @@
 Agent = require 'models/agent'
+Events = require 'events'
+Environment = require 'models/environment'
 helpers = require 'helpers'
 
 defaultProperties =
@@ -6,8 +8,8 @@ defaultProperties =
   'speed': 1
   'default speed': 10
   'sex': 'female'
-  'prey': ""
-  'predator': ""
+  'prey': []
+  'predator': []
   'chance of being seen': 1.0
   'max energy': 100
   'energy': 100
@@ -20,7 +22,8 @@ defaultProperties =
   'hunger bonus': 0
   'mating desire bonus': 0
   'fear bonus': 0
-  'wander threshold': 10
+  'wandering threshold': 10
+  'bubble showing': 'none'
 
 ###
   The base class of a simple animal
@@ -36,8 +39,12 @@ module.exports = class BasicAnimal extends Agent
     WANDERING: 'wandering'
 
   constructor: (args) ->
+    if args.additionalDefaults?
+      defaults = helpers.setDefaults(defaultProperties, args.additionalDefaults)
+    else
+      defaults = helpers.clone defaultProperties
+    args.additionalDefaults = defaults
     super(args)
-    @_props = helpers.setDefaults(@_props, defaultProperties)
 
   getSize: ->
     age = @get('age')
@@ -58,16 +65,17 @@ module.exports = class BasicAnimal extends Agent
     @_closestAgents = null
     @_setSpeedAppropriateForAge()
     @_depleteEnergy()
-    @_determineBehavior()
+    @set 'current behavior', @_determineBehavior()
 
     switch @get('current behavior')
-      when @BEHAVIOR.EATING
+      when BasicAnimal.BEHAVIOR.EATING
         @eat()
-      when @BEHAVIOR.FLEEING
+      when BasicAnimal.BEHAVIOR.FLEEING
         @flee()
-      when @BEHAVIOR.MATING
+      when BasicAnimal.BEHAVIOR.MATING
         @mate()
-      when @BEHAVIOR.WANDERING
+      when BasicAnimal.BEHAVIOR.WANDERING
+        console.log('wandering')
         @wander()
       else
         # NOOP
@@ -80,18 +88,28 @@ module.exports = class BasicAnimal extends Agent
     if nearest?
       eatingDist = @get('eating distance')
       if nearest.distanceSq < Math.pow(eatingDist, 2)
+        console.log('eating')
         @_eatPrey(nearest.agent)
       else
+        console.log('chasing', @getLocation(), nearest.agent.getLocation())
         @chase(nearest)
     else
-      @_wanderAtSpeed(@get('speed') * 0.75)
+      console.log('eating wandering')
+      @wander(@get('speed') * 0.75)
 
   flee: ->
     # TODO
   mate: ->
     # TODO
-  wander: ->
-    # TODO
+
+  wander: (speed)->
+    unless speed?
+      maxSpeed = @get('speed')
+      speed = (maxSpeed/2) + ExtMath.randomGaussian() * (maxSpeed/6)
+    @set 'speed', speed
+    @set 'direction', (@get('direction') + ExtMath.randomGaussian()/2)
+    @move()
+
   chase: (agentDistance)->
     @set('direction', @_direction(@getLocation(), agentDistance.agent.getLocation()))
     @set('speed', Math.min(@get('speed'), Math.sqrt(agentDistance.distanceSq)))
@@ -100,25 +118,26 @@ module.exports = class BasicAnimal extends Agent
   move: ->
     dir = @get 'direction'
     speed = @get 'speed'
+    throw 'invalid speed' unless typeof(speed) is 'number'
+    throw 'invalid direction' unless typeof(dir) is 'number'
     loc = @getLocation()
-    dx = speed * Math.sin(dir)
-    dy = speed * Math.cos(dir) * -1
+    dx = speed * Math.cos(dir)
+    dy = speed * Math.sin(dir)
 
     newLoc = {x: loc.x + dx, y: loc.y + dy}
+    console.log("moving dir: " + dir + ", at speed: " + speed + ", next: ", newLoc)
     if @environment.crossesBarrier(loc, newLoc)
+      console.log 'hit barrier!'
       # stay where you are and turn around, for now
       @set 'direction', dir + Math.PI
     else
       @setLocation newLoc
 
   _direction: (from, to)->
-    dx = from.x - to.x
-    dy = from.y - to.y
+    dx = to.x - from.x
+    dy = to.y - from.y
 
     return Math.atan2(dy, dx)
-
-  _wanderAtSpeed: (speed)->
-    # TODO
 
   _eatPrey: (agent)->
     food = agent.get('food')
@@ -140,8 +159,8 @@ module.exports = class BasicAnimal extends Agent
   _depleteEnergy: ->
     currEnergy = @get 'energy'
     rate = @get 'metabolism'
-    behavior = @get 'behavior'
-    if behavior is @BEHAVIOR.HIDING
+    behavior = @get 'current behavior'
+    if behavior is BasicAnimal.BEHAVIOR.HIDING
       rate = rate/2
     @set 'energy', Math.max(0, currEnergy - rate)
 
@@ -174,30 +193,30 @@ module.exports = class BasicAnimal extends Agent
     desire = @_desireToMate()
     wanderThreshold = @get('wandering threshold')
     if hunger < wanderThreshold and fear < wanderThreshold and desire < wanderThreshold
-      return @BEHAVIOR.WANDERING
+      return BasicAnimal.BEHAVIOR.WANDERING
 
     max = Math.max(Math.max(hunger, fear), desire)
     # in case of ties, order is FLEE, EAT, MATE
     if max == fear
-      return @BEHAVIOR.FLEEING
+      return BasicAnimal.BEHAVIOR.FLEEING
     else if max == hunger
-      return @BEHAVIOR.EATING
+      return BasicAnimal.BEHAVIOR.EATING
     else
-      return @BEHAVIOR.MATING
+      return BasicAnimal.BEHAVIOR.MATING
 
   _nearestPredator: ->
     predator = @get('predator')
-    unless predator instanceof String
+    if predator? and predator.length? and predator.length > 0
       # TODO Add in trait filter
-      nearest = @_nearestAgentsMatching {type: predator, quantity: 1}
+      nearest = @_nearestAgentsMatching {types: predator, quantity: 1}
       return nearest[0] || null
     return null
 
   _nearestPrey: ->
     prey = @get('prey')
-    unless prey instanceof String
+    if prey? and prey.length? and prey.length > 0
       # TODO Add in trait filter
-      nearest = @_nearestAgentsMatching {type: prey}
+      nearest = @_nearestAgentsMatching {types: prey}
       return nearest[ExtMath.randomInt(nearest.length)]
 
     return null
@@ -224,17 +243,18 @@ module.exports = class BasicAnimal extends Agent
       quantity: 3
       crossBarriers: false
 
-    throw "Must pass an agent type" unless opts.type?
+    throw "Must pass agent types array" unless opts.types? or typeof(opts.types) isnt 'object' or not opts.types.length?
 
     nearest = @_nearestAgents()
     returnedAgents = []
     for agentDistance in nearest
       agent = agentDistance.agent
-      continue unless agent instanceof opts.type
+      continue if opts.types.indexOf(agent.species.speciesName) is -1
+
       continue if agent is @
       continue if opts.camo and agent instanceof BasicAnimal and ExtMath.randomFloat() > agent.get('chance seen')
-      continue if agent.get('current behavior') is BEHAVIOR.HIDING
-      continue if !opts.crossBarriers and @environment.crossBarriers(@getLocation(), agent.getLocation())
+      continue if agent.hasProp('current behavior') and agent.get('current behavior') is BasicAnimal.BEHAVIOR.HIDING
+      continue if !opts.crossBarriers and @environment.crossesBarrier(@getLocation(), agent.getLocation())
       continue if opts.trait? # TODO
       returnedAgents.push agentDistance
       break if returnedAgents.length >= opts.quantity

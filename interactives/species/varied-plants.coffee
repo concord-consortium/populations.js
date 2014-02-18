@@ -5,6 +5,7 @@ require.register "species/varied-plants", (exports, require, module) ->
   Trait   = require 'models/trait'
 
   module.exports = new Species
+    speciesName: "varied plants"
     agentClass: BasicPlant
     defs:
       MAX_AGE: 10000

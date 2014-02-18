@@ -109,6 +109,16 @@ module.exports = class Environment extends StateMachine
 
     agent.getView().remove(@getView().stage) if @agents.removeObj(agent)
 
+  agentsWithin: ({x,y,width,height})->
+    throw "Invalid rectangle definition!" unless x? and y? and width? and height?
+    area = new Barrier(x,y,width,height)
+    found = []
+    for agent in @agents
+      loc = agent.getLocation()
+      found.push agent if area.contains(loc.x, loc.y)
+
+    return found
+
   ensureValidLocation: ({x,y}) ->
     x = if @wrapEastWest   then @_wrapSingleDimension(x,  @width) else @_bounceSingleDimension(x,  @width)
     y = if @wrapNorthSouth then @_wrapSingleDimension(y, @height) else @_bounceSingleDimension(y, @height)
