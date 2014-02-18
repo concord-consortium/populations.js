@@ -354,5 +354,5 @@ describe 'Agent', ->
         ySq = (loc.y - 50) * (loc.y - 50)
         dist = Math.round Math.sqrt xSq + ySq
 
-        expect(dist).toBeGreaterThan minDist-1
-        expect(dist).toBeLessThan    maxDist+1
+        expect(dist).toBeGreaterThan minDist-1.5
+        expect(dist).toBeLessThan    maxDist+1.5
