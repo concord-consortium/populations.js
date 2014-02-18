@@ -340,8 +340,8 @@ describe 'Agent', ->
       expect(offspring.get('leaves')).toEqual 3
 
     it 'and add its offspring to the environment near itself', ->
-      env = new Environment {columns: 5, rows: 5}
-      plant.setLocation x: 25, y: 25
+      env = new Environment {columns: 10, rows: 10}
+      plant.setLocation x: 50, y: 50
       env.addAgent plant
 
       minDist = plant.get 'min offspring distance'
@@ -350,8 +350,8 @@ describe 'Agent', ->
       for i in [0...10]
         offspring = plant.createOffspring()
         loc = offspring.getLocation()
-        xSq = (loc.x - 25) * (loc.x - 25)
-        ySq = (loc.y - 25) * (loc.y - 25)
+        xSq = (loc.x - 50) * (loc.x - 50)
+        ySq = (loc.y - 50) * (loc.y - 50)
         dist = Math.round Math.sqrt xSq + ySq
 
         expect(dist).toBeGreaterThan minDist-1
