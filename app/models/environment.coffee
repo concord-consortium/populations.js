@@ -149,6 +149,25 @@ module.exports = class Environment extends StateMachine
   addBarrier: (x, y, width, height) ->
     @barriers.push new Barrier x, y, width, height
 
+  crossesBarrier: (start, finish)->
+    dx = finish.x - start.x
+    dy = finish.y - start.y
+    if dx isnt 0
+      m = dy/dx
+      line = (x,y)->
+        return m * (x - start.x) + start.y - y
+    else
+      line = (x,y)->
+        return x - start.x
+    for barrier in @barriers
+      return true if barrier.contains(finish.x, finish.y)
+      return false if (start.x > barrier.x2 and finish.x > barrier.x2) or # entirely to the right
+                      (start.x < barrier.x1 and finish.x < barrier.x1)    # entirely to the left
+                      (start.y > barrier.y2 and finish.y > barrier.y2)    # entirely below
+                      (start.y < barrier.y1 and finish.y < barrier.y1)    # entirely above
+      return true if barrier.intersectsLine(line)
+    return false
+
   setSeasonLength: (season, length)->
     idx = -1
     switch season
@@ -341,11 +360,31 @@ class Barrier
   constructor: (@x1, @y1, width, height) ->
     @x2 = @x1 + width
     @y2 = @y1 + height
+    @corners = []
+    @corners.push {x: @x1, y: @y1}
+    @corners.push {x: @x1, y: @y2}
+    @corners.push {x: @x2, y: @y1}
+    @corners.push {x: @x2, y: @y2}
 
   contains: (x, y) ->
     @x2 >= x >= @x1 and @y2 >= y >= @y1
 
-
+  # check if we intersect. see: http://stackoverflow.com/questions/3590308/testing-if-a-line-has-a-point-within-a-triangle
+  # tl;dr - by plugging in the corner points of the rectangle into the equation that describes the line from start to finish,
+  # we can determine if all of the points lie on the same side of the line. If so, the path doesn't cross the barrier.
+  # lineFunc should accept two params, x and y and return a number where negative indicates one side of the line,
+  # positive indicates the other, with 0 indicating the point lies on the line. function(x,y) {...}
+  intersectsLine: (lineFunc)->
+    previousSign = null
+    for corner in @corners
+      number = lineFunc(corner.x, corner.y)
+      return true if number is 0
+      sign = if number < 0 then -1 else 1
+      if not previousSign?
+        previousSign = sign
+      else if sign isnt previousSign
+        return true
+    return false
 
 ###
       *** User Interaction States ***
