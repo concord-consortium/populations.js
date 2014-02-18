@@ -40,6 +40,17 @@ ExtMath.randomFloat = (max=1) ->
 ExtMath.randomValue = (min, max) ->
   min + Math.random() * (max - min)
 
+ExtMath.randomGaussian = (opts={}) ->
+  opts.mean = 0 unless opts.mean?
+  opts.deviation = 1 unless opts.deviation?
+
+  # a 12th order Irwin-Hall distribution, which is a close approximation of a
+  # standard normal distribution and is faster than other typical methods.
+  v = 0
+  for i in [1..12]
+    v += (Math.random() - 0.5)
+  return v * opts.deviation + opts.mean
+
 ExtMath.flip = ->
   ExtMath.randomInt(2)
 

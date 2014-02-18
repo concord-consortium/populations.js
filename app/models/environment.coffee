@@ -351,6 +351,7 @@ module.exports = class Environment extends StateMachine
     STEP:   "environment-step"
     RESET:  "environment-reset"
     AGENT_ADDED: "agent-added"
+    AGENT_EATEN: "agent-eaten"
     SEASON_CHANGED: "season-changed"
 
   ### UI States ###
