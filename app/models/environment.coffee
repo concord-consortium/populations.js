@@ -115,6 +115,9 @@ module.exports = class Environment extends StateMachine
 
     return {x,y}
 
+  randomLocation: ->
+    return {x: ExtMath.randomInt(@width), y: ExtMath.randomInt(@height)}
+
   set: (col, row, prop, val) ->
     if not @cells[col][row]
       @cells[col][row] = {}
