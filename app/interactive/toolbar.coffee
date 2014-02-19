@@ -1,5 +1,7 @@
 AddOrganismButton = require "interactive/add-organism-button"
 ToolButton  = require 'interactive/tool-button'
+Events = require 'events'
+Environment = require 'models/environment'
 
 module.exports = class Toolbar
 
@@ -7,6 +9,7 @@ module.exports = class Toolbar
     env = @interactive.environment
 
     @modalButtons = []
+    @toggleButtons = []
     @organismButtons = []
 
     @view = document.createElement 'div'
@@ -18,6 +21,13 @@ module.exports = class Toolbar
           env.start()),
         "pause", (->
           env.stop())
+      # make sure we keep the button state in sync with the environment state
+      Events.addEventListener Environment.EVENTS.PLAY, =>
+        @toggleButtons['play'].style.display="none"
+        @toggleButtons['pause'].style.display=""
+      Events.addEventListener Environment.EVENTS.STOP, =>
+        @toggleButtons['play'].style.display=""
+        @toggleButtons['pause'].style.display="none"
     for opts in @interactive.addOrganismButtons
       button = new AddOrganismButton env, this, opts
       @view.appendChild button.render()
@@ -41,6 +51,7 @@ module.exports = class Toolbar
     button.appendChild innerButton
 
     button.addEventListener 'click', action
+    @toggleButtons[type] = button
     @view.appendChild button
 
   addToggleButton: (type1, action1, type2, action2) ->
