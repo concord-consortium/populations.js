@@ -58,7 +58,10 @@ module.exports = class AgentView
     @_container.position.y = @agent._y
 
   remove: (stage)->
-    stage?.removeChild(@_container)
+    try
+      stage?.removeChild(@_container) if @_rendered
+    catch e
+      console.error("Tried to remove an agent from a stage it wasn't rendered within.")
     @_rendered = false
 
   contains: (x,y)->
