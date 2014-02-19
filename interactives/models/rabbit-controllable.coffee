@@ -95,7 +95,7 @@ window.model =
 
     move = =>
       if @env._isRunning
-        @rabbit.set 'speed', 10
+        @rabbit.set 'speed', 20
         @rabbit.move()
         @rabbit.set 'speed', 0
 
@@ -135,7 +135,7 @@ window.model =
         @showMessage 'The bunny died because it was not able to find enough food to live. Click Reset and try again!'
         return
 
-      hunger = 100 - @rabbit.get('energy')
+      hunger = Math.round(100 - @rabbit.get('energy'))
       slider.innerHTML = "" + hunger
 
       if hunger > 99
