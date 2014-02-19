@@ -65,7 +65,8 @@ module.exports = class BasicAnimal extends Agent
     @_closestAgents = null
     @_setSpeedAppropriateForAge()
     @_depleteEnergy()
-    @set 'current behavior', @_determineBehavior()
+    if @get 'calculate drives'
+      @set 'current behavior', @_determineBehavior()
 
     switch @get('current behavior')
       when BasicAnimal.BEHAVIOR.EATING
