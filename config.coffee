@@ -22,7 +22,7 @@ exports.config =
   plugins:
     afterBrunch: [
       'find public/ -type f -name "*.coffee" -delete'
-      'coffee --compile --output public interactives/'
+      'echo "Building interactives..." && coffee --compile --output public interactives/'
     ]
     jaded:
       jade:
@@ -34,5 +34,5 @@ exports.config =
       plugins:
         afterBrunch: [
           'find public/ -type f -name "*.coffee" -delete'
-          'coffee --compile --output public interactives/ && ./bin/digest'
+          'echo "Building interactives and digesting..." && coffee --compile --output public interactives/ && ./bin/digest'
         ]

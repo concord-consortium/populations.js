@@ -5,7 +5,11 @@
   "dependencies": {
      "pixi.js": ">=1.4.1",
      "classList": "https://raw2.github.com/eligrey/classList.js/master/classList.js",
-     "shutterbug": "git://github.com/concord-consortium/shutterbug.git"
+     "shutterbug": "git://github.com/concord-consortium/shutterbug.git#0.1.3"
     },
-  "overrides": {}
+  "overrides": {
+    "jquery": {
+      "main": "dist/jquery.js"
+    }
+  }
 }
