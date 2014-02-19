@@ -14,6 +14,9 @@ cd $(git rev-parse --show-toplevel)
 
 echo "Building application... "
 rm -rf public
+
+# afterBrunch doesn't seem to want to run unless we build in non-production mode first...
+node_modules/.bin/brunch build
 node_modules/.bin/brunch build -P
 
 
