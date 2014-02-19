@@ -125,7 +125,33 @@ window.model =
       time.innerHTML = "" + t
       if t >= 30
         @env.stop()
-        @showMessage 'Time has run out!'
+        @showMessage 'Congratulations! Your bunny was able to find enough food to live!'
+
+  setupHungerSlider: ->
+    slider = document.getElementById('hunger-slider')
+    Events.addEventListener Environment.EVENTS.STEP, =>
+      if @rabbit.isDead
+        @env.stop()
+        @showMessage 'The bunny died because it was not able to find enough food to live. Click Reset and try again!'
+        return
+
+      hunger = 100 - @rabbit.get('energy')
+      slider.innerHTML = "" + hunger
+
+      if hunger > 99
+        @rabbit.die()
+        return
+
+      if hunger > 70
+        @rabbit.set('bubble showing', 'food')
+      else
+        @rabbit.set('bubble showing', 'none')
+
+      if hunger > 5
+        @rabbit.set('current behavior', BasicAnimal.BEHAVIOR.EATING)
+      else
+        @rabbit.set('current behavior', BasicAnimal.BEHAVIOR.WANDERING)
+
 
   showMessage: (message, pause=false) ->
     helpers.showMessage message, @env.getView().view.parentElement
@@ -135,3 +161,4 @@ window.onload = ->
   model.setupGraph()
   model.setupControls()
   model.setupTimer()
+  model.setupHungerSlider()
