@@ -32,28 +32,28 @@ require.register "species/white-rabbits", (exports, require, module) ->
           {
             image:
               path: "images/agents/white-rabbits/rabbit-fast.png"
-              scale: 0.5
+              scale: 0.7
               anchor:
-                x: 0.5
-                y: 0.5
+                x: 0.8
+                y: 0.47
             useIf: (agent)-> agent.get('current behavior') isnt BasicAnimal.BEHAVIOR.HIDING and agent.get('type') is 'fast'
           }
           {
             image:
               path: "images/agents/white-rabbits/whiteBunny_red.png"
-              scale: 0.5
+              scale: 0.7
               anchor:
-                x: 0.5
-                y: 0.5
+                x: 0.8
+                y: 0.47
             useIf: (agent)-> agent.get('current behavior') isnt BasicAnimal.BEHAVIOR.HIDING and agent.get('is selected')
           }
           {
             image:
               path: "images/agents/white-rabbits/rabbit2.png"
-              scale: 0.5
+              scale: 0.7
               anchor:
-                x: 0.5
-                y: 0.5
+                x: 0.8
+                y: 0.47
             useIf: (agent)-> agent.get('current behavior') isnt BasicAnimal.BEHAVIOR.HIDING
           }
         ]
@@ -65,28 +65,34 @@ require.register "species/white-rabbits", (exports, require, module) ->
           {
             image:
               path: "images/agents/white-rabbits/love-bubble.png"
-              scale: 0.35
+              scale: 0.7
               anchor:
-                x: 0.5
-                y: 0.5
+                x: 0.77
+                y: 1
+              position:
+                y: -16
             useIf: (agent)-> agent.get('bubble showing') is 'love'
           }
           {
             image:
               path: "images/agents/white-rabbits/fear-bubble.png"
-              scale: 0.35
+              scale: 0.7
               anchor:
-                x: 0.5
-                y: 0.5
+                x: 0.77
+                y: 1
+              position:
+                y: -16
             useIf: (agent)-> agent.get('bubble showing') is 'fear'
           }
           {
             image:
               path: "images/agents/white-rabbits/food-bubble.png"
-              scale: 0.35
+              scale: 0.7
               anchor:
-                x: 0.5
-                y: 0.5
+                x: 0.77
+                y: 1
+              position:
+                y: -16
             useIf: (agent)-> agent.get('bubble showing') is 'food'
           }
         ]
