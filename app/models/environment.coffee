@@ -244,9 +244,11 @@ module.exports = class Environment extends StateMachine
       , @_runLoopDelay
 
     runloop()
+    Events.dispatchEvent(Environment.EVENTS.START, {})
 
   stop: ->
     @_isRunning = false
+    Events.dispatchEvent(Environment.EVENTS.STOP, {})
 
   step: ->
     @_incrementDate()
@@ -359,6 +361,8 @@ module.exports = class Environment extends StateMachine
 
   ### Events ###
   @EVENTS:
+    START:  "environment-start"
+    STOP:   "environment-stop"
     STEP:   "environment-step"
     RESET:  "environment-reset"
     AGENT_ADDED: "agent-added"
