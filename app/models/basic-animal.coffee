@@ -75,7 +75,6 @@ module.exports = class BasicAnimal extends Agent
       when BasicAnimal.BEHAVIOR.MATING
         @mate()
       when BasicAnimal.BEHAVIOR.WANDERING
-        console.log('wandering')
         @wander()
       else
         # NOOP
@@ -88,13 +87,10 @@ module.exports = class BasicAnimal extends Agent
     if nearest?
       eatingDist = @get('eating distance')
       if nearest.distanceSq < Math.pow(eatingDist, 2)
-        console.log('eating')
         @_eatPrey(nearest.agent)
       else
-        console.log('chasing', @getLocation(), nearest.agent.getLocation())
         @chase(nearest)
     else
-      console.log('eating wandering')
       @wander(@get('speed') * 0.75)
 
   flee: ->
@@ -125,9 +121,7 @@ module.exports = class BasicAnimal extends Agent
     dy = speed * Math.sin(dir)
 
     newLoc = {x: loc.x + dx, y: loc.y + dy}
-    console.log("moving dir: " + dir + ", at speed: " + speed + ", next: ", newLoc)
     if @environment.crossesBarrier(loc, newLoc)
-      console.log 'hit barrier!'
       # stay where you are and turn around, for now
       @set 'direction', dir + Math.PI
     else
