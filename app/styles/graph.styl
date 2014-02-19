@@ -1,0 +1,65 @@
+div.graph
+   background-color: #ddf2ff
+   border-radius: 0.25em
+   width: 263px
+   height: 200px
+   margin-bottom: 10px
+
+
+.graph
+  position: relative
+  background: rgba(255, 255, 255, 0)
+  &:focus
+    outline: #76d2b8 solid 0.2em
+  div.background
+    position: absolute
+    background: #efefef
+  div.button-layer
+    position: absolute
+    text-align: right
+    a
+      opacity: 0.3
+      color: black
+      font-size: 120%
+      &hover
+        opacity: 1
+  canvas.overlay
+    position: absolute
+    background: rgba(0, 255, 0, 0.05)
+
+svg.graph
+  &:focus
+    outline: #76d2b8 solid 0.2em
+  text
+    &.title
+      font-size: 0.9em
+    &.ylabel
+      font-size: 0.8em
+    &.xlabel
+      font-size: 0.8em
+    &.axis
+      font-size: 0.8em
+      &:focus
+        outline: #76d2b8 solid 0.2em
+  rect.draggable-axis
+    fill: rgba(255, 255, 255, 0)
+    &:hover
+      fill: rgba(196, 196, 196, 0.2)
+
+circle, .line
+  fill: none
+  stroke: steelblue
+  stroke-width: 2px
+circle
+  fill: white
+  fill-opacity: 0.2
+  cursor: move
+  &.selected
+    fill: #ff7f0e
+    stroke: #ff7f0e
+    &:hover
+      fill: #ff7f0e
+      stroke: #ff7f0e
+  &:hover
+    fill: #ff7f0e
+    stroke: #707f0e
