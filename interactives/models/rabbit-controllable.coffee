@@ -84,11 +84,22 @@ window.model =
         plants++ if a.species is @plantSpecies
       @outputGraph.addSamples [plants]
 
+  setupTimer: ->
+    time = document.getElementById('time-value')
+    Events.addEventListener Environment.EVENTS.RESET, =>
+      time.innerHTML = "0"
+
+    Events.addEventListener Environment.EVENTS.STEP, =>
+      t = Math.floor(@env.date * @env._runLoopDelay / 1000)
+      time.innerHTML = "" + t
+      if t >= 30
+        @env.stop()
+        @showMessage 'Time has run out!'
+
   showMessage: (message, pause=false) ->
-    if pause then @env.stop()
-    helpers.showMessage message, @env.getView().view.parentElement, =>
-      @env.start()
+    helpers.showMessage message, @env.getView().view.parentElement
 
 window.onload = ->
   model.run()
   model.setupGraph()
+  model.setupTimer()

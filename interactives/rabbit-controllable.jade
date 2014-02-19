@@ -13,6 +13,19 @@ html
     +script(src="environments/grass-field.js")
     +script(src="models/rabbit-controllable.js")
     style(type="text/css").
+      #side {
+        padding: 2px;
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 100px;
+      }
+
+      #time-value {
+        font-weight: bold;
+        font-size: 1.2em;
+        padding: 4px;
+      }
+
       #graph {
         position: absolute;
         top: 500px;
@@ -23,5 +36,10 @@ html
 
   body
     #environment
+    #side
+      .time= "Time:"
+        br
+        span#time-value= "0"
+        = "seconds"
     #below
       #graph
