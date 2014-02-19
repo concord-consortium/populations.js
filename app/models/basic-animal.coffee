@@ -114,6 +114,7 @@ module.exports = class BasicAnimal extends Agent
   move: ->
     dir = @get 'direction'
     speed = @get 'speed'
+    return if speed is 0
     throw 'invalid speed' unless typeof(speed) is 'number'
     throw 'invalid direction' unless typeof(dir) is 'number'
     loc = @getLocation()

@@ -17,7 +17,7 @@ html
         padding: 2px;
         display: inline-block;
         vertical-align: top;
-        margin-top: 100px;
+        margin-top: 10px;
       }
 
       #time-value {
@@ -34,6 +34,39 @@ html
         height: 300px;
       }
 
+      .controls {
+        position: relative;
+        margin-top: 20px;
+        height: 180px;
+      }
+
+      .controls button {
+        width: 60px;
+        height: 60px;
+        font-size: 2em;
+        position: absolute;
+      }
+
+      #up {
+        top: 0px;
+        left: 38px;
+      }
+
+      #down {
+        top: 124px;
+        left: 38px;
+      }
+
+      #left {
+        top: 62px;
+        left: 0px;
+      }
+
+      #right {
+        top: 62px;
+        left: 76px;
+      }
+
   body
     #environment
     #side
@@ -41,5 +74,14 @@ html
         br
         span#time-value= "0"
         = "seconds"
+      .controls
+        button#up
+          i.fa.fa-arrow-up
+        button#left
+          i.fa.fa-arrow-left
+        button#right
+          i.fa.fa-arrow-right
+        button#down
+          i.fa.fa-arrow-down
     #below
       #graph

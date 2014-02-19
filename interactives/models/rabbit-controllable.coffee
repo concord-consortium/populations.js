@@ -14,6 +14,7 @@ rabbitSpecies = require 'species/white-rabbits'
 env           = require 'environments/grass-field'
 
 window.model =
+  rabbit: null
   setupEnvironment: ->
     for i in [0..21]
       plant = plantSpecies.createAgent()
@@ -24,11 +25,13 @@ window.model =
       plant.setLocation @env.randomLocation()
       @env.addAgent plant
 
-    rabbit = rabbitSpecies.createAgent()
-    rabbit.setLocation({x: 225, y: 225})
-    rabbit.set('is selected', true)
-    rabbit.set('is immortal', true)
-    @env.addAgent rabbit
+    @rabbit = rabbitSpecies.createAgent()
+    @rabbit.setLocation({x: 225, y: 225})
+    @rabbit.set('is selected', true)
+    @rabbit.set('is immortal', true)
+    @rabbit.set('speed', 0)
+    @rabbit.set('default speed', 0)
+    @env.addAgent @rabbit
 
   run: ->
     @interactive = new Interactive
@@ -84,6 +87,34 @@ window.model =
         plants++ if a.species is @plantSpecies
       @outputGraph.addSamples [plants]
 
+  setupControls: ->
+    @up = document.getElementById('up')
+    @down = document.getElementById('down')
+    @left = document.getElementById('left')
+    @right = document.getElementById('right')
+
+    move = =>
+      if @env._isRunning
+        @rabbit.set 'speed', 10
+        @rabbit.move()
+        @rabbit.set 'speed', 0
+
+    @up.onclick = =>
+      @rabbit.set 'direction', 1.5 * Math.PI
+      move()
+
+    @down.onclick = =>
+      @rabbit.set 'direction', 0.5 * Math.PI
+      move()
+
+    @left.onclick = =>
+      @rabbit.set 'direction', Math.PI
+      move()
+
+    @right.onclick = =>
+      @rabbit.set 'direction', 0
+      move()
+
   setupTimer: ->
     time = document.getElementById('time-value')
     Events.addEventListener Environment.EVENTS.RESET, =>
@@ -102,4 +133,5 @@ window.model =
 window.onload = ->
   model.run()
   model.setupGraph()
+  model.setupControls()
   model.setupTimer()
