@@ -8,6 +8,7 @@ Trait       = require 'models/trait'
 Interactive = require 'interactive/interactive'
 Events      = require 'events'
 ToolButton  = require 'interactive/tool-button'
+BasicAnimal = require 'models/basic-animal'
 
 plantSpecies  = require 'species/fast-plants-thin'
 rabbitSpecies = require 'species/white-rabbits'
@@ -31,6 +32,8 @@ window.model =
     @rabbit.set('is immortal', true)
     @rabbit.set('speed', 0)
     @rabbit.set('default speed', 0)
+    @rabbit.set('calculate drives', false)
+    @rabbit.set('current behavior', BasicAnimal.BEHAVIOR.WANDERING)
     @env.addAgent @rabbit
 
   run: ->
@@ -50,9 +53,6 @@ window.model =
 
     Events.addEventListener Environment.EVENTS.RESET, =>
       @setupEnvironment()
-
-    Events.addEventListener Environment.EVENTS.STEP, =>
-      # TODO Track countdown timer, etc.
 
   setupGraph: ->
     outputOptions =
