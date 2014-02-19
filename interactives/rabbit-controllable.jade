@@ -5,12 +5,23 @@ html
     include includes/shared-headers
     include includes/shared-css
     include includes/shared-js
+    include includes/shared-graph
 
     // model files here
     +script(src="species/fast-plants-thin.js")
     +script(src="species/white-rabbits.js")
     +script(src="environments/grass-field.js")
     +script(src="models/rabbit-controllable.js")
+    style(type="text/css").
+      #graph {
+        position: absolute;
+        top: 500px;
+        left: 5px;
+        width: 500px;
+        height: 300px;
+      }
 
   body
     #environment
+    #below
+      #graph

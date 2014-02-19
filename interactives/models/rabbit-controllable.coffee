@@ -51,6 +51,39 @@ window.model =
     Events.addEventListener Environment.EVENTS.STEP, =>
       # TODO Track countdown timer, etc.
 
+  setupGraph: ->
+    outputOptions =
+      title:  "Number of plants in field"
+      xlabel: "Time (s)"
+      ylabel: "Number of plants"
+      xmax:   30
+      xmin:   0
+      ymax:   50
+      ymin:   0
+      xTickCount: 15
+      yTickCount: 5
+      xFormatter: "2d"
+      yFormatter: "2d"
+      realTime: false
+      fontScaleRelativeToParent: true
+      sampleInterval: (@env._runLoopDelay/1000)
+      dataType: 'samples'
+
+    @outputGraph = Lab.grapher.Graph '#graph', outputOptions
+
+    # start the graph at 0,22
+    @outputGraph.addSamples [22]
+
+    Events.addEventListener Environment.EVENTS.RESET, =>
+      @outputGraph.reset()
+      @outputGraph.addSamples [22]
+
+    Events.addEventListener Environment.EVENTS.STEP, =>
+      plants = 0
+      for a in @env.agents
+        plants++ if a.species is @plantSpecies
+      @outputGraph.addSamples [plants]
+
   showMessage: (message, pause=false) ->
     if pause then @env.stop()
     helpers.showMessage message, @env.getView().view.parentElement, =>
@@ -58,3 +91,4 @@ window.model =
 
 window.onload = ->
   model.run()
+  model.setupGraph()
