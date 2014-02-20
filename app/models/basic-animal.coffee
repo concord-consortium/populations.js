@@ -30,6 +30,7 @@ defaultProperties =
 ###
 module.exports = class BasicAnimal extends Agent
   label: 'animal'
+  _viewLayer: 2
 
   @BEHAVIOR:
     EATING: 'eating'
