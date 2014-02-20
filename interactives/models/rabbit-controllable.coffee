@@ -30,6 +30,7 @@ window.model =
     @rabbit.setLocation({x: 225, y: 225})
     @rabbit.set('is selected', true)
     @rabbit.set('is immortal', true)
+    @rabbit.set('age', 20)
     @rabbit.set('speed', 0)
     @rabbit.set('default speed', 0)
     @rabbit.set('calculate drives', false)
