@@ -46,14 +46,6 @@ module.exports = class BasicAnimal extends Agent
     args.additionalDefaults = defaults
     super(args)
 
-  getSize: ->
-    age = @get('age')
-    if @species.defs.MATURITY_AGE?
-      maturity = @get('age') / @species.defs.MATURITY_AGE
-      Math.min maturity, 1
-    else
-      1
-
   makeNewborn: ->
     super()
     @set 'sex', (ExtMath.flip is 0 ? 'female' : 'male')

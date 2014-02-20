@@ -102,18 +102,22 @@ window.model =
     @up.onclick = =>
       @rabbit.set 'direction', 1.5 * Math.PI
       move()
+      return false
 
     @down.onclick = =>
       @rabbit.set 'direction', 0.5 * Math.PI
       move()
+      return false
 
     @left.onclick = =>
       @rabbit.set 'direction', Math.PI
       move()
+      return false
 
     @right.onclick = =>
       @rabbit.set 'direction', 0
       move()
+      return false
 
   setupTimer: ->
     time = document.getElementById('time-value')

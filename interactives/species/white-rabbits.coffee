@@ -10,7 +10,6 @@ require.register "species/white-rabbits", (exports, require, module) ->
     agentClass: BasicAnimal
     defs:
       CHANCE_OF_MUTATION: 0
-      MATURITY_AGE: 0
     traits: [
       new Trait {name: 'speed', default: 10 }
       new Trait {name: 'prey', default: ['fast plants'] }
