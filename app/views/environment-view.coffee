@@ -9,6 +9,7 @@ module.exports = class EnvironmentView
 
   constructor: ({@environment}) ->
     @showingWinter = false
+    @_layers = []
     if @environment.winterImgPath?
       @winterImgSprite = new PIXI.TilingSprite PIXI.Texture.fromImage(@environment.winterImgPath), @environment.width, @environment.height
       @winterImgSprite.anchor.x = 0
@@ -21,6 +22,8 @@ module.exports = class EnvironmentView
     @renderer = new PIXI.CanvasRenderer(@environment.width, @environment.height)
     # create a texture from an image path
     texture = PIXI.Texture.fromImage @environment.imgPath
+
+    layer = @_getOrCreateLayer 0
     # create a new Sprite using the texture
     envSprite = new PIXI.Sprite(texture)
 
@@ -30,22 +33,20 @@ module.exports = class EnvironmentView
     envSprite.position.x = 0
     envSprite.position.y = 0
 
-    @stage.addChild(envSprite)
+    layer.addChild(envSprite)
 
-    @renderBarriers(@stage)
+    @renderBarriers(layer)
 
-    @renderAgents(@stage)
+    @renderAgents()
 
     animate = =>
       requestAnimFrame( animate )
       for agent in @environment.agents
-        agent.getView().rerender(@stage)
+
+        agent.getView().rerender(@_getOrCreateLayer(agent._viewLayer))
 
       if @environment.carriedAgent
-        @environment.carriedAgent.getView().rerender(@stage, 'carry-tool')
-
-      if @showingWinter and @winterImgSprite?
-        @stage.swapChildren @winterImgSprite, @stage.children[@stage.children.length-1]
+        @environment.carriedAgent.getView().rerender(@_getOrCreateLayer(100), 'carry-tool')
 
       @barrierGraphics.visible = @showingBarriers
       @renderer.render(@stage)
@@ -63,7 +64,7 @@ module.exports = class EnvironmentView
 
   renderAgents: (stage) ->
     for agent in @environment.agents
-      agent.getView().render(stage)
+      agent.getView().render(@_getOrCreateLayer(agent._viewLayer))
 
   renderBarriers: (stage) ->
     @barrierGraphics = new PIXI.Graphics()
@@ -83,6 +84,9 @@ module.exports = class EnvironmentView
     @barrierGraphics.visible = @showingBarriers
     stage.addChild(@barrierGraphics)
 
+  removeAgent: (agent)->
+    agent.getView().remove(@_getOrCreateLayer(agent._viewLayer))
+
   setCursor: (name) ->
     return unless @view
     for cursorClass in cursorsClasses
@@ -92,11 +96,13 @@ module.exports = class EnvironmentView
 
   addWinterImage: () ->
     @showingWinter = true
-    @stage.addChild(@winterImgSprite) unless !@winterImgSprite
+    layer = @_getOrCreateLayer(101)
+    layer.addChild(@winterImgSprite) unless !@winterImgSprite
 
   removeWinterImage: () ->
     @showingWinter = false
-    @stage.removeChild(@winterImgSprite) unless !@winterImgSprite
+    layer = @_getOrCreateLayer(101)
+    layer.removeChild(@winterImgSprite) unless !@winterImgSprite
 
   addMouseHandlers: ->
     for eventName in ["click", "mousedown", "mouseup", "mousemove", "touchstart", "touchmove", "touchend"]
@@ -110,3 +116,13 @@ module.exports = class EnvironmentView
           evt.envX = evt.pageX - @view.offsetLeft
           evt.envY = evt.pageY - @view.offsetTop
         @environment.send evt.type, evt
+
+  _getOrCreateLayer: (idx)->
+    if not @_layers[idx]?
+      layer = new PIXI.DisplayObjectContainer
+      @_layers[idx] = layer
+      try
+        @stage.addChildAt layer, idx
+      catch
+        @stage.addChild layer
+    return @_layers[idx]

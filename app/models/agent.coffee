@@ -15,6 +15,7 @@ defaultProperties =
 module.exports = class Agent
   label: "organism"
   bred: false
+  _viewLayer: 1
 
   constructor: ({@name, @environment, @species, x, y, additionalDefaults}) ->
     @_props = helpers.clone defaultProperties

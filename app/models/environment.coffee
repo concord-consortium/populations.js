@@ -107,7 +107,7 @@ module.exports = class Environment extends StateMachine
     else
       @set col, row, "num agents", agents-1
 
-    agent.getView().remove(@getView().stage) if @agents.removeObj(agent)
+    @getView().removeAgent(agent) if @agents.removeObj(agent)
 
   agentsWithin: ({x,y,width,height})->
     throw "Invalid rectangle definition!" unless x? and y? and width? and height?
@@ -155,7 +155,7 @@ module.exports = class Environment extends StateMachine
 
   getAgentAt: (x,y)->
     for agent in @agents
-      if agent.getView().contains(x,y,@_view.stage)
+      if agent.getView().contains(x,y)
         return agent
     return null
 
