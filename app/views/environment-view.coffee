@@ -121,8 +121,9 @@ module.exports = class EnvironmentView
     if not @_layers[idx]?
       layer = new PIXI.DisplayObjectContainer
       @_layers[idx] = layer
-      try
-        @stage.addChildAt layer, idx
-      catch
-        @stage.addChild layer
+      if @stage?
+        try
+          @stage.addChildAt layer, idx
+        catch
+          @stage.addChild layer
     return @_layers[idx]
