@@ -273,6 +273,7 @@ module.exports = class Environment extends StateMachine
     @stop()
     i = @agents.length
     @removeAgent @agents[--i] while i
+    @date   = 0
     Events.dispatchEvent(Environment.EVENTS.RESET, {})
 
   ### Default properties ###
