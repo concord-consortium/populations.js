@@ -134,6 +134,7 @@ window.model =
 
   setupHungerSlider: ->
     slider = document.getElementById('hunger-slider')
+    ppslider = $(slider).PPSlider({height: 150, vertical: true})
     Events.addEventListener Environment.EVENTS.STEP, =>
       if @rabbit.isDead
         @env.stop()
@@ -141,7 +142,7 @@ window.model =
         return
 
       hunger = Math.round(100 - @rabbit.get('energy'))
-      slider.innerHTML = "" + hunger
+      ppslider.updatePositionByValue(hunger)
 
       if hunger > 99
         @rabbit.die()
