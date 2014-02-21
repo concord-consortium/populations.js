@@ -13,7 +13,7 @@ require.register "species/white-rabbits", (exports, require, module) ->
     traits: [
       new Trait {name: 'speed', default: 10 }
       new Trait {name: 'prey', default: ['fast plants'] }
-      new Trait {name: 'vision distance', default: 100 }
+      new Trait {name: 'vision distance', default: 150 }
       new Trait {name: 'eating distance', default:  30 }
       new Trait {name: 'mating distance', default: 100 }
       new Trait {name: 'max offspring',   default:  6 }
