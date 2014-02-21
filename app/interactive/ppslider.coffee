@@ -25,8 +25,8 @@ var PPSliderClass;
       container.addClass('vertical');
     }
     container.addClass('clearfix');
-    var minLabel = '<div class="pp-slider-min">-</div>';
-    var maxLabel = '<div class="pp-slider-max">+</div>';
+    var minLabel = '<div class="pp-slider-min">' + opts.minLabel + '</div>';
+    var maxLabel = '<div class="pp-slider-max">' + opts.maxLabel + '</div>';
     var content = '';
     if (opts.vertical) {
       content  += maxLabel;
@@ -211,6 +211,8 @@ var PPSliderClass;
   }
 
   $.fn.PPSlider.defaults = {
+    minLabel: '-',
+    maxLabel: '+',
     vertical: false,
     hideTooltip: true
   };
