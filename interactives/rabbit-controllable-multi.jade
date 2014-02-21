@@ -1,0 +1,93 @@
+include includes/_helpers
+doctype html
+html
+  head
+    include includes/shared-headers
+    include includes/shared-css
+    include includes/shared-js
+    include includes/shared-graph
+
+    // model files here
+    +script(src="species/fast-plants-thin.js")
+    +script(src="species/white-rabbits.js")
+    +script(src="environments/grass-field.js")
+    +script(src="models/rabbit-controllable-multi.js")
+    style(type="text/css").
+      #side {
+        padding: 2px;
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 10px;
+      }
+
+      #time-value {
+        font-weight: bold;
+        font-size: 1.2em;
+        padding: 4px;
+      }
+
+      .hunger {
+        margin-top: 40px;
+      }
+
+      #graph {
+        position: absolute;
+        top: 500px;
+        left: 5px;
+        width: 500px;
+        height: 300px;
+      }
+
+      .controls {
+        position: relative;
+        margin-top: 20px;
+        height: 180px;
+      }
+
+      .controls button {
+        width: 60px;
+        height: 60px;
+        font-size: 2em;
+        position: absolute;
+      }
+
+      #up {
+        top: 0px;
+        left: 38px;
+      }
+
+      #down {
+        top: 124px;
+        left: 38px;
+      }
+
+      #left {
+        top: 62px;
+        left: 0px;
+      }
+
+      #right {
+        top: 62px;
+        left: 76px;
+      }
+
+  body
+    #environment
+    #side
+      .time= "Time:"
+        br
+        span#time-value= "0"
+        = "seconds"
+      .controls
+        button#up
+          i.fa.fa-arrow-up
+        button#left
+          i.fa.fa-arrow-left
+        button#right
+          i.fa.fa-arrow-right
+        button#down
+          i.fa.fa-arrow-down
+      .hunger= "Hunger:"
+        input#hunger-slider(type="hidden", value="0")
+    #below
+      #graph
