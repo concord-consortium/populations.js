@@ -134,7 +134,7 @@ window.model =
 
   setupHungerSlider: ->
     slider = document.getElementById('hunger-slider')
-    ppslider = $(slider).PPSlider({height: 150, vertical: true})
+    ppslider = $(slider).PPSlider({height: 150, vertical: true, minLabel: 'Not hungry', maxLabel: 'Very hungry', moveable: false})
     Events.addEventListener Environment.EVENTS.STEP, =>
       if @rabbit.isDead
         @env.stop()
