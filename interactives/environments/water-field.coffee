@@ -5,7 +5,7 @@ env = new Environment
   columns:  70
   rows:     74
   imgPath: "images/environments/water10levels.png"
-  winterImgPath: "images/environments/snow.png"
+  winterImgPath: "images/environments/snow-overlay.png"
   seasonLengths: [30, 30, 15, 10]
   barriers: [
     [0, 670, 700, 70]
