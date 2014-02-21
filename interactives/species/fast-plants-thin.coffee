@@ -11,7 +11,7 @@ require.register "species/fast-plants-thin", (exports, require, module) ->
       CHANCE_OF_MUTATION: 0
       MATURITY_AGE: 14
     traits: [
-      new Trait {name: "growth rate", min: 0, max: 1, default: 0.003, float: true, mutatable: false}
+      new Trait {name: "growth rate", min: 0, max: 1, default: 0.0015, float: true, mutatable: false}
     ]
     imageRules: [
       {

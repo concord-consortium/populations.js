@@ -62,10 +62,10 @@ window.model =
       ylabel: "Number of plants"
       xmax:   30
       xmin:   0
-      ymax:   50
+      ymax:   80
       ymin:   0
       xTickCount: 15
-      yTickCount: 5
+      yTickCount: 8
       xFormatter: "2d"
       yFormatter: "2d"
       realTime: false
