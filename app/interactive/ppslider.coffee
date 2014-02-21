@@ -34,7 +34,11 @@ var PPSliderClass;
       content  += minLabel;
     }
     content    += '<div class="pp-slider-scale">';
-    content    += '<div class="pp-slider-button"><div class="pp-slider-divies"></div></div>';
+    content    += '<div class="pp-slider-button';
+    if (options.moveable) {
+      content  += ' moveable';
+    }
+    content    += '"><div class="pp-slider-divies"></div></div>';
     content    += '<div class="pp-slider-tooltip"></div>';
     content    += '</div>';
     if (opts.vertical) {
@@ -65,6 +69,9 @@ var PPSliderClass;
     }
 
     var startSlide = function (e) {
+      if (!options.moveable) {
+        return true;
+      }
       if (e.originalEvent && e.originalEvent instanceof TouchEvent) {
         e.preventDefault();
       }
@@ -213,6 +220,7 @@ var PPSliderClass;
   $.fn.PPSlider.defaults = {
     minLabel: '-',
     maxLabel: '+',
+    moveable: true,
     vertical: false,
     hideTooltip: true
   };
