@@ -27,7 +27,7 @@ window.model =
       @env.addAgent plant
 
     @rabbit = rabbitSpecies.createAgent()
-    @rabbit.setLocation({x: 225, y: 225})
+    @rabbit.setLocation @env.randomLocation()
     @rabbit.set('is selected', true)
     @rabbit.set('is immortal', true)
     @rabbit.set('age', 20)
