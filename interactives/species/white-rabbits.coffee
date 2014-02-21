@@ -30,7 +30,7 @@ require.register "species/white-rabbits", (exports, require, module) ->
         rules: [
           {
             image:
-              path: "images/agents/white-rabbits/rabbit-fast.png"
+              path: "images/agents/rabbits/rabbit-fast.png"
               scale: 0.7
               anchor:
                 x: 0.8
@@ -39,7 +39,7 @@ require.register "species/white-rabbits", (exports, require, module) ->
           }
           {
             image:
-              path: "images/agents/white-rabbits/whiteBunny_red.png"
+              path: "images/agents/rabbits/whiteBunny_red.png"
               scale: 0.7
               anchor:
                 x: 0.8
@@ -48,7 +48,7 @@ require.register "species/white-rabbits", (exports, require, module) ->
           }
           {
             image:
-              path: "images/agents/white-rabbits/rabbit2.png"
+              path: "images/agents/rabbits/rabbit2.png"
               scale: 0.7
               anchor:
                 x: 0.8
@@ -63,7 +63,7 @@ require.register "species/white-rabbits", (exports, require, module) ->
         rules: [
           {
             image:
-              path: "images/agents/white-rabbits/love-bubble.png"
+              path: "images/agents/rabbits/love-bubble.png"
               scale: 0.7
               anchor:
                 x: 0.77
@@ -74,7 +74,7 @@ require.register "species/white-rabbits", (exports, require, module) ->
           }
           {
             image:
-              path: "images/agents/white-rabbits/fear-bubble.png"
+              path: "images/agents/rabbits/fear-bubble.png"
               scale: 0.7
               anchor:
                 x: 0.77
@@ -85,7 +85,7 @@ require.register "species/white-rabbits", (exports, require, module) ->
           }
           {
             image:
-              path: "images/agents/white-rabbits/food-bubble.png"
+              path: "images/agents/rabbits/food-bubble.png"
               scale: 0.7
               anchor:
                 x: 0.77
