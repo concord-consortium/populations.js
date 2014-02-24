@@ -6,7 +6,7 @@ require.register "species/white-rabbits", (exports, require, module) ->
   Trait   = require 'models/trait'
 
   module.exports = new Species
-    speciesName: "white rabbits"
+    speciesName: "rabbits"
     agentClass: BasicAnimal
     defs:
       CHANCE_OF_MUTATION: 0
