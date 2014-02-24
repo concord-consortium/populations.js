@@ -241,7 +241,7 @@ module.exports = class BasicAnimal extends Agent
       continue if opts.types.indexOf(agent.species.speciesName) is -1
 
       continue if agent is @
-      continue if opts.camo and agent instanceof BasicAnimal and ExtMath.randomFloat() > agent.get('chance seen')
+      continue if opts.camo and agent instanceof BasicAnimal and ExtMath.randomFloat() > agent.get('chance of being seen')
       continue if agent.hasProp('current behavior') and agent.get('current behavior') is BasicAnimal.BEHAVIOR.HIDING
       continue if !opts.crossBarriers and @environment.crossesBarrier(@getLocation(), agent.getLocation())
       continue if opts.trait? # TODO
