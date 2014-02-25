@@ -45,14 +45,10 @@ module.exports = class AddOrganismButton
 
       agent = @species.createAgent(@traits)
       agent.environment = @environment
-      agent.setLocation
-        x: ExtMath.randomInt(@environment.width)
-        y: ExtMath.randomInt(@environment.height)
+      agent.setLocation @environment.randomLocation()
 
       while !@environment.addAgent(agent)
-        agent.setLocation
-          x: ExtMath.randomInt(@environment.width)
-          y: ExtMath.randomInt(@environment.height)
+        agent.setLocation @environment.randomLocation()
 
   enterAddOrganismsMode: ->
     @toolbar.activateModalButton this
