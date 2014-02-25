@@ -26,7 +26,6 @@ require.register "species/white-rabbits", (exports, require, module) ->
     imageRules: [
       {
         name: 'white rabbit'
-        contexts: ['environment']
         rules: [
           {
             image:

@@ -19,7 +19,6 @@ require.register "species/fast-plants-roots", (exports, require, module) ->
     imageRules: [
       {
         name: 'plant'
-        contexts: ['environment']
         rules: [
           {
             image:

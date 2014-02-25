@@ -24,7 +24,6 @@ require.register "species/hawks", (exports, require, module) ->
     imageRules: [
       {
         name: 'hawk'
-        contexts: ['environment']
         rules: [
           {
             image:

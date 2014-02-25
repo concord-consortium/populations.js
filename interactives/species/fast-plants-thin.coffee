@@ -16,7 +16,6 @@ require.register "species/fast-plants-thin", (exports, require, module) ->
     imageRules: [
       {
         name: 'plant'
-        contexts: ['environment']
         rules: [
           {
             image:
