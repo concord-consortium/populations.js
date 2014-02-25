@@ -18,6 +18,8 @@ module.exports = class InfoView
     else
       @_details.appendChild @agent.getView().textView()
 
+    @title.innerHTML = @agent.label.charAt(0).toUpperCase() + @agent.label.slice(1)
+
   _repositionAgent: ->
     @_container.children[0].position.x = 52
     @_container.children[0].position.y = 70
@@ -36,9 +38,9 @@ module.exports = class InfoView
     titleBar = document.createElement 'div'
     titleBar.classList.add 'title-bar'
 
-    title = document.createElement 'span'
-    title.classList.add 'title'
-    title.innerHTML = @agent.label.charAt(0).toUpperCase() + @agent.label.slice(1)
+    @title = document.createElement 'span'
+    @title.classList.add 'title'
+    @title.innerHTML = @agent.label.charAt(0).toUpperCase() + @agent.label.slice(1)
 
     closeButton = document.createElement 'span'
     closeButton.classList.add 'close'
@@ -64,7 +66,7 @@ module.exports = class InfoView
     @_redraw()
     agentView.appendChild @_renderer.view
 
-    titleBar.appendChild title
+    titleBar.appendChild @title
     titleBar.appendChild closeButton
 
     content.appendChild agentView
