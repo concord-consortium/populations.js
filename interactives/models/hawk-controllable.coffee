@@ -76,9 +76,9 @@ window.model =
 
   setupGraph: ->
     outputOptions =
-      title:  "Number of plants in field"
+      title:  "Number of rabbits"
       xlabel: "Time (s)"
-      ylabel: "Number of plants"
+      ylabel: "Number of rabbits"
       xmax:   30
       xmin:   0
       ymax:   80
@@ -94,27 +94,24 @@ window.model =
       dataColors: [
         [153, 153, 153]
         [153,  85,   0]
-        [255,   0,   0]
       ]
 
     @outputGraph = LabGrapher '#graph', outputOptions
 
     # start the graph at 0,22
-    @outputGraph.addSamples [@startingRabbits,@startingRabbits,@startingPlants]
+    @outputGraph.addSamples [@startingRabbits,@startingRabbits]
 
     Events.addEventListener Environment.EVENTS.RESET, =>
       @outputGraph.reset()
-      @outputGraph.addSamples [@startingRabbits,@startingRabbits,@startingPlants]
+      @outputGraph.addSamples [@startingRabbits,@startingRabbits]
 
     Events.addEventListener Environment.EVENTS.STEP, =>
       whiteRabbits = 0
       brownRabbits = 0
-      plants = 0
       for a in @env.agents
         whiteRabbits++ if a.species is @rabbitSpecies and a.get('color') is 'white'
         brownRabbits++ if a.species is @rabbitSpecies and a.get('color') is 'brown'
-        plants++ if a.species is @plantSpecies
-      @outputGraph.addSamples [whiteRabbits, brownRabbits, plants]
+      @outputGraph.addSamples [whiteRabbits, brownRabbits]
 
   numEaten: 0
   brownEaten: 0
