@@ -10,6 +10,7 @@ require.register "species/fast-plants-roots", (exports, require, module) ->
     defs:
       CHANCE_OF_MUTATION: 0
       MATURITY_AGE: 14
+      INFO_VIEW_SCALE: 2.5
     traits: [
       new Trait {name: "growth rate", default: 0.0035, float: true }
       new Trait {name: "max offspring distance", default: 100 }

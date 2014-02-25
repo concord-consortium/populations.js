@@ -12,6 +12,7 @@ module.exports = class InfoView
       @_container.removeChild @_container.children[0]
     @agent.getView().render(@_container, 'info-tool')
     @_repositionAgent()
+    @_rescaleAgent()
 
     if @_details.firstChild?
       @_details.replaceChild @agent.getView().textView(), @_details.firstChild
@@ -21,8 +22,16 @@ module.exports = class InfoView
     @title.innerHTML = @agent.label.charAt(0).toUpperCase() + @agent.label.slice(1)
 
   _repositionAgent: ->
-    @_container.children[0].position.x = 52
-    @_container.children[0].position.y = 70
+    @_container.children[0].position = { x: 0, y: 0 }
+    @_container.position = { x: 52, y: 70 }
+
+  _rescaleAgent: ->
+    if @agent.species.defs.INFO_VIEW_SCALE?
+      @_container.scale.x = @agent.species.defs.INFO_VIEW_SCALE
+      @_container.scale.y = @agent.species.defs.INFO_VIEW_SCALE
+    else
+      @_container.scale.x = 1.25
+      @_container.scale.y = 1.25
 
   _redraw: ->
     if @_showing then requestAnimFrame => @_redraw()
@@ -59,8 +68,6 @@ module.exports = class InfoView
     @_stage = new PIXI.Stage(0xFFFFFF, true)
     @_renderer = new PIXI.CanvasRenderer(125, 160)
     @_container = new PIXI.DisplayObjectContainer()
-    @_container.scale.x = 1.25
-    @_container.scale.y = 1.25
     @_stage.addChild @_container
     @setAgent @agent
     @_redraw()

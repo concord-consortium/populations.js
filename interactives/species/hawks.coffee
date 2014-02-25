@@ -9,6 +9,7 @@ require.register "species/hawks", (exports, require, module) ->
     agentClass: BasicAnimal
     defs:
       CHANCE_OF_MUTATION: 0
+      INFO_VIEW_SCALE: 1
     traits: [
       new Trait {name: 'speed', default: 8 }
       new Trait {name: 'prey', default: ['rabbits'] }

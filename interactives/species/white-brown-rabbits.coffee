@@ -11,6 +11,9 @@ require.register "species/white-brown-rabbits", (exports, require, module) ->
       MAX_HEALTH: 1
       MATURITY_AGE: 9
       CHANCE_OF_MUTATION: 0
+      INFO_VIEW_SCALE: 2.5
+      INFO_VIEW_PROPERTIES:
+        "Color: ": 'color'
     traits: [
       new Trait {name: 'speed', default: 30 }
       new Trait {name: 'prey', default: ['fast plants'] }
