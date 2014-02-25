@@ -39,9 +39,9 @@ module.exports = class AddOrganismButton
 
   scatterOrganisms: ->
     for i in [0...@scatter]
-      if @limit and ++@_count > @limit
+      if @limit and ++@_count >= @limit
         @disable()
-        return
+        return if @_count > @limit
 
       agent = @species.createAgent(@traits)
       agent.environment = @environment
