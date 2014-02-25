@@ -8,6 +8,8 @@ defaultProperties =
   'max offspring distance': 40
   'health': 1
   'is immortal': false
+  'resource deficit': 0
+  'resource consumption rate': 1
 
 ###
   The base agent class
@@ -150,6 +152,16 @@ module.exports = class Agent
     @set('age', @get('age')+1)
 
   _consumeResources: ->
+    food = @getEnvironmentProperty('food')
+    consumption = @get('resource consumption rate')
+    if food >= consumption
+      @setEnvironmentProperty('food', food - consumption)
+      @set('resource deficit', 0)
+    else
+      underfed = consumption - food
+      currDeficit = @get('resource deficit')
+      @set('resource deficit', currDeficit + underfed)
+      @setEnvironmentProperty('food', 0)
 
   _checkSurvival: ->
     chance = if @hasProp('chance of survival') then @get('chance of survival') else @_getSurvivalChances()
@@ -164,9 +176,11 @@ module.exports = class Agent
     agePct = 1 - (age/ageMax)
 
     # TODO factor in HUNGER
-    # p2 = Math.pow(hungerPct, 2)
+    hunger = @get 'resource deficit'
+    hungerPct = 1 - Math.pow(hunger/100, 2)
+
     healthPct = @get('health')/@species.defs.MAX_HEALTH
 
-    return agePct * healthPct
+    return agePct * hungerPct * healthPct
 
 
