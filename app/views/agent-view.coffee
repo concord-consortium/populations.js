@@ -79,8 +79,9 @@ module.exports = class AgentView
     opts = helpers.setDefaults(options, @defaultTextViewOptions)
     content = document.createElement 'div'
 
-    @_appendPropVals(content, 'Leaf Size:', 'size') if opts.leaves
-    @_appendPropVals(content, 'Root Size:', 'root size') if opts.roots
+    if @agent.species.defs.INFO_VIEW_PROPERTIES?
+      for own k,v of @agent.species.defs.INFO_VIEW_PROPERTIES
+        @_appendPropVals(content, k, v)
 
     return content
 
