@@ -92,7 +92,7 @@ window.model =
       sampleInterval: (@env._runLoopDelay/1000)
       dataType: 'samples'
 
-    @outputGraph = Lab.grapher.Graph '#graph', outputOptions
+    @outputGraph = LabGrapher '#graph', outputOptions
 
     # start the graph at 0,22
     @outputGraph.addSamples [@startingRabbits,@startingRabbits,@startingPlants]
