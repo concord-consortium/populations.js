@@ -91,6 +91,11 @@ window.model =
       fontScaleRelativeToParent: true
       sampleInterval: (@env._runLoopDelay/1000)
       dataType: 'samples'
+      dataColors: [
+        [153, 153, 153]
+        [153,  85,   0]
+        [255,   0,   0]
+      ]
 
     @outputGraph = LabGrapher '#graph', outputOptions
 
