@@ -18,8 +18,8 @@ env           = require 'environments/snow'
 
 window.model =
   hawk: null
-  startingPlants: 100
-  startingRabbits: 15
+  startingPlants: 200
+  startingRabbits: 25
   setupEnvironment: ->
     for i in [1..@startingPlants]
       plant = plantSpecies.createAgent()
@@ -34,7 +34,7 @@ window.model =
       for i in [1..@startingRabbits]
         rabbit = rabbitSpecies.createAgent()
         rabbit.set 'age', 10
-        rabbit.set 'mating desire bonus', 0
+        rabbit.set 'mating desire bonus', 10
         rabbit.set 'hunger bonus', -10
         rabbit.set 'resource consumption rate', 10
         rabbit.set 'fear bonus', -1000
@@ -137,6 +137,8 @@ window.model =
     Events.addEventListener Environment.EVENTS.RESET, =>
       @env.setState 'hawk-follow-mouse'
       @numEaten = 0
+      @brownEaten = 0
+      @whiteEaten = 0
       caughtElem.innerHTML = "0"
 
     Events.addEventListener Environment.EVENTS.AGENT_EATEN, (evt)=>
