@@ -123,8 +123,8 @@ window.model =
     @env.addState 'hawk-follow-mouse',
       click: (evt)=>
         @hawk.setLocation {x: evt.envX, y: evt.envY}
-        @hawk.eat()
         @hawk.set 'wings', 1
+        @_tryToEat()
         setTimeout =>
           @hawk.set 'wings', 0
         , 200
@@ -146,6 +146,16 @@ window.model =
         @brownEaten++ if evt.detail.prey.get('color') is 'brown'
         @whiteEaten++ if evt.detail.prey.get('color') is 'white'
         caughtElem.innerHTML = "" + @numEaten
+
+  _tryToEat: ->
+    nearest = @hawk._nearestPrey()
+    if nearest?
+      eatingDist = @hawk.get('eating distance')
+      if nearest.distanceSq < Math.pow(eatingDist, 2)
+        color = nearest.agent.get('color')
+        if color is 'brown' or ExtMath.flip() is 1
+          @hawk._eatPrey(nearest.agent)
+
   _createPlusOne: ->
     plus = @plusOne.createAgent()
     plus.setLocation @hawk.getLocation()
