@@ -1,6 +1,7 @@
 Agent = require 'models/agent'
 Events = require 'events'
 Environment = require 'models/environment'
+Trait = require 'models/trait'
 helpers = require 'helpers'
 
 defaultProperties =
@@ -10,6 +11,7 @@ defaultProperties =
   'sex': 'female'
   'prey': []
   'predator': []
+  'hiding place': []
   'chance of being seen': 1.0
   'max energy': 100
   'energy': 100
@@ -22,7 +24,7 @@ defaultProperties =
   'hunger bonus': 0
   'mating desire bonus': 0
   'fear bonus': 0
-  'wandering threshold': 10
+  'wandering threshold': 5
   'bubble showing': 'none'
 
 ###
@@ -31,6 +33,8 @@ defaultProperties =
 module.exports = class BasicAnimal extends Agent
   label: 'animal'
   _viewLayer: 2
+  _hasEatenOnce: false
+  _timeLastMated: -20
 
   @BEHAVIOR:
     EATING: 'eating'
@@ -88,9 +92,33 @@ module.exports = class BasicAnimal extends Agent
       @wander(@get('speed') * 0.75)
 
   flee: ->
-    # TODO
+    nearest = @_nearestPredator()
+    if nearest?
+      hidingPlace = @_nearestHidingPlace()
+      if hidingPlace?
+        speed = @get 'speed'
+        @set 'speed', speed*6
+        @chase(hidingPlace)
+        @set 'speed', speed
+
+        @set('current behavior', BasicAnimal.BEHAVIOR.HIDING) if hidingPlace.distanceSq < Math.pow(@get('speed'), 2)
+      else
+        @runFrom(nearest)
+    else
+      @wander()
+
   mate: ->
-    # TODO
+    nearest = @_nearestMate()
+    if nearest?
+      @chase(nearest)
+      if nearest.distanceSq < Math.pow(@get('mating distance'), 2)
+        max = @get('max offspring')
+        @set 'max offspring', Math.max(max/2, 1)
+        @reproduce()
+        @set 'max offspring', max
+        @_timeLastMated = @environment.date
+    else
+      @wander(@get('speed') * 0.75)
 
   wander: (speed)->
     unless speed?
@@ -103,6 +131,10 @@ module.exports = class BasicAnimal extends Agent
   chase: (agentDistance)->
     @set('direction', @_direction(@getLocation(), agentDistance.agent.getLocation()))
     @set('speed', Math.min(@get('speed'), Math.sqrt(agentDistance.distanceSq)))
+    @move()
+
+  runFrom: (agentDistance)->
+    @set('direction', @_direction(@getLocation(), agentDistance.agent.getLocation())) + Math.PI + (ExtMath.randomGaussian/2)
     @move()
 
   move: ->
@@ -133,6 +165,7 @@ module.exports = class BasicAnimal extends Agent
     currEnergy = @get('energy')
     @set('energy', Math.min(@get('max energy'), currEnergy + food))
     agent.die()
+    @_hasEatenOnce = true
 
     Events.dispatchEvent(Environment.EVENTS.AGENT_EATEN, {predator: @, prey: agent})
 
@@ -173,8 +206,17 @@ module.exports = class BasicAnimal extends Agent
     return 0
 
   _desireToMate: ->
-    # TODO
-    return 0
+    age = @get 'age'
+    return 0 if @species.defs.MATURITY_AGE? and age < @species.defs.MATURITY_AGE
+    return 0 if @get('max offspring') < 1
+    return 0 unless @_hasEatenOnce
+    return 0 if (@environment.date - @_timeLastMated) < 20
+
+    proximityDesire = if @_nearestMate()? then 30 else 15
+    reciprocationFactor = if @_nearestMatingMate()? then 15 else 0
+    matingBonus = @get 'mating desire bonus'
+
+    return proximityDesire + reciprocationFactor + matingBonus
 
   _determineBehavior: ->
     hunger = @_hunger()
@@ -210,6 +252,28 @@ module.exports = class BasicAnimal extends Agent
 
     return null
 
+  _nearestHidingPlace: ->
+    hidingPlace = @get('hiding place')
+    if hidingPlace? and hidingPlace.length? and hidingPlace.length > 0
+      # TODO Add in trait filter
+      nearest = @_nearestAgentsMatching {types: hidingPlace, quantity: 1}
+      return nearest[0] || null
+
+    return null
+
+  _nearestMate: ->
+    desiredSex = if @get('sex') is 'male' then 'female' else 'male'
+    trait = new Trait({name: 'sex', possibleValues: [desiredSex]})
+    nearest = @_nearestAgentsMatching {traits: [trait], types: [@species.speciesName], quantity: 1}
+    return nearest[0] || null
+
+  _nearestMatingMate: ->
+    desiredSex = if @get('sex') is 'male' then 'female' else 'male'
+    trait  = new Trait({name: 'sex', possibleValues: [desiredSex]})
+    trait2 = new Trait({name: 'current behavior', possibleValues: [BasicAnimal.BEHAVIOR.MATING]})
+    nearest = @_nearestAgentsMatching {traits: [trait, trait2], types: [@species.speciesName], quantity: 1}
+    return nearest[0] || null
+
   _nearestAgents: ->
     return @_closestAgents if @_closestAgents?
     loc = @getLocation()
@@ -231,6 +295,7 @@ module.exports = class BasicAnimal extends Agent
       camo: true
       quantity: 3
       crossBarriers: false
+      traits: []
 
     throw "Must pass agent types array" unless opts.types? or typeof(opts.types) isnt 'object' or not opts.types.length?
 
@@ -244,7 +309,10 @@ module.exports = class BasicAnimal extends Agent
       continue if opts.camo and agent instanceof BasicAnimal and ExtMath.randomFloat() > agent.get('chance of being seen')
       continue if agent.hasProp('current behavior') and agent.get('current behavior') is BasicAnimal.BEHAVIOR.HIDING
       continue if !opts.crossBarriers and @environment.crossesBarrier(@getLocation(), agent.getLocation())
-      continue if opts.trait? # TODO
+      if opts.traits.length > 0
+        for trait in opts.traits
+          continue unless trait.isPossibleValue(agent.get(trait.name))
+
       returnedAgents.push agentDistance
       break if returnedAgents.length >= opts.quantity
 
@@ -254,6 +322,16 @@ module.exports = class BasicAnimal extends Agent
     dx = p1.x - p2.x
     dy = p1.y - p2.y
     return (dx*dx + dy*dy)
+
+  _getSurvivalChances: ->
+    return 1.0 if @get('is immortal')
+
+    basicPct = super()
+
+    energy = @get 'energy'
+    energyPct = 1 - Math.pow(1-(energy/100), 8)
+
+    return basicPct * energyPct
 
 class AgentDistance
   constructor: (@agent, @distanceSq)->

@@ -48,6 +48,9 @@ module.exports = class Trait
     else
       return val
 
+  isPossibleValue: (val)->
+    return @possibleValues.indexOf(val) != -1
+
   _mutateValueFromRange: (val) ->
     sign = if ExtMath.flip() then 1 else -1
     diff  = if @float then 0.1 else 1
