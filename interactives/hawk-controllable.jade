@@ -1,0 +1,46 @@
+include includes/_helpers
+doctype html
+html
+  head
+    include includes/shared-headers
+    include includes/shared-css
+    include includes/shared-js
+    include includes/shared-graph
+
+    // model files here
+    +script(src="species/fast-plants-roots.js")
+    +script(src="species/white-brown-rabbits.js")
+    +script(src="species/hawks.js")
+    +script(src="species/plus-one.js")
+    +script(src="environments/snow.js")
+    +script(src="models/hawk-controllable.js")
+    style(type="text/css").
+      #side {
+        padding: 2px;
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 10px;
+      }
+
+      #caught-value {
+        font-weight: bold;
+        font-size: 1.2em;
+        padding: 4px;
+      }
+
+      #graph {
+        position: absolute;
+        top: 500px;
+        left: 5px;
+        width: 500px;
+        height: 300px;
+      }
+
+  body
+    #environment
+    #side
+      .caught= "Rabbits caught:"
+        br
+        span#caught-value= "0"
+    #below
+      #graph
