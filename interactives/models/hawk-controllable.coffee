@@ -89,7 +89,7 @@ window.model =
       yFormatter: "2d"
       realTime: false
       fontScaleRelativeToParent: true
-      sampleInterval: (@env._runLoopDelay/1000)
+      sampleInterval: (Environment.DEFAULT_RUN_LOOP_DELAY/1000)
       dataType: 'samples'
       dataColors: [
         [153, 153, 153]
@@ -171,7 +171,7 @@ window.model =
 
   setupTimer: ->
     Events.addEventListener Environment.EVENTS.STEP, =>
-      t = Math.floor(@env.date * @env._runLoopDelay / 1000)
+      t = Math.floor(@env.date * Environment.DEFAULT_RUN_LOOP_DELAY / 1000) # this will calculate seconds at default speed
       if t >= 30 or @_numRabbits() is 0
         @env.stop()
         if @numEaten is 0

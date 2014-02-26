@@ -29,6 +29,7 @@ cellDefaults =
 # yearLength      :   # set by seasonsLength
 
 module.exports = class Environment extends StateMachine
+  @DEFAULT_RUN_LOOP_DELAY: 54.5
 
   constructor: (opts) ->
     opts = helpers.setDefaults(opts, defaultOptions)
@@ -50,6 +51,8 @@ module.exports = class Environment extends StateMachine
     @cells = []
     @cells[col] = [] for col in [0..@columns]
     @_setCellDefaults()
+
+    @_runLoopDelay = Environment.DEFAULT_RUN_LOOP_DELAY
 
     barriers = @barriers.slice()
     @barriers = []
