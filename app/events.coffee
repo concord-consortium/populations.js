@@ -31,3 +31,11 @@ module.exports = class Events
 
     window.CustomEvent = CustomEvent
 )()
+
+
+(->
+  unless window.TouchEvent?
+    # Firefox > 24 doesn't expose TouchEvent to the desktop browser version. Create a class to prevent NPE's in the code.
+    console.log "Shimming TouchEvent..."
+    window.TouchEvent = class TouchEvent
+)()
