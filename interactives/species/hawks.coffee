@@ -11,14 +11,13 @@ require.register "species/hawks", (exports, require, module) ->
       CHANCE_OF_MUTATION: 0
       INFO_VIEW_SCALE: 1
     traits: [
-      new Trait {name: 'speed', default: 8 }
+      new Trait {name: 'speed', default: 80 }
       new Trait {name: 'prey', default: ['rabbits'] }
-      new Trait {name: 'color', possibleValues: ['white','brown'] }
       new Trait {name: 'vision distance', default: 150 }
       new Trait {name: 'eating distance', default:  50 }
       new Trait {name: 'mating distance', default: 100 }
       new Trait {name: 'max offspring',   default:  3 }
-      new Trait {name: 'resource consumption rate', default:  35 }
+      new Trait {name: 'resource consumption rate', default:  10 }
       new Trait {name: 'metabolism', default:  0.5 }
       new Trait {name: 'wings', default: 0 }
     ]
