@@ -1,0 +1,28 @@
+include includes/_helpers
+doctype html
+html
+  head
+    include includes/shared-headers
+    include includes/shared-css
+    include includes/shared-js
+    include includes/shared-graph
+
+    // model files here
+    +script(src="species/fast-plants-roots.js")
+    +script(src="species/white-brown-rabbits.js")
+    +script(src="species/hawks.js")
+    +script(src="environments/snow.js")
+    +script(src="models/hawk-rabbit-evolution.js")
+    style(type="text/css").
+      #graph {
+        position: absolute;
+        top: 500px;
+        left: 5px;
+        width: 500px;
+        height: 300px;
+      }
+
+  body
+    #environment
+    #below
+      #graph
