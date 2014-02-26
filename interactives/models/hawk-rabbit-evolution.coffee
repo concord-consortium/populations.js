@@ -27,7 +27,7 @@ window.model =
           imagePath: "images/agents/grass/tallgrass.png"
           traits: [          ]
           limit: 180
-          scatter: 40
+          scatter: 45
         }
         {
           species: rabbitSpecies
@@ -35,11 +35,11 @@ window.model =
           traits: [
             new Trait {name: "mating desire bonus", default: -20}
             new Trait {name: "hunger bonus", default: -10}
-            new Trait {name: "age", default: 10}
+            new Trait {name: "age", default: 3}
             new Trait {name: "resource consumption rate", default: 10}
           ]
-          limit: 60
-          scatter: 60
+          limit: 30
+          scatter: 30
         }
         {
           species: hawkSpecies
@@ -68,20 +68,20 @@ window.model =
       action: (agent) =>
         if agent.species is rabbitSpecies
           if agent.get('color') is 'brown'
-            agent.set 'chance of being seen', (0.4 - (@brownness*0.4))
+            agent.set 'chance of being seen', (0.6 - (@brownness*0.6))
           else
-            agent.set 'chance of being seen', (@brownness*0.4)
+            agent.set 'chance of being seen', (@brownness*0.6)
 
   setupGraph: ->
     outputOptions =
       title:  "Number of rabbits"
       xlabel: "Time (s)"
       ylabel: "Number of rabbits"
-      xmax:   30
+      xmax:   100
       xmin:   0
-      ymax:   100
+      ymax:   50
       ymin:   0
-      xTickCount: 15
+      xTickCount: 10
       yTickCount: 10
       xFormatter: "2d"
       yFormatter: "2d"
@@ -123,7 +123,7 @@ window.model =
     Events.addEventListener Environment.EVENTS.STEP, =>
       t = Math.floor(@env.date * Environment.DEFAULT_RUN_LOOP_DELAY / 1000) # this will calculate seconds at default speed
       if t > 99
-        @environment.stop()
+        @env.stop()
         @showMessage "All the snow is gone. Look at the graph.<br/>How many white and brown rabbits are left in the field?<br/>Enter the number of rabbits in the table and then go on to the next page."
         return
 
@@ -146,6 +146,7 @@ window.model =
 
   setupPopulationControls: ->
     Events.addEventListener Environment.EVENTS.STEP, =>
+      @checkPlants()
       @checkRabbits()
       @checkHawks()
 
@@ -189,7 +190,7 @@ window.model =
       @addAgent(@rabbitSpecies, [["resource consumption rate", 10],["color", color]])
 
     if @numRabbits < 16
-      # @setProperty(allRabbits, "min offspring", 5)
+      @setProperty(allRabbits, "min offspring", 2)
       @setProperty(allRabbits, "speed", 70)
     else
       # @setProperty(allRabbits, "metabolism", 1)
@@ -223,7 +224,7 @@ window.model =
 
     if numHawks < 3 and @numRabbits > 0
       @setProperty(allHawks, "is immortal", true)
-      @setProperty(allHawks, "mating desire bonus", 0)
+      @setProperty(allHawks, "mating desire bonus", -10)
       @setProperty(allHawks, "hunger bonus", 5)
     else
       if allHawks[0].get("is immortal")
@@ -235,6 +236,15 @@ window.model =
       else
         @setProperty(allHawks, "mating desire bonus", -15)
         @setProperty(allHawks, "hunger bonus", -5)
+
+  checkPlants: ->
+    allPlants  = @agentsOfSpecies(@plantSpecies)
+    if allPlants.length < 100
+      @setProperty(allPlants, 'growth rate', 0.007)
+    else if allPlants.length < 300
+      @setProperty(allPlants, 'growth rate', 0.0035)
+    else
+      @setProperty(allPlants, 'growth rate', 0.0005)
 
 window.onload = ->
   model.run()
