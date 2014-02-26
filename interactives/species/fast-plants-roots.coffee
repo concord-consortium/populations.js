@@ -13,7 +13,8 @@ require.register "species/fast-plants-roots", (exports, require, module) ->
       INFO_VIEW_SCALE: 2.5
     traits: [
       new Trait {name: "growth rate", default: 0.0035, float: true }
-      new Trait {name: "max offspring distance", default: 100 }
+      new Trait {name: "max offspring", default: 3 }
+      new Trait {name: "max offspring distance", default: 200 }
       new Trait {name: "roots", possibleValues: [1,2,3], default: 2 }
       new Trait {name: "food quantity", default: 100 }
     ]

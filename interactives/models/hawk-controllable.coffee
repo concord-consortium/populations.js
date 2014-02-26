@@ -23,10 +23,6 @@ window.model =
   setupEnvironment: ->
     for i in [1..@startingPlants]
       plant = plantSpecies.createAgent()
-      plant.set "food quantity",100
-      plant.set "max offspring distance", 200
-      plant.set "min offspring", 1
-      plant.set "max offspring", 3
       plant.setLocation @env.randomLocation()
       @env.addAgent plant
 
