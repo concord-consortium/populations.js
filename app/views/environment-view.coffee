@@ -6,6 +6,7 @@ cursorsClasses = [
 
 module.exports = class EnvironmentView
   showingBarriers: false
+  _backgroundSprite: null
 
   constructor: ({@environment}) ->
     @showingWinter = false
@@ -25,15 +26,15 @@ module.exports = class EnvironmentView
 
     layer = @_getOrCreateLayer 0
     # create a new Sprite using the texture
-    envSprite = new PIXI.Sprite(texture)
+    @_backgroundSprite = new PIXI.Sprite(texture)
 
-    envSprite.anchor.x = 0
-    envSprite.anchor.y = 0
+    @_backgroundSprite.anchor.x = 0
+    @_backgroundSprite.anchor.y = 0
 
-    envSprite.position.x = 0
-    envSprite.position.y = 0
+    @_backgroundSprite.position.x = 0
+    @_backgroundSprite.position.y = 0
 
-    layer.addChild(envSprite)
+    layer.addChild(@_backgroundSprite)
 
     @renderBarriers(layer)
 
@@ -116,6 +117,10 @@ module.exports = class EnvironmentView
           evt.envX = evt.pageX - @view.offsetLeft
           evt.envY = evt.pageY - @view.offsetTop
         @environment.send evt.type, evt
+
+  updateBackground: ->
+    texture = PIXI.Texture.fromImage @environment.imgPath
+    @_backgroundSprite.setTexture texture
 
   _getOrCreateLayer: (idx)->
     if not @_layers[idx]?

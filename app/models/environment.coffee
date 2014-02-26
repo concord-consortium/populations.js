@@ -302,6 +302,10 @@ module.exports = class Environment extends StateMachine
   clearRules: ->
     @_rules = []
 
+  setBackground: (path)->
+    @imgPath = path
+    @_view.updateBackground()
+
   _incrementDate: ->
     @date++
     if @usingSeasons and @_totalSeasonLengths.length == 4
