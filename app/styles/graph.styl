@@ -20,7 +20,7 @@ div.graph, #graph
       opacity: 0.3
       color: black
       font-size: 120%
-      &hover
+      &:hover
         opacity: 1
   canvas.overlay
     position: absolute
@@ -44,24 +44,28 @@ svg.graph
     fill: rgba(255, 255, 255, 0)
     &:hover
       fill: rgba(196, 196, 196, 0.2)
+  .ruler
+    &.hidden
+      visibility: hidden
 
-circle, .line
-  fill: none
-  stroke: steelblue
-  stroke-width: 2px
-circle
-  fill: white
-  fill-opacity: 0.2
-  cursor: move
-  &.selected
-    fill: #ff7f0e
-    stroke: #ff7f0e
-    &:hover
+  circle
+    fill: none
+    stroke: steelblue
+    stroke-width: 2px
+    fill-opacity: 0.2
+    cursor: move
+    &.selected
       fill: #ff7f0e
       stroke: #ff7f0e
-  &:hover
-    fill: #ff7f0e
-    stroke: #707f0e
+      &:hover
+        fill: #ff7f0e
+        stroke: #ff7f0e
+    &:hover
+      fill: #ff7f0e
+      stroke: #707f0e
+  .brush
+    .extent
+      opacity: 0.2
 
 /* Hack for LabGrapher using an older version of font-awesome */
 i.icon-picture
@@ -72,5 +76,5 @@ i.icon-picture
   line-height: 1
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
-  content: "\f03e"
-  height: 21px
+  &:before
+    content: "\f03e"
