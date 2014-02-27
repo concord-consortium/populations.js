@@ -15,8 +15,8 @@ module.exports = function(config) {
     files: [
 
       // Program files
-      'public/js/vendor.js',
-      'public/js/app.js',
+      'public-test/js/vendor.js',
+      'public-test/js/app.js',
 
       // Specs
 
