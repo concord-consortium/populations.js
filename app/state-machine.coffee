@@ -39,3 +39,7 @@ module.exports = class StateMachine
 
     if @_states[@currentState][evtName]?
       @_states[@currentState][evtName].apply @, [evt]
+    # oddly, touch quit generating 'click' events, so here's a workaround for it
+    else if evtName is "touchstart" and @_states[@currentState]['click']?
+      evt.preventDefault()
+      @_states[@currentState]['click'].apply @, [evt]
