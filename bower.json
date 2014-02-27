@@ -6,7 +6,7 @@
      "pixi.js": ">=1.4.1",
      "classList": "https://raw2.github.com/eligrey/classList.js/master/classList.js",
      "shutterbug": "git://github.com/concord-consortium/shutterbug.git#0.1.3",
-     "lab-grapher": "https://raw.githubusercontent.com/concord-consortium/lab-grapher/master/dist/lab-grapher.js"
+     "lab-grapher": "https://raw.github.com/concord-consortium/lab-grapher/fix-samples-autoscale/dist/lab-grapher.js"
     },
   "overrides": {
     "jquery": {
