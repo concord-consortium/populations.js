@@ -1,19 +1,18 @@
-div.graph
-   background-color: #ddf2ff
+div.graph, #graph
+   background-color: #ffffff
    border-radius: 0.25em
    width: 263px
    height: 200px
    margin-bottom: 10px
 
-
-.graph
+.graph, #graph
   position: relative
   background: rgba(255, 255, 255, 0)
   &:focus
     outline: #76d2b8 solid 0.2em
   div.background
     position: absolute
-    background: #efefef
+    background: #ffffff
   div.button-layer
     position: absolute
     text-align: right
@@ -25,7 +24,7 @@ div.graph
         opacity: 1
   canvas.overlay
     position: absolute
-    background: rgba(0, 255, 0, 0.05)
+    background: rgba(255, 255, 255, 0.05)
 
 svg.graph
   &:focus
@@ -63,3 +62,15 @@ circle
   &:hover
     fill: #ff7f0e
     stroke: #707f0e
+
+/* Hack for LabGrapher using an older version of font-awesome */
+i.icon-picture
+  display: inline-block
+  font-family: FontAwesome
+  font-style: normal
+  font-weight: normal
+  line-height: 1
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  content: "\f03e"
+  height: 21px
