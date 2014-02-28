@@ -94,31 +94,37 @@ window.model =
     @left = document.getElementById('left')
     @right = document.getElementById('right')
 
-    move = =>
+    move = (direction)=>
+      @rabbit.set 'direction', direction
       if @env._isRunning
         @rabbit.set 'speed', 20
         @rabbit.move()
         @rabbit.set 'speed', 0
+      return false
 
     @up.onclick = =>
-      @rabbit.set 'direction', 1.5 * Math.PI
-      move()
-      return false
+      return move(1.5 * Math.PI)
+    @up.ontouchstart = (evt)=>
+      evt.preventDefault()
+      return move(1.5 * Math.PI)
 
     @down.onclick = =>
-      @rabbit.set 'direction', 0.5 * Math.PI
-      move()
-      return false
+      return move(0.5 * Math.PI)
+    @down.ontouchstart = (evt)=>
+      evt.preventDefault()
+      return move(0.5 * Math.PI)
 
     @left.onclick = =>
-      @rabbit.set 'direction', Math.PI
-      move()
-      return false
+      return move(Math.PI)
+    @left.ontouchstart = (evt)=>
+      evt.preventDefault()
+      return move(Math.PI)
 
     @right.onclick = =>
-      @rabbit.set 'direction', 0
-      move()
-      return false
+      return move(0)
+    @right.ontouchstart = (evt)=>
+      evt.preventDefault()
+      return move(0)
 
   setupTimer: ->
     time = document.getElementById('time-value')
