@@ -54,10 +54,7 @@ module.exports = class Environment extends StateMachine
 
     @_runLoopDelay = Environment.DEFAULT_RUN_LOOP_DELAY
 
-    barriers = @barriers.slice()
-    @barriers = []
-    for barrier in (barriers || [])
-      @addBarrier.apply this, barrier
+    @setBarriers(@barriers)
 
     @agents = []
     @_rules = []
@@ -161,6 +158,13 @@ module.exports = class Environment extends StateMachine
       if agent.getView().contains(x,y)
         return agent
     return null
+
+  setBarriers: (bars)->
+    barriers = bars.slice()
+    @barriers = []
+    for barrier in (barriers || [])
+      @addBarrier.apply this, barrier
+    @_view.rerenderBarriers() if @_view && @_view.barrierGraphics?
 
   addBarrier: (x, y, width, height) ->
     @barriers.push new Barrier x, y, width, height

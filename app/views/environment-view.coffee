@@ -70,6 +70,15 @@ module.exports = class EnvironmentView
   renderBarriers: (stage) ->
     @barrierGraphics = new PIXI.Graphics()
 
+    @rerenderBarriers()
+
+    stage.addChild(@barrierGraphics)
+
+  rerenderBarriers: ->
+    while @barrierGraphics.children.length > 0
+      @barrierGraphics.removeChild(@barrierGraphics.children[0])
+    @barrierGraphics.clear()
+
     # set a fill and line style
     @barrierGraphics.beginFill(0xFF3300, 0.5)
     @barrierGraphics.lineStyle(1, 0xffd900, 0.5)
@@ -83,7 +92,6 @@ module.exports = class EnvironmentView
 
     @barrierGraphics.endFill()
     @barrierGraphics.visible = @showingBarriers
-    stage.addChild(@barrierGraphics)
 
   removeAgent: (agent)->
     agent.getView().remove(@_getOrCreateLayer(agent._viewLayer))
