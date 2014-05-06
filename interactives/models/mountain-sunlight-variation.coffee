@@ -61,7 +61,6 @@ window.model =
     @plantSpecies = plantSpecies
 
   setupMountains: ->
-    # TODO
     mountains1 = document.getElementById('mountains1')
     mountains2 = document.getElementById('mountains2')
     mountains3 = document.getElementById('mountains3')
@@ -89,6 +88,11 @@ window.model =
       light = if col > 30 then rightSunlight else leftSunlight
       for row in [0..52]
         @env.set col, row, "sunlight", light
+
+    for agent in @env.agents
+      loc = agent.getLocation()
+      if @env.isInBarrier(loc.x, loc.y)
+        agent.die()
 
   showMessage: (message, callback) ->
     helpers.showMessage message, @env.getView().view.parentElement, callback
