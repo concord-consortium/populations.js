@@ -238,7 +238,6 @@ module.exports = class BasicAnimal extends Agent
   _nearestPredator: ->
     predator = @get('predator')
     if predator? and predator.length? and predator.length > 0
-      # TODO Add in trait filter
       nearest = @_nearestAgentsMatching {types: predator, quantity: 1}
       return nearest[0] || null
     return null
@@ -246,7 +245,6 @@ module.exports = class BasicAnimal extends Agent
   _nearestPrey: ->
     prey = @get('prey')
     if prey? and prey.length? and prey.length > 0
-      # TODO Add in trait filter
       nearest = @_nearestAgentsMatching {types: prey}
       return nearest[ExtMath.randomInt(nearest.length)]
 
@@ -255,7 +253,6 @@ module.exports = class BasicAnimal extends Agent
   _nearestHidingPlace: ->
     hidingPlace = @get('hiding place')
     if hidingPlace? and hidingPlace.length? and hidingPlace.length > 0
-      # TODO Add in trait filter
       nearest = @_nearestAgentsMatching {types: hidingPlace, quantity: 1}
       return nearest[0] || null
 
@@ -264,14 +261,14 @@ module.exports = class BasicAnimal extends Agent
   _nearestMate: ->
     desiredSex = if @get('sex') is 'male' then 'female' else 'male'
     trait = new Trait({name: 'sex', possibleValues: [desiredSex]})
-    nearest = @_nearestAgentsMatching {traits: [trait], types: [@species.speciesName], quantity: 1}
+    nearest = @_nearestAgentsMatching {types: [{name: @species.speciesName, traits: [trait]}], quantity: 1}
     return nearest[0] || null
 
   _nearestMatingMate: ->
     desiredSex = if @get('sex') is 'male' then 'female' else 'male'
     trait  = new Trait({name: 'sex', possibleValues: [desiredSex]})
     trait2 = new Trait({name: 'current behavior', possibleValues: [BasicAnimal.BEHAVIOR.MATING]})
-    nearest = @_nearestAgentsMatching {traits: [trait, trait2], types: [@species.speciesName], quantity: 1}
+    nearest = @_nearestAgentsMatching {types: [{name: @species.speciesName, traits: [trait, trait2]}], quantity: 1}
     return nearest[0] || null
 
   _nearestAgents: ->
@@ -295,7 +292,6 @@ module.exports = class BasicAnimal extends Agent
       camo: true
       quantity: 3
       crossBarriers: false
-      traits: []
 
     throw "Must pass agent types array" unless opts.types? or typeof(opts.types) isnt 'object' or not opts.types.length?
 
@@ -303,18 +299,23 @@ module.exports = class BasicAnimal extends Agent
     returnedAgents = []
     for agentDistance in nearest
       agent = agentDistance.agent
-      continue if opts.types.indexOf(agent.species.speciesName) is -1
+      for type in opts.types
+        throw "types array must be an array of objects in format {name: 'foo', traits: []}" if typeof(type) isnt 'object' or not type.name?
+        continue if type.name isnt agent.species.speciesName
 
-      continue if agent is @
-      continue if opts.camo and agent instanceof BasicAnimal and ExtMath.randomFloat() > agent.get('chance of being seen')
-      continue if agent.hasProp('current behavior') and agent.get('current behavior') is BasicAnimal.BEHAVIOR.HIDING
-      continue if !opts.crossBarriers and @environment.crossesBarrier(@getLocation(), agent.getLocation())
-      if opts.traits.length > 0
-        for trait in opts.traits
-          continue unless trait.isPossibleValue(agent.get(trait.name))
+        continue if agent is @
+        continue if opts.camo and agent instanceof BasicAnimal and ExtMath.randomFloat() > agent.get('chance of being seen')
+        continue if agent.hasProp('current behavior') and agent.get('current behavior') is BasicAnimal.BEHAVIOR.HIDING
+        continue if !opts.crossBarriers and @environment.crossesBarrier(@getLocation(), agent.getLocation())
+        if type.traits? and type.traits.length > 0
+          # All traits must match to be considered a valid agent match
+          nextType = false
+          for trait in type.traits
+            nextType = true unless trait.isPossibleValue(agent.get(trait.name))
+          continue if nextType
 
-      returnedAgents.push agentDistance
-      break if returnedAgents.length >= opts.quantity
+        returnedAgents.push agentDistance
+        return returnedAgents if returnedAgents.length >= opts.quantity
 
     return returnedAgents
 

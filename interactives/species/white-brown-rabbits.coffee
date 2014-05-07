@@ -16,8 +16,8 @@ require.register "species/white-brown-rabbits", (exports, require, module) ->
         "Color: ": 'color'
     traits: [
       new Trait {name: 'speed', default: 30 }
-      new Trait {name: 'prey', default: ['fast plants'] }
-      new Trait {name: 'predator', default: ['hawks','foxes'] }
+      new Trait {name: 'prey', default: [{name: 'fast plants'}] }
+      new Trait {name: 'predator', default: [{name: 'hawks'},{name: 'foxes'}] }
       new Trait {name: 'color', possibleValues: ['white','brown'] }
       new Trait {name: 'vision distance', default: 200 }
       new Trait {name: 'eating distance', default:  50 }

@@ -12,7 +12,7 @@ require.register "species/hawks", (exports, require, module) ->
       INFO_VIEW_SCALE: 1
     traits: [
       new Trait {name: 'speed', default: 80 }
-      new Trait {name: 'prey', default: ['rabbits'] }
+      new Trait {name: 'prey', default: [{name: 'rabbits'}] }
       new Trait {name: 'vision distance', default: 150 }
       new Trait {name: 'eating distance', default:  50 }
       new Trait {name: 'mating distance', default:  50 }
