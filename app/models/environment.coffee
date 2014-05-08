@@ -215,8 +215,8 @@ module.exports = class Environment extends StateMachine
       # drop the agent back on it's original location if addAgent returns false
       @carriedAgent.setLocation @_agentOrigin
       @addAgent(@carriedAgent)
+    @getView().removeCarriedAgent(@carriedAgent)
     @carriedAgent = null
-
 
   # Used for setting the default species and traits for
   # creating and adding agents.

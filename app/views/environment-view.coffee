@@ -96,6 +96,9 @@ module.exports = class EnvironmentView
   removeAgent: (agent)->
     agent.getView().remove(@_getOrCreateLayer(agent._viewLayer))
 
+  removeCarriedAgent: (agent)->
+    agent.getView().remove(@_getOrCreateLayer(100))
+
   setCursor: (name) ->
     return unless @view
     for cursorClass in cursorsClasses
