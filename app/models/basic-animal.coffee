@@ -53,7 +53,7 @@ module.exports = class BasicAnimal extends Agent
 
   makeNewborn: ->
     super()
-    @set 'sex', (ExtMath.flip is 0 ? 'female' : 'male')
+    @set 'sex', (if ExtMath.flip() is 0 then 'female' else 'male')
     @set 'energy', @get('max energy')
     @set 'direction', ExtMath.randomFloat(2 * Math.PI)
     @set 'speed', @get('default speed')
