@@ -1,0 +1,98 @@
+include includes/_helpers
+doctype html
+html
+  head
+    include includes/shared-headers
+    include includes/shared-css
+    include includes/shared-js
+
+    // model files here
+    +script(src="species/fast-plants-roots.js")
+    +script(src="species/varied-rabbits.js")
+    +script(src="environments/dam.js")
+    +script(src="models/dam-plants-rabbits.js")
+    style(type="text/css").
+      #meta {
+        padding: 2px;
+        display: inline-block;
+        vertical-align: top;
+      }
+
+      #meta .left {
+        width: 150px;
+        display: inline-block;
+        vertical-align: top;
+      }
+
+      #meta .right {
+        display: inline-block;
+        margin-left: 4px;
+        vertical-align: top;
+      }
+
+      .title {
+        font-weight: bold;
+      }
+
+
+      #controls, #water-level-container, #highlight {
+        margin-top: 35px;
+      }
+
+      #water-level {
+        height: 100px;
+        width: 18px;
+        border-radius: 10px;
+        background-color: #cccccc;
+        position: relative;
+        padding: 2px;
+      }
+
+      #water-level-indicator {
+        position: absolute;
+        bottom: 0;
+        left: 3px;
+        height: 100%;
+        max-height: 100px;
+        margin-top: 2px;
+        margin-bottom: 2px;
+        width: 16px;
+        border-radius: 8px;
+        background-color: blue;
+      }
+
+  body
+    #environment
+    #meta
+      .left
+        .year-container
+          span.title= "Year:"
+          br
+          span#year= "1"
+        #controls
+          button#build-button= "Build Dam"
+        #water-level-container
+          .title= "Water below the dam"
+          .level
+            div= "Lots of water"
+            #water-level
+              #water-level-indicator
+            div= "Little water"
+        #highlight
+          span.title= "Highlight:"
+          br
+          input#highlight-none(type='radio' name='highlight' checked='checked')
+          ="None"
+          br
+          input#highlight-big(type='radio' name='highlight')
+          = "Big rabbits"
+          br
+          input#highlight-medium(type='radio' name='highlight')
+          = "Medium rabbits"
+          br
+          input#highlight-small(type='radio' name='highlight')
+          = "Small rabbits"
+
+      .right
+        #chart1= "Chart 1 here"
+        #chart2= "Chart 2 here"
