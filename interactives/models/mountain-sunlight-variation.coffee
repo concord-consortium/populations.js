@@ -135,7 +135,7 @@ window.model =
         if allExtinct || halfExtinct
           if successful && (allExtinct || willAnyoneSurvive)
             # case 2
-            @showMessage "The plants went extinct. Why did the plants go\nextinct when the mountains changed quickly?\nGo on to the next page to answer this question."
+            @showMessage "The plants went extinct. Why did the plants go\nextinct when the mountains changed quickly?"
             env.stop()
             extinctionCount++
           else if extinctionCount is 0
@@ -171,12 +171,12 @@ window.model =
                 successful = true
                 if extinctionCount > 0
                   # case 1 success
-                  @showMessage "Great job! The mountains grew slowly enough so that the plants could evolve.\nTake a picture and take a look at the graph.\nThen go on to the next page."
+                  @showMessage "Great job! The mountains grew slowly enough so that the plants could evolve.\nTake a Snapshot to help answer the question."
                   env.stop()
                   shownMessage = true
                 else
                   # case 2 success
-                  @showMessage "Congratulations! The mountains grew slowly and the plants had time to evolve.\n Take a picture and take a look at the graph.\nThen click reset and try changing the environment quickly. What do you think will happen?"
+                  @showMessage "Congratulations! The mountains grew slowly and the plants had time to evolve.\n Take a Snapshot to help answer the question.\nThen click reset and try changing the environment quickly. What do you think will happen?"
                   env.stop()
                   shownMessage = true
 
