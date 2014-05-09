@@ -45,7 +45,7 @@ module.exports = class BasicAnimal extends Agent
 
   constructor: (args) ->
     if args.additionalDefaults?
-      defaults = helpers.setDefaults(defaultProperties, args.additionalDefaults)
+      defaults = helpers.setDefaults(helpers.clone(defaultProperties), args.additionalDefaults)
     else
       defaults = helpers.clone defaultProperties
     args.additionalDefaults = defaults

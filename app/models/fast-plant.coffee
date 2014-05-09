@@ -19,7 +19,7 @@ module.exports = class FastPlant extends Agent
   constructor: (args) ->
     super(args)
     # FastPlant defaults take priority over Agent defaults
-    @_props = helpers.setDefaults(defaultProperties, @_props)
+    @_props = helpers.setDefaults(helpers.clone(defaultProperties), @_props)
 
   getSize: ->
     1
