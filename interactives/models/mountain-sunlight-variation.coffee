@@ -214,7 +214,65 @@ window.model =
         return true
     return false
 
+  chartData: null
+  chart: null
+  setupChart: ->
+    domChart = document.getElementById('chart')
+    if domChart?
+      # init chart
+      @chartData = new google.visualization.DataTable()
+      @chartData.addColumn('string', 'Plant Type (Leaf Size)')
+      @chartData.addColumn('number', 'Number of plants')
+      @chartData.addColumn({ type: 'string', role: 'style' })
+      @chartData.addRows [
+        ["1",  0, "color: #5942BF"]
+        ["2",  0, "color: #5F42B8"]
+        ["3",  0, "color: #65429F"]
+        ["4",  0, "color: #73419E"]
+        ["5",  0, "color: #874084"]
+        ["6",  0, "color: #904078"]
+        ["7",  0, "color: #9F416B"]
+        ["8",  0, "color: #B5435A"]
+        ["9",  0, "color: #C84349"]
+        ["10", 0, "color: #D34441"]
+      ]
+
+      # Set chart options
+      options =
+        title: 'Number of Plants'
+        hAxis:
+          title: 'Plant Type (Leaf Size)'
+        vAxis:
+          title: 'Number of plants'
+          minValue: 0
+          maxValue: 10
+          gridlines:
+            count: 6
+        legend:
+          position: 'none'
+        width: 500
+        height: 400
+
+      # Instantiate and draw our chart, passing in some options.
+      @chart = new google.visualization.ColumnChart(domChart);
+      @chart.draw(@chartData, options);
+
+      Events.addEventListener Environment.EVENTS.STEP, =>
+        unless @env.get(0, 0, "season") is "summer" then return
+        counts = []; counts.push(0) for i in [0..9]
+        for agent in @env.agents
+          counts[agent.get('size')] += 1
+
+        for i in [0..8]
+          @chartData.setValue(i, 1, counts[i+1])
+
+        if counts[1] > 10 or counts[5] > 10 or counts[9] > 10
+          options.vAxis.gridlines.count = -1
+
+        @chart.draw(@chartData, options)
+
 window.onload = ->
   model.run()
   model.setupMountains()
   model.setupMessages()
+  model.setupChart()

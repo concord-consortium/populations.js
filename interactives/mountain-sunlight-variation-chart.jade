@@ -1,0 +1,56 @@
+include includes/_helpers
+doctype html
+html
+  head
+    include includes/shared-headers
+    include includes/shared-css
+    include includes/shared-js
+
+    // model files here
+    +script(src="species/varied-plants.js")
+    +script(src="environments/sunlight-mountain.js")
+    +script(src="models/mountain-sunlight-variation.js")
+
+    style(type="text/css").
+      .meta {
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 30px
+      }
+      .mountain-selection {
+        padding: 2px;
+        vertical-align: top;
+      }
+      #chart {
+        margin-top: 10px;
+        display: block;
+      }
+
+      .mountain-selection input {
+        margin-left: 20px;
+      }
+
+      span.title {
+        font-weight: bold;
+        font-size: 1.2em;
+        padding: 4px;
+      }
+
+  body
+    #environment
+    .meta
+      .mountain-selection
+        span.title= "Mountain height:"
+        br
+        input#mountains5(type='radio' name='mountain-size')
+        ="High"
+        br
+        input#mountains4(type='radio' name='mountain-size')
+        br
+        input#mountains3(type='radio' name='mountain-size')
+        br
+        input#mountains2(type='radio' name='mountain-size')
+        br
+        input#mountains1(type='radio' name='mountain-size' checked='checked')
+        = "Low"
+      #chart
