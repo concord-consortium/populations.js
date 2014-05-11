@@ -126,7 +126,13 @@ module.exports = class Environment extends StateMachine
     return {x,y}
 
   randomLocation: ->
-    return {x: ExtMath.randomInt(@width), y: ExtMath.randomInt(@height)}
+    return @randomLocationWithin(0,0,@width,@height)
+
+  randomLocationWithin: (left, top, width, height, avoidBarriers=false)->
+    point = {x: ExtMath.randomInt(width)+left, y: ExtMath.randomInt(height)+top}
+    while avoidBarriers and @isInBarrier(point)
+      point = {x: ExtMath.randomInt(width)+left, y: ExtMath.randomInt(height)+top}
+    return point
 
   set: (col, row, prop, val) ->
     if not @cells[col][row]
