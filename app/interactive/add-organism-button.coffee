@@ -1,12 +1,13 @@
 module.exports = class AddOrganismButton
 
-  constructor: (@environment, @toolbar, {@species, @traits, @scatter, @limit, @imagePath}) ->
+  constructor: (@environment, @toolbar, {@species, @traits, @scatter, @limit, @imagePath, @showRemoveButton}) ->
     if !@scatter
       @toolbar.registerModalButton this
 
   render: ->
     @button = document.createElement 'div'
     @button.classList.add 'button'
+    @button.classList.add 'has-no-button' if @showRemoveButton
     @button.addEventListener 'click', => @action()
     if !@scatter then @button.classList.add 'modal'
 

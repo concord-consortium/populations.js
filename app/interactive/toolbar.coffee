@@ -1,4 +1,5 @@
 AddOrganismButton = require "interactive/add-organism-button"
+RemoveOrganismButton = require "interactive/remove-organism-button"
 ToolButton  = require 'interactive/tool-button'
 Events = require 'events'
 Environment = require 'models/environment'
@@ -32,6 +33,11 @@ module.exports = class Toolbar
       button = new AddOrganismButton env, this, opts
       @view.appendChild button.render()
       @organismButtons.push button
+
+      if opts.showRemoveButton
+        removeButton = new RemoveOrganismButton env, this, opts
+        @view.appendChild removeButton.render()
+        @organismButtons.push removeButton
 
     for opts in @interactive.toolButtons
       button = new ToolButton env, this, opts

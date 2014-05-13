@@ -109,6 +109,15 @@ module.exports = class Environment extends StateMachine
 
     @getView().removeAgent(agent) if @agents.removeObj(agent)
 
+  removeDeadAgents: ->
+    i = 0
+    while i < @agents.length
+      a = @agents[i]
+      if a.isDead
+        @removeAgent(a)
+      else
+        i++
+
   agentsWithin: ({x,y,width,height})->
     throw "Invalid rectangle definition!" unless x? and y? and width? and height?
     area = new Barrier(x,y,width,height)
@@ -273,13 +282,7 @@ module.exports = class Environment extends StateMachine
       a._consumeResources() if a._consumeResources?
       a.step()
     @_replenishResources()
-    i = 0
-    while i < @agents.length
-      a = @agents[i]
-      if a.isDead
-        @removeAgent(a)
-      else
-        i++
+    @removeDeadAgents()
     Events.dispatchEvent(Environment.EVENTS.STEP, {})
 
   reset: ->
