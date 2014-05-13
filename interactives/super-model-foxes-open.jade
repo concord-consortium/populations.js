@@ -1,0 +1,47 @@
+include includes/_helpers
+doctype html
+html
+  head
+    include includes/shared-headers
+    include includes/shared-css
+    include includes/shared-js
+    include includes/shared-graph
+
+    // model files here
+    +script(src="species/fast-plants-roots.js")
+    +script(src="species/white-brown-rabbits.js")
+    +script(src="species/hawks.js")
+    +script(src="species/foxes.js")
+    +script(src="environments/open.js")
+    +script(src="models/super-model-foxes-open.js")
+    style(type="text/css").
+      #graph-legend {
+        display: inline-block;
+        margin-left: 5px;
+        margin-right: 10px;
+        margin-bottom: 450px;
+        height: 100px;
+        vertical-align: middle
+      }
+
+      .grass { color: #00AA00; }
+      .rabbit { color: #9999BB; }
+      .hawk { color: #A31F05; }
+      .fox { color: #DEB709; }
+
+      #graph {
+        display: inline-block;
+        margin-left: 5px;
+        margin-top: 100px;
+        width: 500px;
+        height: 300px;
+      }
+
+  body
+    #environment
+    #graph-legend
+      .grass= "Grass"
+      .rabbit= "Rabbits"
+      .hawk= "Hawks"
+      .fox= "Foxes"
+    #graph
