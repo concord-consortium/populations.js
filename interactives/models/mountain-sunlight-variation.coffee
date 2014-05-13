@@ -239,11 +239,11 @@ window.model =
 
       # Set chart options
       options =
-        title: 'Number of Plants'
+        title: 'Number of flowers'
         hAxis:
           title: 'Plant Type (Leaf Size)'
         vAxis:
-          title: 'Number of plants'
+          title: 'Flowers'
           minValue: 0
           maxValue: 10
           gridlines:
@@ -261,7 +261,7 @@ window.model =
         unless @env.get(0, 0, "season") is "summer" then return
         counts = []; counts.push(0) for i in [0..9]
         for agent in @env.agents
-          counts[agent.get('size')] += 1
+          counts[agent.get('size')] += 1 if agent.get('has flowers')
 
         for i in [0..8]
           @chartData.setValue(i, 1, counts[i+1])
