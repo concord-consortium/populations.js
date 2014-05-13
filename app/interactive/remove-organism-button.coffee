@@ -1,3 +1,6 @@
+Events = require 'events'
+Environment = require 'models/environment'
+
 module.exports = class RemoveOrganismButton
 
   constructor: (@environment, @toolbar, {@species, @imagePath}) ->
@@ -33,6 +36,7 @@ module.exports = class RemoveOrganismButton
   action: ->
     return if @_disabled
     @removeOrganisms()
+    Events.dispatchEvent(Environment.EVENTS.USER_REMOVED_AGENTS, {species: @species})
 
   removeOrganisms: ->
     for agent in @environment.agents

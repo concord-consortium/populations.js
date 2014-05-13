@@ -389,6 +389,7 @@ module.exports = class Environment extends StateMachine
     AGENT_ADDED: "agent-added"
     AGENT_EATEN: "agent-eaten"
     SEASON_CHANGED: "season-changed"
+    USER_REMOVED_AGENTS: 'user-removed-agents'
 
   ### UI States ###
 
