@@ -139,3 +139,12 @@ module.exports =
 
     element.appendChild box
 
+  stringify: (obj)->
+    if not obj? or typeof obj isnt 'object'
+      return String(obj)
+
+    str = "{ "
+    for key of obj
+      str += String(key) + ": " + @stringify obj[key] + ", "
+
+    return str.slice(0,str.length-2) + " }"
