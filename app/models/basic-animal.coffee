@@ -16,9 +16,9 @@ defaultProperties =
   'max energy': 100
   'energy': 100
   'metabolism': 3
-  'vision distance': 30
-  'eating distance': 5
-  'mating distance': 5
+  'vision distance': 300
+  'eating distance': 50
+  'mating distance': 50
   'current behavior': 'wandering'
   'calculate drives': true
   'hunger bonus': 0
