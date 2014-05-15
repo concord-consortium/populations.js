@@ -40,7 +40,7 @@ ExtMath.randomFloat = (max=1) ->
 ExtMath.randomValue = (min, max) ->
   min + Math.random() * (max - min)
 
-ExtMath.randomGaussian = (opts={}) ->
+ExtMath.randomGaussianIrwinHall = (opts={}) ->
   opts.mean = 0 unless opts.mean?
   opts.deviation = 1 unless opts.deviation?
 
@@ -50,6 +50,27 @@ ExtMath.randomGaussian = (opts={}) ->
   for i in [1..12]
     v += (Math.random() - 0.5)
   return v * opts.deviation + opts.mean
+
+ExtMath._haveNextNextGuassian = false
+ExtMath._nextNextGuassian = 0
+ExtMath.randomGaussianJava = (opts={}) ->
+  if ExtMath._haveNextNextGaussian
+    ExtMath._haveNextNextGaussian = false
+    return ExtMath._nextNextGaussian
+  else
+    s = 0
+    while s >= 1 or s is 0
+      v1 = 2 * Math.random() - 1   # between -1.0 and 1.0
+      v2 = 2 * Math.random() - 1   # between -1.0 and 1.0
+      s = v1 * v1 + v2 * v2
+    multiplier = Math.sqrt(-2 * Math.log(s)/s)
+    ExtMath._nextNextGaussian = v2 * multiplier
+    ExtMath._haveNextNextGaussian = true
+    return v1 * multiplier
+
+ExtMath.randomGaussian= (opts={}) ->
+  # return ExtMath.randomGaussianIrwinHall(opts)
+  return ExtMath.randomGaussianJava(opts)
 
 ExtMath.flip = ->
   ExtMath.randomInt(2)
