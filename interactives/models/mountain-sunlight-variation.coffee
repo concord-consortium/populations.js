@@ -218,7 +218,18 @@ window.model =
   chart: null
   setupChart: ->
     domChart = document.getElementById('chart')
+
     if domChart?
+      toggleButton = document.getElementById('chart-visibility')
+      if toggleButton?
+        toggleButton.onclick = ->
+          if toggleButton.innerHTML is "Show Graph"
+            domChart.style.display = "block"
+            toggleButton.innerHTML = "Hide Graph"
+          else
+            domChart.style.display = "none"
+            toggleButton.innerHTML = "Show Graph"
+
       # init chart
       @chartData = new google.visualization.DataTable()
       @chartData.addColumn('string', 'Plant Type (Leaf Size)')
