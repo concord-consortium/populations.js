@@ -196,10 +196,10 @@ module.exports = class Environment extends StateMachine
         return x - start.x
     for barrier in @barriers
       return true if barrier.contains(finish.x, finish.y)
-      return false if (start.x > barrier.x2 and finish.x > barrier.x2) or # entirely to the right
-                      (start.x < barrier.x1 and finish.x < barrier.x1)    # entirely to the left
-                      (start.y > barrier.y2 and finish.y > barrier.y2)    # entirely below
-                      (start.y < barrier.y1 and finish.y < barrier.y1)    # entirely above
+      continue if (start.x > barrier.x2 and finish.x > barrier.x2) or # entirely to the right
+                  (start.x < barrier.x1 and finish.x < barrier.x1) or # entirely to the left
+                  (start.y > barrier.y2 and finish.y > barrier.y2) or # entirely below
+                  (start.y < barrier.y1 and finish.y < barrier.y1)    # entirely above
       return true if barrier.intersectsLine(line)
     return false
 
