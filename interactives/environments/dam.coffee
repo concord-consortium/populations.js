@@ -10,7 +10,7 @@ env = new Environment
   imgPath: "images/environments/dam-year0.png"
   seasonLengths: [30, 30, 15, 10]
   barriers: [
-    [0, 240, 500, 50]
+    [0, 247, 500, 20]
   ]
   wrapEastWest: false
   wrapNorthSouth: false
