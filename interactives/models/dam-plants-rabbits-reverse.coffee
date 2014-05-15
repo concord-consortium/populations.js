@@ -35,7 +35,14 @@ window.model =
     @plantSpecies = plantSpecies
     @rabbitSpecies = rabbitSpecies
 
+    @_reset()
+    Events.addEventListener Environment.EVENTS.RESET, =>
+      @_reset()
+
+  _reset: ->
     @env.setBackground("images/environments/dam-rv-year0.png")
+    @damRemoved = false
+    @env.setBarriers [[0, 240, 500, 50]]
     @_setEnvironmentProperty('water', 10, true)
     @_setEnvironmentProperty('water',  0, false)
     @_addPlants()
@@ -178,8 +185,6 @@ window.model =
 
     Events.addEventListener Environment.EVENTS.RESET, =>
       noneHighlightRadio.click()
-      @damRemoved = false
-      @env.setBarriers [[0, 240, 500, 50]]
 
   _highlight: (size)->
     for agent in @env.agents
@@ -213,7 +218,8 @@ window.model =
         backgroundChangeable = true
 
     Events.addEventListener Environment.EVENTS.RESET, =>
-      @env.setBackground("images/environments/dam-rv-year0.png")
+      yearSpan.innerHTML = "1"
+      waterLevelIndicator.style.height = "0%"
 
   _changeBackground: (n)->
     return unless 0 < n < 11
