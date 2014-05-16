@@ -379,9 +379,24 @@ window.model =
     #   if loc.y > 228 && loc.y < 260
     #     plant.die()
 
+  preload: [
+    "images/environments/dam-rv-year0.png",
+    "images/environments/dam-rv-year1.png",
+    "images/environments/dam-rv-year2.png",
+    "images/environments/dam-rv-year3.png",
+    "images/environments/dam-rv-year4.png",
+    "images/environments/dam-rv-year5.png",
+    "images/environments/dam-rv-year6.png",
+    "images/environments/dam-rv-year7.png",
+    "images/environments/dam-rv-year8.png",
+    "images/environments/dam-rv-year9.png",
+    "images/environments/dam-rv-year10.png"
+  ]
+
 window.onload = ->
-  model.run()
-  model.setupControls()
-  model.setupCharts()
-  model.setupTimer()
-  model.setupPopulationMonitoring()
+  helpers.preload [model, env, rabbitSpecies, plantSpecies], ->
+    model.run()
+    model.setupControls()
+    model.setupCharts()
+    model.setupTimer()
+    model.setupPopulationMonitoring()

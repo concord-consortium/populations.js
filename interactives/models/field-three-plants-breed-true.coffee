@@ -143,6 +143,13 @@ window.model =
     helpers.showMessage message, @env.getView().view.parentElement, =>
       @env.start()
 
+  preload: [
+    "images/agents/varied-plants/buttons/seedpack_2.png",
+    "images/agents/varied-plants/buttons/seedpack_6.png",
+    "images/agents/varied-plants/buttons/seedpack_10.png"
+  ]
+
 window.onload = ->
-  model.run()
-  model.setupChart()
+  helpers.preload [model, env, plantSpecies], ->
+    model.run()
+    model.setupChart()

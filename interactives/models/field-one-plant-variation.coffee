@@ -1,4 +1,4 @@
-require 'helpers'
+helpers     = require 'helpers'
 
 Environment = require 'models/environment'
 Species     = require 'models/species'
@@ -96,6 +96,11 @@ window.model =
 
       @chart.draw(@chartData, options)
 
+  preload: [
+    "images/agents/varied-plants/buttons/seedpack_6.png"
+  ]
+
 window.onload = ->
-  model.run()
-  model.setupChart()
+  helpers.preload [model, env, plantSpecies], ->
+    model.run()
+    model.setupChart()

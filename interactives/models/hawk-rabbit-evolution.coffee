@@ -246,8 +246,25 @@ window.model =
     else
       @setProperty(allPlants, 'growth rate', 0.0005)
 
+  preload: [
+    "images/agents/grass/tallgrass.png",
+    "images/agents/rabbits/rabbit2.png",
+    "images/agents/hawks/hawk.png",
+    "images/environments/snow.png",
+    "images/environments/snow-1.png",
+    "images/environments/snow-2.png",
+    "images/environments/snow-3.png",
+    "images/environments/snow-4.png",
+    "images/environments/snow-5.png",
+    "images/environments/snow-6.png",
+    "images/environments/snow-7.png",
+    "images/environments/snow-8.png",
+    "images/environments/snow-9.png"
+  ]
+
 window.onload = ->
-  model.run()
-  model.setupGraph()
-  model.setupTimer()
-  model.setupPopulationControls()
+  helpers.preload [model, env, plantSpecies, rabbitSpecies, hawkSpecies], ->
+    model.run()
+    model.setupGraph()
+    model.setupTimer()
+    model.setupPopulationControls()

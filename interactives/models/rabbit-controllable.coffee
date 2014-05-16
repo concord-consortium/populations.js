@@ -169,8 +169,9 @@ window.model =
     helpers.showMessage message, @env.getView().view.parentElement
 
 window.onload = ->
-  model.run()
-  model.setupGraph()
-  model.setupControls()
-  model.setupTimer()
-  model.setupHungerSlider()
+  helpers.preload [env, plantSpecies, rabbitSpecies], ->
+    model.run()
+    model.setupGraph()
+    model.setupControls()
+    model.setupTimer()
+    model.setupHungerSlider()

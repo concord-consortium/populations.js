@@ -250,7 +250,15 @@ window.model =
       @_setProperty allFoxes, "max offspring", 3
       @_setProperty allFoxes, "metabolism", 4
 
+  preload: [
+    "images/agents/grass/tallgrass.png",
+    "images/agents/rabbits/rabbit2.png",
+    "images/agents/hawks/hawk.png",
+    "images/agents/foxes/fox.png"
+  ]
+
 window.onload = ->
-  model.run()
-  model.setupGraph()
-  model.setupPopulationControls()
+  helpers.preload [model, env, plantSpecies, rabbitSpecies, hawkSpecies, foxSpecies], ->
+    model.run()
+    model.setupGraph()
+    model.setupPopulationControls()

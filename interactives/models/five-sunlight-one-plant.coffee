@@ -87,5 +87,8 @@ window.model =
   showMessage: (message) ->
     helpers.showMessage message, @env.getView().view.parentElement
 
+  preload: ["images/agents/varied-plants/buttons/seedpack_10.png"]
+
 window.onload = ->
-  model.run()
+  helpers.preload [model, env, plantSpecies], ->
+    model.run()

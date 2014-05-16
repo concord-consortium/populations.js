@@ -108,7 +108,14 @@ window.model =
         else
           showMessage("Uh oh, one of your plants is wilted! Try to find the right environment for it using the Carry button.")
 
-window.onload = ->
-  model.run()
+  preload: [
+    "images/agents/varied-plants/buttons/seedpack_x.png",
+    "images/agents/varied-plants/buttons/seedpack_y.png",
+    "images/agents/varied-plants/buttons/seedpack_z.png"
+  ]
 
-  model.setupDialogs()
+window.onload = ->
+  helpers.preload [model, env, plantSpecies], ->
+    model.run()
+
+    model.setupDialogs()

@@ -282,8 +282,18 @@ window.model =
 
         @chart.draw(@chartData, options)
 
+  preload: [
+    "images/agents/varied-plants/buttons/seedpack_10.png",
+    "images/environments/mountains1.jpg",
+    "images/environments/mountains2flipped.jpg",
+    "images/environments/mountains3flipped.jpg",
+    "images/environments/mountains4flipped.jpg",
+    "images/environments/mountains5flipped.jpg"
+  ]
+
 window.onload = ->
-  model.run()
-  model.setupMountains()
-  model.setupMessages()
-  model.setupChart()
+  helpers.preload [model, env, plantSpecies], ->
+    model.run()
+    model.setupMountains()
+    model.setupMessages()
+    model.setupChart()

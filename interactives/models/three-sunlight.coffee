@@ -221,6 +221,9 @@ window.model =
           for agent in agents
             agent.set("complete", true)
 
+  preload: ["images/agents/varied-plants/buttons/seedpack_6.png"]
+
 window.onload = ->
-  model.run()
-  model.setupDialogs()
+  helpers.preload [model, env, plantSpecies], ->
+    model.run()
+    model.setupDialogs()

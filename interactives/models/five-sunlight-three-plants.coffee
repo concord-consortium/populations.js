@@ -1,4 +1,4 @@
-require 'helpers'
+helpers     = require 'helpers'
 
 Environment = require 'models/environment'
 Species     = require 'models/species'
@@ -51,5 +51,12 @@ window.model =
     @env = env
     @plantSpecies = plantSpecies
 
+  preload: [
+    "images/agents/varied-plants/buttons/seedpack_2.png",
+    "images/agents/varied-plants/buttons/seedpack_6.png",
+    "images/agents/varied-plants/buttons/seedpack_10.png"
+  ]
+
 window.onload = ->
-  model.run()
+  helpers.preload [model, env, plantSpecies], ->
+    model.run()

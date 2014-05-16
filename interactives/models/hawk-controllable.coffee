@@ -180,7 +180,8 @@ window.model =
     helpers.showMessage message, @env.getView().view.parentElement, callback
 
 window.onload = ->
-  model.run()
-  model.setupGraph()
-  model.setupControls()
-  model.setupTimer()
+  helpers.preload [env, plantSpecies, rabbitSpecies, hawkSpecies, plusOne], ->
+    model.run()
+    model.setupGraph()
+    model.setupControls()
+    model.setupTimer()

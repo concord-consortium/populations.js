@@ -54,5 +54,10 @@ window.model =
     Events.addEventListener Environment.EVENTS.AGENT_ADDED, (evt)->
       updateMoney(moneyLeft-1) unless evt.detail.agent.bred
 
+  preload: [
+    "images/agents/varied-plants/buttons/seedpack_z.png"
+  ]
+
 window.onload = ->
-  model.run()
+  helpers.preload [model, env, plantSpecies], ->
+    model.run()
