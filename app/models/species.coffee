@@ -71,6 +71,8 @@ module.exports = class Species
 
   _parsePreloads: ->
     @preload = []
+    return unless @imageRules?
     for layer in @imageRules
+      continue unless layer.rules?
       for imageRule in layer.rules
-        @preload.push imageRule.image.path
+        @preload.push imageRule.image.path if imageRule.image?.path?
