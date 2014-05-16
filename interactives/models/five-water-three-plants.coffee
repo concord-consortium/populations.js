@@ -96,7 +96,7 @@ window.model =
 
       if numXFlowers >= 3 and numYFlowers >= 3 and numZFlowers >= 3
         if numWilted is 0
-          showMessage("Good job! All your plants are in the right boxes.<br/>Take a picture of your model and go on to the next page.")
+          showMessage("Good job! All your plants are in the right boxes.<br/>Take a picture of your model and continue on.")
         else
           if numWilted > 1
             showMessage("You've got lots of healthy plants, but still a few wilted ones! Can you work out where they should go?")

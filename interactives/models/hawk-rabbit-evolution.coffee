@@ -124,7 +124,7 @@ window.model =
       t = Math.floor(@env.date * Environment.DEFAULT_RUN_LOOP_DELAY / 1000) # this will calculate seconds at default speed
       if t > 99
         @env.stop()
-        @showMessage "All the snow is gone. Look at the graph.<br/>How many white and brown rabbits are left in the field?<br/>Enter the number of rabbits in the table and then go on to the next page."
+        @showMessage "All the snow is gone. Look at the graph.<br/>How many white and brown rabbits are left in the field?"
         return
 
       if t % changeInterval is 0 and backgroundChangeable and t/changeInterval <= 9

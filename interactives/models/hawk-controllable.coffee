@@ -174,7 +174,7 @@ window.model =
           @showMessage "Oh no, you didn't catch any rabbits!<br/>Press Reset to try again, and be sure to click on the rabbits to eat them."
         else
           @showMessage "Good job! You caught #{@numEaten} rabbits!<br/>You caught #{@whiteEaten} white rabbits and #{@brownEaten} brown rabbits.", =>
-            @showMessage "Take a picture of the graph. Then go to the next page."
+            @showMessage "Take a picture of the graph. Then continue on."
 
   showMessage: (message, callback) ->
     helpers.showMessage message, @env.getView().view.parentElement, callback

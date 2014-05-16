@@ -214,7 +214,7 @@ window.model =
           message4StepCount++
         if message4StepCount is 16
           if @env.agents.length is 6
-            showMessage "Good job! Each of your plants is in an environment that makes it healthy!\nIf you want to experiment again, you can reset the model,\nor you can continue to the next page."
+            showMessage "Good job! Each of your plants is in an environment that makes it healthy!\nIf you want to experiment again, you can reset the model,\nor you can continue on."
           else
             showMessage "Each of your plants is in an environment that makes it healthy!\nHowever, some of your plants were dropped between flower boxes.\nIf you want to try again to make all six plants healthy, you can reset the model."
           waitingForMessage4 = false
