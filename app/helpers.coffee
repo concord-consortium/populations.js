@@ -169,3 +169,55 @@ module.exports =
       str += String(key) + ": " + @stringify obj[key] + ", "
 
     return str.slice(0,str.length-2) + " }"
+
+  # sources is an array of objects, each which have a 'preload' property.
+  # the 'preload' property is an array of strings which will be treated as urls.
+  # ex: preload([{preload: ["foo.jpg", "bar.png"]},{preload: ["baz.png","biz.png"]}], function() {})
+  preload: (sources, callback)->
+    statusContainer = document.createElement 'div'
+    statusContainer.classList.add 'preload-message'
+    statusDom = document.createElement 'div'
+    statusDom.classList.add 'text'
+    statusDom.innerHTML = "Loading... 0% complete."
+    statusContainer.appendChild statusDom
+    document.body.appendChild statusContainer
+
+    numImages = 0
+    for source in sources
+      numImages += source.preload.length if source.preload?
+
+    loadedSoFar = 0
+    progress = ->
+      loadedSoFar++
+      if loadedSoFar < numImages
+        statusDom.innerHTML = "Loading... "+Math.floor(loadedSoFar/numImages*100)+"%"
+      else
+        statusDom.innerHTML = "Loading complete!"
+        setTimeout ->
+          callback()
+          document.body.removeChild statusContainer
+        , 10
+    loadUrl = (url, n=0)=>
+      try
+        img = new Image()
+        img.src = url
+        img.onload = ->
+          progress()
+        img.onerror = ->
+          if n < 3
+            loadUrl url, ++n
+          else
+            # give up
+            progress()
+      catch e
+        if n < 3
+          loadUrl url, ++n
+        else
+          # give up
+          progress()
+
+    for source in sources
+      continue unless source.preload?
+      for url in source.preload
+        loadUrl url
+
