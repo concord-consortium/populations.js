@@ -17,6 +17,7 @@ module.exports = class Species
       @reproductiveStrategy
       @mutationChance}) ->
     @defs = helpers.setDefaults(@defs || {}, defaultDefs)
+    @_parsePreloads()
 
   ###
     Create an agent of this species, with the traits defined in
@@ -67,3 +68,9 @@ module.exports = class Species
     return true unless validContexts? and validContexts.length > 0  # if no valid contexts are supplied, assume all contexts valid
 
     return validContexts.indexOf(context) isnt -1
+
+  _parsePreloads: ->
+    @preload = []
+    for layer in @imageRules
+      for imageRule in layer.rules
+        @preload.push imageRule.image.path
