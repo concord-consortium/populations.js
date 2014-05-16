@@ -35,6 +35,10 @@ module.exports = class Environment extends StateMachine
     opts = helpers.setDefaults(opts, defaultOptions)
     @[prop] = opts[prop] for prop of opts     # give us immediate access to @columns, @barriers, etc
 
+    @preload = []
+    @preload.push @imgPath if @imgPath?
+    @preload.push @winterImgPath if @winterImgPath
+
     if @columns and @width
       throw "You can set columns and rows, or width and height, but not both"
     if @columns
