@@ -29,6 +29,15 @@ module.exports = class Interactive
       # Shutterbug can see it.
       $(window).on 'shutterbug-saycheese', =>
         @repaint()
+    if iframePhone?
+      phone = iframePhone.getIFrameEndpoint()
+      phone.addListener 'stop', =>
+        @toolbar.toggleButtons['pause'].click() if @environment._isRunning
+      phone.addListener 'start', =>
+        @toolbar.toggleButtons['play'].click() unless @environment._isRunning
+      phone.addListener 'reset', =>
+        @toolbar.toggleButtons['reset'].click()
+      phone.initialize()
 
   getEnvironmentPane: ->
     @view = document.createElement 'div'

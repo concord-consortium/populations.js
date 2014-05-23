@@ -29,7 +29,7 @@ html
       var modelDivs = [];
 
       window.onload = function() {
-        var modelCollection, i, ii, j, jj, zoom;
+        var modelCollection, i, ii, j, jj, zoom, phone, play, stop;
 
         modelCollection = document.getElementsByClassName("model-collection")[0];
         for (model in models) {
@@ -50,6 +50,24 @@ html
           } else {
             iframe.classList.remove("zoom-out");
           }
+        });
+
+        phone = new iframePhone.ParentEndpoint(iframe);
+
+        play = document.getElementById('play');
+        play.addEventListener('click', function(evt) {
+          // Send start event via iframe-phone
+          phone.post({type: 'start'});
+        });
+        stop = document.getElementById('stop');
+        stop.addEventListener('click', function(evt) {
+          // Send stop event via iframe-phone
+          phone.post({type: 'stop'});
+        });
+        reset = document.getElementById('reset');
+        reset.addEventListener('click', function(evt) {
+          // Send reset event via iframe-phone
+          phone.post({type: 'reset'});
         });
       }
 
@@ -176,6 +194,14 @@ html
         float: right;
       }
 
+      .control {
+        margin-right: 10px;
+      }
+
+      .controls {
+        margin-bottom: 20px;
+      }
+
   body
     #header
       h1 Evolution Readiness Models
@@ -187,6 +213,13 @@ html
 
     .left-column
       h2 ITSI Models
+      .controls
+        span.control
+          a#play(href='#')= "Play"
+        span.control
+          a#stop(href='#')= "Stop"
+        span.control
+          a#reset(href='#')= "Reset"
       .model-collection
 
     .model
