@@ -26,7 +26,7 @@ html
         "super-model-foxes-open.html":            "4.4 Open model: grass, rabbits, hawks and foxes"
       }
 
-      var modelDivs = [];
+      var modelDivs = [], phone;
 
       window.onload = function() {
         var modelCollection, i, ii, j, jj, zoom, phone, play, stop;
@@ -52,6 +52,13 @@ html
           }
         });
 
+        initPhone(iframe);
+      }
+
+      initPhone = function(iframe) {
+        if (phone && phone.removeAllListeners) {
+          phone.removeAllListeners();
+        }
         phone = new iframePhone.ParentEndpoint(iframe);
 
         play = document.getElementById('play');
@@ -92,6 +99,7 @@ html
         }
         el.classList.add("active");
         iframe.setAttribute("src", model);
+        setTimeout(function() { initPhone(iframe); }, 50);
       }
 
     style(type="text/css").
