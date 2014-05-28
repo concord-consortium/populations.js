@@ -2,6 +2,8 @@ helpers = require "helpers"
 Toolbar = require "interactive/toolbar"
 InfoView = require "interactive/info-view"
 SpeedSlider = require "interactive/speed-slider"
+Events = require 'events'
+Environment = require 'models/environment'
 
 defaultOptions =
   environment : null
@@ -31,12 +33,25 @@ module.exports = class Interactive
         @repaint()
     if iframePhone?
       phone = iframePhone.getIFrameEndpoint()
+      ignoreEvent = false
       phone.addListener 'stop', =>
+        ignoreEvent = true
         @toolbar.toggleButtons['pause'].click() if @environment._isRunning
+        ignoreEvent = false
       phone.addListener 'start', =>
+        ignoreEvent = true
         @toolbar.toggleButtons['play'].click() unless @environment._isRunning
+        ignoreEvent = false
       phone.addListener 'reset', =>
+        ignoreEvent = true
         @toolbar.toggleButtons['reset'].click()
+        ignoreEvent = false
+      Events.addEventListener Environment.EVENTS.PLAY, =>
+        phone.post({type: 'start'}) unless ignoreEvent
+      Events.addEventListener Environment.EVENTS.STOP, =>
+        phone.post({type: 'stop'}) unless ignoreEvent
+      Events.addEventListener Environment.EVENTS.RESET, =>
+        phone.post({type: 'reset'}) unless ignoreEvent
       phone.initialize()
 
   getEnvironmentPane: ->
