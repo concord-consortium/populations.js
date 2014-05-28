@@ -56,8 +56,8 @@ html
 
         play = document.getElementById('play');
         play.addEventListener('click', function(evt) {
-          // Send start event via iframe-phone
-          phone.post({type: 'start'});
+          // Send play event via iframe-phone
+          phone.post({type: 'play'});
         });
         stop = document.getElementById('stop');
         stop.addEventListener('click', function(evt) {

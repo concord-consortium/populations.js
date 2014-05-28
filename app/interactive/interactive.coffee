@@ -38,7 +38,7 @@ module.exports = class Interactive
         ignoreEvent = true
         @toolbar.toggleButtons['pause'].click() if @environment._isRunning
         ignoreEvent = false
-      phone.addListener 'start', =>
+      phone.addListener 'play', =>
         ignoreEvent = true
         @toolbar.toggleButtons['play'].click() unless @environment._isRunning
         ignoreEvent = false
@@ -47,7 +47,7 @@ module.exports = class Interactive
         @toolbar.toggleButtons['reset'].click()
         ignoreEvent = false
       Events.addEventListener Environment.EVENTS.PLAY, =>
-        phone.post({type: 'start'}) unless ignoreEvent
+        phone.post({type: 'play'}) unless ignoreEvent
       Events.addEventListener Environment.EVENTS.STOP, =>
         phone.post({type: 'stop'}) unless ignoreEvent
       Events.addEventListener Environment.EVENTS.RESET, =>
