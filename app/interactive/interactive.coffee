@@ -46,7 +46,7 @@ module.exports = class Interactive
         ignoreEvent = true
         @toolbar.toggleButtons['reset'].click()
         ignoreEvent = false
-      Events.addEventListener Environment.EVENTS.PLAY, =>
+      Events.addEventListener Environment.EVENTS.START, =>
         phone.post({type: 'play'}) unless ignoreEvent
       Events.addEventListener Environment.EVENTS.STOP, =>
         phone.post({type: 'stop'}) unless ignoreEvent
