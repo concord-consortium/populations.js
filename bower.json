@@ -1,7 +1,7 @@
 {
   "name": "populations.js",
   "version": "0.0.1",
-  "main": "public/app.js",
+  "main": "public/js/app.js",
   "dependencies": {
      "pixi.js": ">=1.4.1",
      "classList": "https://raw2.github.com/eligrey/classList.js/master/classList.js",
@@ -13,5 +13,19 @@
     "jquery": {
       "main": "dist/jquery.js"
     }
-  }
+  },
+  "ignore": [
+    "app",
+    "bin",
+    "bower_components",
+    "interactives",
+    "test",
+    ".gitignore",
+    "bower.json",
+    "build-and-deploy.sh",
+    "config.coffee",
+    "package.json",
+    "readme.md",
+    "test-models.sh"
+  ]
 }
