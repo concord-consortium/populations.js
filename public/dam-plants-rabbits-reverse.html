@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>populations.js</title>
+        <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
+        <script src="js/vendor.js"></script>
+        <script src="js/app.js"></script>
+    <!-- model files here-->
+        <script src="species/fast-plants-roots.js"></script>
+        <script src="species/varied-rabbits.js"></script>
+        <script src="environments/dam.js"></script>
+        <script src="models/dam-plants-rabbits-reverse.js"></script>
+    <style type="text/css">
+      #meta {
+        padding: 2px;
+        display: inline-block;
+        vertical-align: top;
+      }
+      
+      #meta .left {
+        width: 150px;
+        display: inline-block;
+        vertical-align: top;
+      }
+      
+      #meta .right {
+        display: inline-block;
+        margin-left: 4px;
+        vertical-align: top;
+      }
+      
+      .title {
+        font-weight: bold;
+      }
+      
+      
+      #controls, #water-level-container, #highlight {
+        margin-top: 35px;
+      }
+      
+      #water-level {
+        height: 100px;
+        width: 18px;
+        border-radius: 10px;
+        background-color: #cccccc;
+        position: relative;
+        padding: 2px;
+      }
+      
+      #water-level-indicator {
+        position: absolute;
+        bottom: 0;
+        left: 3px;
+        height: 0%;
+        max-height: 100px;
+        margin-top: 2px;
+        margin-bottom: 2px;
+        width: 16px;
+        border-radius: 8px;
+        background-color: blue;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div id="environment"></div>
+    <div id="meta">
+      <div class="left">
+        <div class="year-container"><span class="title">Year:</span><br><span id="year">1</span></div>
+        <div id="controls">
+          <button id="remove-button">Remove the Dam</button>
+        </div>
+        <div id="water-level-container">
+          <div class="title">Water below the dam</div>
+          <div class="level">
+            <div>Lots of water</div>
+            <div id="water-level">
+              <div id="water-level-indicator"></div>
+            </div>
+            <div>Little water</div>
+          </div>
+        </div>
+        <div id="highlight"><span class="title">Highlight:</span><br>
+          <input id="highlight-none" type="radio" name="highlight" checked="checked">None<br>
+          <input id="highlight-big" type="radio" name="highlight">Big rabbits<br>
+          <input id="highlight-medium" type="radio" name="highlight">Medium rabbits<br>
+          <input id="highlight-small" type="radio" name="highlight">Small rabbits
+        </div>
+      </div>
+      <div class="right">
+        <div id="chart1">Chart 1 here</div>
+        <div id="chart2">Chart 2 here</div>
+      </div>
+    </div>
+  </body>
+</html>

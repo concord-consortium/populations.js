@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>populations.js</title>
+        <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
+        <script src="js/vendor.js"></script>
+        <script src="js/app.js"></script>
+    <!-- model files here-->
+        <script src="species/varied-plants.js"></script>
+        <script src="environments/sunlight-mountain.js"></script>
+        <script src="models/mountain-sunlight-variation.js"></script>
+    <style type="text/css">
+      .mountain-selection {
+        padding: 2px;
+        vertical-align: top;
+      }
+      
+      .mountain-selection input {
+        margin-left: 20px;
+      }
+      
+      span.title {
+        font-weight: bold;
+        font-size: 1.2em;
+        padding: 4px;
+      }
+      
+      .meta {
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 20px
+      }
+      
+      #chart-visibility {
+        display: block;
+        margin-top: 10px;
+      }
+      
+      #chart {
+        display: none;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div id="environment"></div>
+    <div class="meta">
+      <div class="mountain-selection"><span class="title">Mountain height:</span><br>
+        <input id="mountains5" type="radio" name="mountain-size">High<br>
+        <input id="mountains4" type="radio" name="mountain-size"><br>
+        <input id="mountains3" type="radio" name="mountain-size"><br>
+        <input id="mountains2" type="radio" name="mountain-size"><br>
+        <input id="mountains1" type="radio" name="mountain-size" checked="checked">Low
+      </div>
+      <button id="chart-visibility">Show Graph</button>
+      <div id="chart"></div>
+    </div>
+  </body>
+</html>
