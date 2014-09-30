@@ -16,8 +16,8 @@ module.exports = class ToolButton
     @button.addEventListener 'click', => @action()
     @button.classList.add 'modal'
 
-    image = document.createElement 'img'
-    image.setAttribute 'src', @_getButtonImage()
+    image = document.createElement 'div'
+    image.classList.add @type
     @button.appendChild image
 
     return @button
@@ -27,11 +27,6 @@ module.exports = class ToolButton
   action: ->
     @toolbar.activateModalButton this
     @environment.setState @type
-
-  _getButtonImage: ->
-    switch @type
-      when 'info-tool'  then 'ui/info-tool.png'
-      when 'carry-tool' then 'ui/carry-plant.png'
 
   _getState: ->
     return @_states[@type]

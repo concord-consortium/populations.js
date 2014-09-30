@@ -1,3 +1,5 @@
+stylus = require './node_modules/stylus-brunch/node_modules/stylus'
+
 exports.config =
   # See http://brunch.io/#documentation for docs.
   paths:
@@ -23,11 +25,18 @@ exports.config =
     afterBrunch: [
       'echo -n "Cleaning coffee files..." && find public/ -type f -name "*.coffee" -delete'
       'echo -n "Building interactives..." && coffee --compile --output public interactives/'
+      'echo -n "Cleaning ui assets..." && rm -rf public/ui'
     ]
     jaded:
       jade:
         pretty: true
       staticPatterns: /^(app|interactives)(\/|\\)(.+)\.jade$/
+    stylus:
+      defines:
+        url: stylus.url()
+      paths: [
+        './app/assets/ui'
+      ]
 
   overrides:
     production:
@@ -35,4 +44,5 @@ exports.config =
         afterBrunch: [
           'echo -n "Cleaning coffee files..." && find public/ -type f -name "*.coffee" -delete'
           'echo -n "Building interactives and digesting..." && coffee --compile --output public interactives/ && ./bin/digest'
+          'echo -n "Cleaning ui assets..." && rm -rf public/ui'
         ]
