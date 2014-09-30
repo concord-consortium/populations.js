@@ -1062,8 +1062,8 @@ module.exports = RemoveOrganismButton = (function() {
     image = document.createElement('img');
     image.setAttribute('src', this.imagePath);
     this.button.appendChild(image);
-    noImage = document.createElement('img');
-    noImage.setAttribute('src', "ui/no.png");
+    noImage = document.createElement('div');
+    noImage.classList.add('no-sign');
     this.button.appendChild(noImage);
     return this.button;
   };
@@ -1176,8 +1176,8 @@ module.exports = ToolButton = (function() {
       return _this.action();
     });
     this.button.classList.add('modal');
-    image = document.createElement('img');
-    image.setAttribute('src', this._getButtonImage());
+    image = document.createElement('div');
+    image.classList.add(this.type);
     this.button.appendChild(image);
     return this.button;
   };
@@ -1189,15 +1189,6 @@ module.exports = ToolButton = (function() {
   ToolButton.prototype.action = function() {
     this.toolbar.activateModalButton(this);
     return this.environment.setState(this.type);
-  };
-
-  ToolButton.prototype._getButtonImage = function() {
-    switch (this.type) {
-      case 'info-tool':
-        return 'ui/info-tool.png';
-      case 'carry-tool':
-        return 'ui/carry-plant.png';
-    }
   };
 
   ToolButton.prototype._getState = function() {
