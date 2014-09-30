@@ -15,8 +15,8 @@ module.exports = class RemoveOrganismButton
     image.setAttribute 'src', @imagePath
     @button.appendChild image
 
-    noImage = document.createElement 'img'
-    noImage.setAttribute 'src', "ui/no.png"
+    noImage = document.createElement 'div'
+    noImage.classList.add 'no-sign'
     @button.appendChild noImage
 
     return @button
