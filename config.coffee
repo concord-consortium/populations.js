@@ -1,3 +1,5 @@
+stylus = require './node_modules/stylus-brunch/node_modules/stylus'
+
 exports.config =
   # See http://brunch.io/#documentation for docs.
   paths:
@@ -28,6 +30,12 @@ exports.config =
       jade:
         pretty: true
       staticPatterns: /^(app|interactives)(\/|\\)(.+)\.jade$/
+    stylus:
+      defines:
+        url: stylus.url()
+      paths: [
+        './app/assets/ui'
+      ]
 
   overrides:
     production:
