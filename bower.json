@@ -1,7 +1,10 @@
 {
   "name": "populations.js",
   "version": "0.0.1",
-  "main": "public/js/app.js",
+  "main": [
+    "public/js/app.js",
+    "public/css/app.css"
+  ],
   "dependencies": {
      "pixi.js": ">=1.4.1",
      "classList": "https://raw2.github.com/eligrey/classList.js/master/classList.js",
