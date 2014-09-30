@@ -1,0 +1,47 @@
+include includes/_helpers
+doctype html
+html
+  head
+    include includes/shared-headers
+    include includes/shared-css
+    include includes/shared-js
+
+    // model files here
+    +script(src="species/white-brown-rabbits.js")
+    +script(src="species/hawks.js")
+    +script(src="environments/snow.js")
+    +script(src="models/hawk-rabbit-snow.js")
+    style(type="text/css").
+      #graph {
+        position: absolute;
+        top: 500px;
+        left: 5px;
+        width: 500px;
+        height: 300px;
+      }
+      #meta {
+        padding: 2px;
+        display: inline-block;
+        vertical-align: top;
+      }
+
+      #meta .left {
+        width: 150px;
+        display: inline-block;
+        vertical-align: top;
+      }
+
+      #meta .right {
+        display: inline-block;
+        margin-left: 4px;
+        vertical-align: top;
+        position: absolute;
+        top: 10px;
+        left: 535px;
+      }
+
+  body
+    #environment
+    #meta
+      .right
+        #chart1= "Chart 1 here"
