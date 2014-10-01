@@ -21,7 +21,7 @@
     "app",
     "bin",
     "bower_components",
-    "interactives",
+    "examples",
     "test",
     ".gitignore",
     "bower.json",

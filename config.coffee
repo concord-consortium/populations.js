@@ -3,7 +3,7 @@ stylus = require './node_modules/stylus-brunch/node_modules/stylus'
 exports.config =
   # See http://brunch.io/#documentation for docs.
   paths:
-    watched: ['app','interactives','vendor']
+    watched: ['app','examples','vendor']
   files:
     javascripts:
       joinTo:
@@ -19,18 +19,18 @@ exports.config =
       path.replace(/^app\//, '')
 
   conventions:
-    assets: /assets(\/|\\)/
+    assets: /examples(\/|\\)/
 
   plugins:
     afterBrunch: [
       'echo -n "Cleaning coffee files..." && find public/ -type f -name "*.coffee" -delete'
-      'echo -n "Building interactives..." && coffee --compile --output public interactives/'
+      'echo -n "Building examples..." && coffee --compile --output public examples/'
       'echo -n "Cleaning ui assets..." && rm -rf public/ui'
     ]
     jaded:
       jade:
         pretty: true
-      staticPatterns: /^(app|interactives)(\/|\\)(.+)\.jade$/
+      staticPatterns: /^(app|examples)(\/|\\)(.+)\.jade$/
     stylus:
       defines:
         url: stylus.url()
