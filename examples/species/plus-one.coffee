@@ -1,11 +1,11 @@
 require.register "species/plus-one", (exports, require, module) ->
 
   Species = require 'models/species'
-  EnvironmentFeature = require 'models/environment-feature'
+  Inanimate = require 'models/inanimate'
 
   module.exports = new Species
     speciesName: "plus one"
-    agentClass: EnvironmentFeature
+    agentClass: Inanimate
     defs: {}
     traits: []
     imageRules: [
