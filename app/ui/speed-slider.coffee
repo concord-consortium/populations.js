@@ -1,4 +1,4 @@
-PPSlider    = require 'interactive/ppslider'
+PPSlider    = require 'ui/ppslider'
 
 module.exports = class SpeedSlider
 
@@ -23,4 +23,4 @@ module.exports = class SpeedSlider
 
   getView: -> @view
 
-    
+

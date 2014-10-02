@@ -1,4 +1,4 @@
-InfoView = require 'interactive/info-view'
+InfoView = require 'ui/info-view'
 
 module.exports = class ToolButton
   @INFO_TOOL: 'info-tool'

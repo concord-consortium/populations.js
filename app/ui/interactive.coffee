@@ -1,7 +1,7 @@
 helpers = require "helpers"
-Toolbar = require "interactive/toolbar"
-InfoView = require "interactive/info-view"
-SpeedSlider = require "interactive/speed-slider"
+Toolbar = require "ui/toolbar"
+InfoView = require "ui/info-view"
+SpeedSlider = require "ui/speed-slider"
 Events = require 'events'
 Environment = require 'models/environment'
 

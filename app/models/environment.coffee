@@ -445,4 +445,4 @@ AddAgentsState =
   click: (evt) ->
     @addDefaultAgent evt.envX, evt.envY
 
-## more states added by interactive/tool-button
+## more states added by ui/tool-button

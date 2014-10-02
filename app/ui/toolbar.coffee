@@ -1,6 +1,6 @@
-AddOrganismButton = require "interactive/add-organism-button"
-RemoveOrganismButton = require "interactive/remove-organism-button"
-ToolButton  = require 'interactive/tool-button'
+AddOrganismButton = require "ui/add-organism-button"
+RemoveOrganismButton = require "ui/remove-organism-button"
+ToolButton  = require 'ui/tool-button'
 Events = require 'events'
 Environment = require 'models/environment'
 
