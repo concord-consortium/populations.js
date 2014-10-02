@@ -1,8 +1,8 @@
 Environment = require 'models/environment'
 Rule        = require 'models/rule'
 Trait       = require 'models/trait'
-BasicAnimal = require 'models/basic-animal'
-FastPlant   = require 'models/fast-plant'
+BasicAnimal = require 'models/agents/basic-animal'
+FastPlant   = require 'models/agents/fast-plant'
 
 env = new Environment
   columns:  50

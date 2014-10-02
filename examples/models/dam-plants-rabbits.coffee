@@ -8,7 +8,7 @@ Trait       = require 'models/trait'
 Interactive = require 'ui/interactive'
 Events      = require 'events'
 ToolButton  = require 'ui/tool-button'
-BasicAnimal = require 'models/basic-animal'
+BasicAnimal = require 'models/agents/basic-animal'
 
 plantSpecies  = require 'species/fast-plants-roots'
 rabbitSpecies = require 'species/varied-rabbits'
