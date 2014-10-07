@@ -164,6 +164,13 @@ module.exports = class AgentView
         when "down"
           sprite.scale.y *= -1 if -Math.PI < d < 0
 
+    if @imageProperties.rotate
+      initialDirection = @imageProperties.initialRotationDirection || 0
+      d = ExtMath.normalizeRads @agent.get('direction')
+      dd = d - initialDirection
+      sprite.rotation = dd
+
+
     # default anchor of 0.5 -- the image is centered on the container's position
     sprite.anchor.x = if image.anchor?.x? then image.anchor.x else 0.5
     sprite.anchor.y = if image.anchor?.y? then image.anchor.y else 0.5
