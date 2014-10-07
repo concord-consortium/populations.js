@@ -124,16 +124,20 @@ module.exports = class BasicAnimal extends Agent
     unless speed?
       maxSpeed = @get('speed')
       speed = (maxSpeed/2) + ExtMath.randomGaussian() * (maxSpeed/6)
-    @set 'direction', (@get('direction') + ExtMath.randomGaussian()/2)
+    @set 'direction', (@get('direction') + ExtMath.randomGaussian()/10)
     @move(speed)
 
   chase: (agentDistance)->
-    @set('direction', @_direction(@getLocation(), agentDistance.agent.getLocation()))
+    directionToAgent =  @_direction(@getLocation(), agentDistance.agent.getLocation())
+    directionToMove = (@get('direction')*19 + directionToAgent) / 20
+    @set('direction', directionToMove)
     speed = Math.min(@get('speed'), Math.sqrt(agentDistance.distanceSq))
     @move(speed)
 
   runFrom: (agentDistance)->
-    @set('direction', @_direction(@getLocation(), agentDistance.agent.getLocation())) + Math.PI + (ExtMath.randomGaussian/2)
+    directionToRunTo =  @_direction(@getLocation(), agentDistance.agent.getLocation()) + Math.PI + (ExtMath.randomGaussian/3)
+    directionToMove = (@get('direction')*19 + directionToRunTo) / 20
+    @set('direction', directionToMove)
     @move(@get 'speed')
 
   move: (speed) ->
