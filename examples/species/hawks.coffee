@@ -21,6 +21,7 @@ require.register "species/hawks", (exports, require, module) ->
       new Trait {name: 'metabolism', default:  0.5 }
       new Trait {name: 'wings', default: 0 }
     ]
+    viewLayer: 5
     imageProperties:
       rotate: true
       initialRotationDirection: -Math.PI / 2

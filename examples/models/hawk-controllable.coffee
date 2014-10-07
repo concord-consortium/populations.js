@@ -39,7 +39,6 @@ window.model =
         @env.addAgent rabbit
 
     @hawk = hawkSpecies.createAgent()
-    @hawk._viewLayer = 5
     @hawk.setLocation @env.randomLocation()
     @hawk.set 'is immortal', true
     @hawk.set 'age', 20

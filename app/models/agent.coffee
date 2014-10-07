@@ -23,6 +23,7 @@ module.exports = class Agent
     @_props = helpers.clone defaultProperties
     @_props = helpers.setDefaults(@_props, additionalDefaults) if additionalDefaults?
     @_view = new AgentView({agent: @})
+    @_viewLayer = @species.viewLayer if @species.viewLayer?
     if x? && y?
       @setLocation({x,y})
     @makeNewborn()
