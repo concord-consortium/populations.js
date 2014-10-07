@@ -118,28 +118,26 @@ module.exports = class BasicAnimal extends Agent
         @set 'max offspring', max
         @_timeLastMated = @environment.date
     else
-      @wander(@get('speed') * 0.75)
+      @wander(@get('speed') * Math.random() * 0.75)
 
   wander: (speed)->
     unless speed?
       maxSpeed = @get('speed')
       speed = (maxSpeed/2) + ExtMath.randomGaussian() * (maxSpeed/6)
-    @set 'speed', speed
     @set 'direction', (@get('direction') + ExtMath.randomGaussian()/2)
-    @move()
+    @move(speed)
 
   chase: (agentDistance)->
     @set('direction', @_direction(@getLocation(), agentDistance.agent.getLocation()))
-    @set('speed', Math.min(@get('speed'), Math.sqrt(agentDistance.distanceSq)))
-    @move()
+    speed = Math.min(@get('speed'), Math.sqrt(agentDistance.distanceSq))
+    @move(speed)
 
   runFrom: (agentDistance)->
     @set('direction', @_direction(@getLocation(), agentDistance.agent.getLocation())) + Math.PI + (ExtMath.randomGaussian/2)
-    @move()
+    @move(@get 'speed')
 
-  move: ->
+  move: (speed) ->
     dir = @get 'direction'
-    speed = @get 'speed'
     return if speed is 0
     throw 'invalid speed' unless typeof(speed) is 'number'
     throw 'invalid direction' unless typeof(dir) is 'number'
