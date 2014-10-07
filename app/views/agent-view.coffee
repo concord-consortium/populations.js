@@ -1,4 +1,5 @@
 helpers = require 'helpers'
+require 'animated-sprite'
 
 module.exports = class AgentView
 
@@ -14,7 +15,7 @@ module.exports = class AgentView
     # create a texture from set of image paths
     images = @agent.getImages({context: context})
     for layer in images
-      sprite = @_createSprite layer.selectedImage
+      sprite = @_createSprite layer.selectedImage, layer.name
       sprites[layer.name] = sprite
       container.addChild(sprite)
 
@@ -42,7 +43,7 @@ module.exports = class AgentView
         sprite = @_createSprite layer.selectedImage
         @_sprites[layer.name] = sprite
         @_container.addChildAt(sprite,i)
-      else if layer.selectedImage.path != @_sprites[layer.name].texture.baseTexture.source.src
+      else if layer.selectedImage.path? and layer.selectedImage.path != @_sprites[layer.name].texture.baseTexture.source.src
         texture = PIXI.Texture.fromImage layer.selectedImage.path
         sprite = @_sprites[layer.name]
         sprite.setTexture texture
@@ -56,6 +57,18 @@ module.exports = class AgentView
 
     @_container.position.x = @agent._x
     @_container.position.y = @agent._y
+
+    for layer,i in newImages
+      if (sprite = @_sprites[layer.name])? and sprite instanceof PIXI.AnimatedSprite
+        window.sprite = sprite
+        sequence = @agent.getMovement()
+        return unless sequence
+        if sequence isnt sprite.currentSequence
+          if not sprite.playing
+            sprite.gotoAndPlay sequence
+          else
+            sprite.nextSequence = sequence
+        sprite.advanceTime()
 
   remove: (stage)->
     try
@@ -98,11 +111,38 @@ module.exports = class AgentView
     container.appendChild(val)
     return container
 
-  _createSprite: (image)->
+  _createSprite: (image, layerName)->
     # create a new Sprite using the texture
-    texture = PIXI.Texture.fromImage image.path
-    sprite = new PIXI.Sprite(texture)
-    @_setSpriteProperties(sprite, image)
+    if not image.animations
+      texture = PIXI.Texture.fromImage image.path
+      sprite = new PIXI.Sprite(texture)
+      @_setSpriteProperties(sprite, image)
+    else
+      sprite = null
+      for animation in image.animations
+        spriteTextures = []
+        for i in [0...animation.length]
+          spriteTextures.push PIXI.Texture.fromFrame(animation.animationName+"-"+i)
+
+        if not sprite
+          sequences = {}
+          sequences[animation.movement]           = {frames: spriteTextures}
+          sequences[animation.movement].frameRate = animation.frameRate if animation.frameRate
+          sequences[animation.movement].loop      = animation.loop if animation.loop
+          sprite = new PIXI.AnimatedSprite sequences
+        else
+          sprite.sequences[animation.movement]           = {frames: spriteTextures}
+          sprite.sequences[animation.movement].frameRate = animation.frameRate if animation.frameRate
+          sprite.sequences[animation.movement].loop      = animation.loop if animation.loop
+
+        sprite.nextSequence = null
+        sprite.onComplete = (sequence) ->
+          if not sprite.sequences[sequence].loop
+            if sprite.nextSequence
+              sprite.gotoAndPlay sprite.nextSequence
+              sprite.nextSequence = null
+
+      @_setSpriteProperties(sprite, image)
     return sprite
 
   _setSpriteProperties: (sprite, image)->
