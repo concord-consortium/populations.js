@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+  <head>
+        <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <title>Populations.js Models</title>
+        <script src="js/vendor.js"></script>
+    <script>
+      var models = {
+        "five-sunlight-three-plants.html":        "Flowerpots with three plants",
+        "hawk-controllable.html":                 "Hawk and rabbits (controllable)",
+        "hawk-rabbit-evolution.html":             "Hawks and rabbits in changing environment",
+        "mountain-sunlight-variation-chart.html": "Plant variation with mountains",
+        "dam-plants-rabbits.html":                "Dam model",
+        "super-model-foxes-open.html":            "Open model: grass, rabbits, hawks and foxes"
+      }
+
+      var modelDivs = [], phone;
+
+      window.onload = function() {
+        var modelCollection, i, ii, j, jj, zoom, phone, play, stop;
+
+        modelCollection = document.getElementsByClassName("model-collection")[0];
+        for (model in models) {
+          if (!models.hasOwnProperty(model)) continue;
+          createModelDiv(model, modelCollection);
+
+          if (modelDivs.length === 1) {
+            loadModel(model, modelDivs[0]);
+          }
+        }
+
+
+        zoom = document.getElementById("zoom");
+        iframe = document.getElementById("model-iframe");
+        zoom.addEventListener('click', function(evt) {
+          if (zoom.checked) {
+            iframe.classList.add("zoom-out");
+          } else {
+            iframe.classList.remove("zoom-out");
+          }
+        });
+
+        initPhone(iframe);
+      }
+
+      initPhone = function(iframe) {
+        if (phone && phone.removeAllListeners) {
+          phone.removeAllListeners();
+        }
+        phone = new iframePhone.ParentEndpoint(iframe);
+
+        play = document.getElementById('play');
+        play.addEventListener('click', function(evt) {
+          // Send play event via iframe-phone
+          phone.post({type: 'play'});
+        });
+        stop = document.getElementById('stop');
+        stop.addEventListener('click', function(evt) {
+          // Send stop event via iframe-phone
+          phone.post({type: 'stop'});
+        });
+        reset = document.getElementById('reset');
+        reset.addEventListener('click', function(evt) {
+          // Send reset event via iframe-phone
+          phone.post({type: 'reset'});
+        });
+      }
+
+      createModelDiv = function(model, container) {
+        var el = document.createElement('div'),
+            title = document.createElement('div'),
+            linkDiv = document.createElement('div');
+        title.innerHTML = models[model];
+        linkDiv.classList.add("link");
+        linkDiv.innerHTML = "<a href="+model+">link";
+        el.appendChild(linkDiv);
+        el.appendChild(title);
+        el.addEventListener('click', function(){loadModel(model, el)});
+        modelDivs.push(el);
+        container.appendChild(el);
+      }
+
+      loadModel = function(model, el) {
+        var iframe = document.getElementById("model-iframe");
+        for (j = 0, jj = modelDivs.length; j < jj; j++) {
+          modelDivs[j].classList.remove("active");
+        }
+        el.classList.add("active");
+        iframe.setAttribute("src", model);
+        setTimeout(function() { initPhone(iframe); }, 50);
+      }
+
+    </script>
+    <style type="text/css">
+      body {
+        background-color: #e7e7e5;
+        font-family: 'Lato', georgia, times, "times new roman", serif;
+        color: #555;
+      }
+
+      #header {
+        background-color: #777;
+
+        color: white;
+        padding: 0.5em 1em;
+        font-size: 1em;
+        font-weight: 600;
+      }
+
+      #header h2 {
+        margin: -25px 310px 15px;
+      }
+
+      #credits {
+        font-size: 0.8em;
+        color: #777;
+      }
+
+      #credits p {
+        padding-left: 2em;
+        margin-bottom: -0.5em;
+      }
+
+      .left-column {
+        width: 285px;
+        float: left;
+        padding-top: 20px;
+      }
+
+      .model-collection > div,
+      .model-collection .link {
+        padding: 7px;
+        background-color: #F1F1F1;
+        border: #FFF 1px solid;
+        cursor: pointer;
+      }
+
+      .model-collection > div:hover,
+      .model-collection > div.active {
+        background-color: #DDD;
+      }
+
+      .model-collection .link {
+        position: relative;
+        float: right;
+        top: -2px;
+        background-color: #F1F1F1;
+        display: none;
+      }
+
+      .model-collection div:hover .link,
+      .model-collection div.active .link {
+        display: inline-block;
+        line-height: 0.5em;
+      }
+
+      .model-collection .link a {
+        margin: -3px;
+        font-size: 0.8em;
+        text-decoration: none;
+      }
+
+      .model {
+        float: left;
+        padding-left: 10px;
+        padding-top: 13px;
+      }
+
+      #model-iframe {
+        width: 1040px;
+        height: 630px;
+        border: 1px solid #BBB;
+        background-color: white;
+      }
+
+      #model-iframe.zoom-out {
+        -ms-zoom: 0.75;
+        -moz-transform: scale(0.75);
+        -moz-transform-origin: 0 0;
+        -o-transform: scale(0.75);
+        -o-transform-origin: 0 0;
+        -webkit-transform: scale(0.75);
+        -webkit-transform-origin: 0 0;
+        transform: scale(0.75);
+        transform-origin: 0 0;
+
+        width: 1267px;
+        height: 800px;
+      }
+
+      #zoom-check {
+        clear: both;
+        float: right;
+      }
+
+      .control {
+        margin-right: 10px;
+      }
+
+      .controls {
+        margin-bottom: 20px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div id="header">
+      <h1>populations.js example models</h1>
+    </div>
+    <div id="credits">
+      <p>GitHub repository:<a href="https://github.com/concord-consortium/populations.js">github.com/concord-consortium/populations.js</a></p>
+    </div>
+    <div class="left-column">
+      <div class="controls"><span class="control"><a id="play" href="#">Play</a></span><span class="control"><a id="stop" href="#">Stop</a></span><span class="control"><a id="reset" href="#">Reset</a></span></div>
+      <div class="model-collection"></div>
+    </div>
+    <div class="model">
+      <iframe id="model-iframe"></iframe>
+    </div>
+    <div id="zoom-check">
+      <input type="checkbox" name="checkbox" id="zoom">
+      <label for="zoom">Zoom out</label>
+    </div>
+  </body>
+</html>

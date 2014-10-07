@@ -1,6 +1,6 @@
 {
   "name": "populations.js",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "main": [
     "public/js/app.js",
     "public/css/app.css"
@@ -21,7 +21,7 @@
     "app",
     "bin",
     "bower_components",
-    "interactives",
+    "examples",
     "test",
     ".gitignore",
     "bower.json",

@@ -12,6 +12,8 @@ module.exports = class Species
       @individualName
       @agentClass
       @traits
+      @viewLayer
+      @imageProperties
       @imageRules
       @defs
       @reproductiveStrategy
@@ -76,3 +78,6 @@ module.exports = class Species
       continue unless layer.rules?
       for imageRule in layer.rules
         @preload.push imageRule.image.path if imageRule.image?.path?
+        continue unless imageRule.image?.animations?
+        for animation in imageRule.image.animations
+          @preload.push animation.path if animation.path?

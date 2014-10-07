@@ -189,6 +189,10 @@ module.exports = class Environment extends StateMachine
     @barriers.push new Barrier x, y, width, height
 
   crossesBarrier: (start, finish)->
+    if (!@wrapEastWest && (0 > finish.x || finish.x > @width)) ||
+        (!@wrapNorthSouth && (0 > finish.y || finish.y > @height))
+      return true
+
     dx = finish.x - start.x
     dy = finish.y - start.y
     if dx isnt 0
@@ -445,4 +449,4 @@ AddAgentsState =
   click: (evt) ->
     @addDefaultAgent evt.envX, evt.envY
 
-## more states added by interactive/tool-button
+## more states added by ui/tool-button
