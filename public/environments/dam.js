@@ -8,9 +8,9 @@
 
   Trait = require('models/trait');
 
-  BasicAnimal = require('models/basic-animal');
+  BasicAnimal = require('models/agents/basic-animal');
 
-  FastPlant = require('models/fast-plant');
+  FastPlant = require('models/agents/fast-plant');
 
   env = new Environment({
     columns: 50,

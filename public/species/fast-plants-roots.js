@@ -3,7 +3,7 @@
   require.register("species/fast-plants-roots", function(exports, require, module) {
     var FastPlant, Species, Trait;
     Species = require('models/species');
-    FastPlant = require('models/fast-plant');
+    FastPlant = require('models/agents/fast-plant');
     Trait = require('models/trait');
     return module.exports = new Species({
       speciesName: "fast plants",

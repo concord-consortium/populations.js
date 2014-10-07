@@ -14,7 +14,7 @@
 
   Trait = require('models/trait');
 
-  Interactive = require('interactive/interactive');
+  Interactive = require('ui/interactive');
 
   plantSpecies = require('species/varied-plants');
 

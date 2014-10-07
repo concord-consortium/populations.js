@@ -7,41 +7,30 @@
         <script src="js/vendor.js"></script>
     <script>
       var models = {
-        "five-sunlight-one-plant.html":           "1.1 Flowerpots with one plant (sunlight)",
-        "five-sunlight-three-plants.html":        "1.2 Flowerpots with three plants (sunlight)",
-        "five-sunlight-three-plants-graph.html":  "1.3 Flowerpots with graph (sunlight)",
-        "five-water-three-plants.html":           "1.4 Flowerpots with three plants (water)",
-        "field-three-plants-breed-true.html":     "2.1 Field, three plants, breed true",
-        "three-sunlight.html":                    "2.2 Three flowerpots",
-        "field-one-plant-variation.html":         "2.3 Field, one plant with variation (sunlight)",
-        "field-water-one-plant-variation.html":   "2.4 Field, one plant with variation (water)",
-        "rabbit-controllable.html":               "3.1 Single rabbit (controllable)",
-        "rabbit-controllable-multi.html":         "3.2 Rabbit population (controllable)",
-        "hawk-controllable.html":                 "3.3 Hawk and rabbits (controllable)",
-        "hawk-rabbit-evolution.html":             "3.4 Hawks and rabbits in changing environment",
-        "mountain-sunlight-variation.html":       "4.1 Plant variation with mountains",
-        "mountain-sunlight-variation-chart.html": "4.1 Plant variation with mountains (with chart)",
-        "dam-plants-rabbits.html":                "4.2 Dam model",
-        "dam-plants-rabbits-reverse.html":        "4.3 Dam model (reverse)",
-        "super-model-foxes-open.html":            "4.4 Open model: grass, rabbits, hawks and foxes"
+        "five-sunlight-three-plants.html":        "Flowerpots with three plants",
+        "hawk-controllable.html":                 "Hawk and rabbits (controllable)",
+        "hawk-rabbit-evolution.html":             "Hawks and rabbits in changing environment",
+        "mountain-sunlight-variation-chart.html": "Plant variation with mountains",
+        "dam-plants-rabbits.html":                "Dam model",
+        "super-model-foxes-open.html":            "Open model: grass, rabbits, hawks and foxes"
       }
-      
+
       var modelDivs = [], phone;
-      
+
       window.onload = function() {
         var modelCollection, i, ii, j, jj, zoom, phone, play, stop;
-        
+
         modelCollection = document.getElementsByClassName("model-collection")[0];
         for (model in models) {
           if (!models.hasOwnProperty(model)) continue;
           createModelDiv(model, modelCollection);
-          
+
           if (modelDivs.length === 1) {
             loadModel(model, modelDivs[0]);
           }
         }
-        
-        
+
+
         zoom = document.getElementById("zoom");
         iframe = document.getElementById("model-iframe");
         zoom.addEventListener('click', function(evt) {
@@ -51,16 +40,16 @@
             iframe.classList.remove("zoom-out");
           }
         });
-        
+
         initPhone(iframe);
       }
-      
+
       initPhone = function(iframe) {
         if (phone && phone.removeAllListeners) {
           phone.removeAllListeners();
         }
         phone = new iframePhone.ParentEndpoint(iframe);
-        
+
         play = document.getElementById('play');
         play.addEventListener('click', function(evt) {
           // Send play event via iframe-phone
@@ -77,7 +66,7 @@
           phone.post({type: 'reset'});
         });
       }
-      
+
       createModelDiv = function(model, container) {
         var el = document.createElement('div'),
             title = document.createElement('div'),
@@ -91,7 +80,7 @@
         modelDivs.push(el);
         container.appendChild(el);
       }
-      
+
       loadModel = function(model, el) {
         var iframe = document.getElementById("model-iframe");
         for (j = 0, jj = modelDivs.length; j < jj; j++) {
@@ -101,43 +90,44 @@
         iframe.setAttribute("src", model);
         setTimeout(function() { initPhone(iframe); }, 50);
       }
-      
+
     </script>
     <style type="text/css">
       body {
-        background-color: #DAEDD5;
+        background-color: #e7e7e5;
         font-family: 'Lato', georgia, times, "times new roman", serif;
         color: #555;
       }
-      
+
       #header {
         background-color: #777;
-        
+
         color: white;
         padding: 0.5em 1em;
         font-size: 1em;
         font-weight: 600;
       }
-      
+
       #header h2 {
         margin: -25px 310px 15px;
       }
-      
+
       #credits {
         font-size: 0.8em;
         color: #777;
       }
-      
+
       #credits p {
         padding-left: 2em;
         margin-bottom: -0.5em;
       }
-      
+
       .left-column {
-        width: 320px;
+        width: 285px;
         float: left;
+        padding-top: 20px;
       }
-      
+
       .model-collection > div,
       .model-collection .link {
         padding: 7px;
@@ -145,12 +135,12 @@
         border: #FFF 1px solid;
         cursor: pointer;
       }
-      
+
       .model-collection > div:hover,
       .model-collection > div.active {
         background-color: #DDD;
       }
-      
+
       .model-collection .link {
         position: relative;
         float: right;
@@ -158,31 +148,32 @@
         background-color: #F1F1F1;
         display: none;
       }
-      
+
       .model-collection div:hover .link,
       .model-collection div.active .link {
         display: inline-block;
         line-height: 0.5em;
       }
-      
+
       .model-collection .link a {
         margin: -3px;
         font-size: 0.8em;
         text-decoration: none;
       }
-      
+
       .model {
         float: left;
-        padding-left: 20px;
+        padding-left: 10px;
+        padding-top: 13px;
       }
-      
+
       #model-iframe {
-        width: 950px;
-        height: 600px;
+        width: 1040px;
+        height: 630px;
         border: 1px solid #BBB;
         background-color: white;
       }
-      
+
       #model-iframe.zoom-out {
         -ms-zoom: 0.75;
         -moz-transform: scale(0.75);
@@ -193,41 +184,38 @@
         -webkit-transform-origin: 0 0;
         transform: scale(0.75);
         transform-origin: 0 0;
-        
+
         width: 1267px;
         height: 800px;
       }
-      
+
       #zoom-check {
         clear: both;
         float: right;
       }
-      
+
       .control {
         margin-right: 10px;
       }
-      
+
       .controls {
         margin-bottom: 20px;
       }
-      
+
     </style>
   </head>
   <body>
     <div id="header">
-      <h1>Evolution Readiness Models</h1>
-      <h2>&mdash; populations.js</h2>
+      <h1>populations.js example models</h1>
     </div>
     <div id="credits">
       <p>GitHub repository:<a href="https://github.com/concord-consortium/populations.js">github.com/concord-consortium/populations.js</a></p>
     </div>
     <div class="left-column">
-      <h2>ITSI Models</h2>
       <div class="controls"><span class="control"><a id="play" href="#">Play</a></span><span class="control"><a id="stop" href="#">Stop</a></span><span class="control"><a id="reset" href="#">Reset</a></span></div>
       <div class="model-collection"></div>
     </div>
     <div class="model">
-      <h1 id="model-title"></h1>
       <iframe id="model-iframe"></iframe>
     </div>
     <div id="zoom-check">

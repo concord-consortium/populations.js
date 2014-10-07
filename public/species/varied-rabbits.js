@@ -3,7 +3,7 @@
   require.register("species/varied-rabbits", function(exports, require, module) {
     var BasicAnimal, Species, Trait;
     Species = require('models/species');
-    BasicAnimal = require('models/basic-animal');
+    BasicAnimal = require('models/agents/basic-animal');
     Trait = require('models/trait');
     return module.exports = new Species({
       speciesName: "rabbits",
@@ -61,6 +61,9 @@
           possibleValues: [1, 2, 3]
         })
       ],
+      imageProperties: {
+        initialFlipDirection: "right"
+      },
       imageRules: [
         {
           name: 'glow',

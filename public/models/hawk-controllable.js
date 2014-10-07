@@ -14,13 +14,13 @@
 
   Trait = require('models/trait');
 
-  Interactive = require('interactive/interactive');
+  Interactive = require('ui/interactive');
 
   Events = require('events');
 
-  ToolButton = require('interactive/tool-button');
+  ToolButton = require('ui/tool-button');
 
-  BasicAnimal = require('models/basic-animal');
+  BasicAnimal = require('models/agents/basic-animal');
 
   plantSpecies = require('species/fast-plants-roots');
 
@@ -59,7 +59,6 @@
         }
       }
       this.hawk = hawkSpecies.createAgent();
-      this.hawk._viewLayer = 5;
       this.hawk.setLocation(this.env.randomLocation());
       this.hawk.set('is immortal', true);
       this.hawk.set('age', 20);

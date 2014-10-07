@@ -3,7 +3,7 @@
   require.register("species/white-brown-rabbits", function(exports, require, module) {
     var BasicAnimal, Species, Trait;
     Species = require('models/species');
-    BasicAnimal = require('models/basic-animal');
+    BasicAnimal = require('models/agents/basic-animal');
     Trait = require('models/trait');
     return module.exports = new Species({
       speciesName: "rabbits",
@@ -60,6 +60,9 @@
           "default": 0.5
         })
       ],
+      imageProperties: {
+        initialFlipDirection: "right"
+      },
       imageRules: [
         {
           name: 'rabbit',

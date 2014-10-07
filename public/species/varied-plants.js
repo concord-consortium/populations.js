@@ -3,7 +3,7 @@
   require.register("species/varied-plants", function(exports, require, module) {
     var BasicPlant, Species, Trait;
     Species = require('models/species');
-    BasicPlant = require('models/basic-plant');
+    BasicPlant = require('models/agents/basic-plant');
     Trait = require('models/trait');
     return module.exports = new Species({
       speciesName: "varied plants",

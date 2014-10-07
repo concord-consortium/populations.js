@@ -14,11 +14,11 @@
 
   Trait = require('models/trait');
 
-  Interactive = require('interactive/interactive');
+  Interactive = require('ui/interactive');
 
   Events = require('events');
 
-  ToolButton = require('interactive/tool-button');
+  ToolButton = require('ui/tool-button');
 
   plantSpecies = require('species/varied-plants');
 

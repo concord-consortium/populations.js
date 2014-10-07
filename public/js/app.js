@@ -90,7 +90,93 @@
   globals.require.list = list;
   globals.require.brunch = true;
 })();
-require.register("events", function(exports, require, module) {
+require.register("animated-sprite", function(exports, require, module) {
+PIXI.AnimatedSprite = function(sequences, firstSequence) {
+  var key;
+  this.sequences = sequences;
+  if (firstSequence == null) {
+    for (key in sequences) {
+      this.currentSequence = key;
+      break;
+    }
+  } else {
+    this.currentSequence = firstSequence;
+  }
+  this.frames = this.sequences[this.currentSequence].frames;
+  this.frameRate = this.sequences[this.currentSequence].frameRate || 60;
+  this.loop = this.sequences[this.currentSequence].loop || false;
+  PIXI.Sprite.call(this, this.frames[0]);
+  this.anchor.x = this.anchor.y = .5;
+  this.onComplete = null;
+  this.currentFrame = 0;
+  this.previousFrame;
+  this.playing = false;
+  this.loop = false;
+};
+
+PIXI.AnimatedSprite.constructor = PIXI.AnimatedSprite;
+
+PIXI.AnimatedSprite.prototype = Object.create(PIXI.Sprite.prototype);
+
+PIXI.AnimatedSprite.prototype.gotoAndPlay = function(where) {
+  if (Object.prototype.toString.call(where) === "[object String]") {
+    this.currentFrame = 0;
+    this.currentSequence = where;
+    this.frames = this.sequences[where].frames;
+    this.frameRate = this.sequences[where].frameRate || 60;
+    this.loop = this.sequences[where].loop || false;
+  } else {
+    this.currentFrame = where;
+  }
+  this.playing = true;
+};
+
+PIXI.AnimatedSprite.prototype.gotoAndStop = function(where) {
+  if (Object.prototype.toString.call(where) === "[object String]") {
+    this.currentFrame = 0;
+    this.currentSequence = where;
+    this.frames = this.sequences[where].frames;
+    this.frameRate = this.sequences[where].frameRate || 60;
+    this.loop = this.sequences[where].loop || false;
+  } else {
+    this.currentFrame = where;
+  }
+  this.setTexture(this.frames[this.currentFrame]);
+  this.playing = false;
+};
+
+PIXI.AnimatedSprite.prototype.play = function() {
+  this.playing = true;
+};
+
+PIXI.AnimatedSprite.prototype.stop = function() {
+  this.playing = false;
+};
+
+PIXI.AnimatedSprite.prototype.advanceTime = function(dt) {
+  var constrainedFrame;
+  if (typeof dt === "undefined") {
+    dt = 1 / 60;
+  }
+  if (this.playing) {
+    this.currentFrame += this.frameRate * dt;
+    constrainedFrame = Math.floor(Math.min(this.currentFrame, this.frames.length - 1));
+    this.setTexture(this.frames[constrainedFrame]);
+    if (this.currentFrame >= this.frames.length) {
+      if (this.loop) {
+        this.gotoAndPlay(0);
+      } else {
+        this.stop();
+      }
+      if (this.onComplete) {
+        this.onComplete(this.currentSequence);
+      }
+    }
+  }
+};
+});
+
+;require.register("events", function(exports, require, module) {
 /*
   This is a simple helper library for dispatching custom events.
   While not strictly necessary, it also includes a polyfill for supporting
@@ -154,6 +240,10 @@ module.exports = Events = (function() {
 });
 
 ;require.register("helpers", function(exports, require, module) {
+var __slice = [].slice,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
 Array.prototype.remove = function(from, to) {
   var rest;
   rest = this.slice((to || from) + 1 || this.length);
@@ -266,6 +356,14 @@ ExtMath.flip = function() {
   return ExtMath.randomInt(2);
 };
 
+ExtMath.HALF_PI = Math.PI / 2;
+
+ExtMath.TWO_PI = Math.PI * 2;
+
+ExtMath.normalizeRads = function(t) {
+  return t - ExtMath.TWO_PI * Math.floor((t + Math.PI) / ExtMath.TWO_PI);
+};
+
 module.exports = {
   /*
     Given an object of default values:
@@ -365,8 +463,7 @@ module.exports = {
     return str.slice(0, str.length - 2) + " }";
   },
   preload: function(sources, callback) {
-    var loadUrl, loadedSoFar, numImages, progress, source, statusContainer, statusDom, url, _i, _j, _len, _len1, _results,
-      _this = this;
+    var asset, assets, loader, numImages, source, statusContainer, statusDom, _i, _j, _len, _len1, _ref;
     statusContainer = document.createElement('div');
     statusContainer.classList.add('preload-message');
     statusDom = document.createElement('div');
@@ -374,1064 +471,60 @@ module.exports = {
     statusDom.innerHTML = "Loading... 0% complete.";
     statusContainer.appendChild(statusDom);
     document.body.appendChild(statusContainer);
-    numImages = 0;
+    assets = [];
     for (_i = 0, _len = sources.length; _i < _len; _i++) {
       source = sources[_i];
-      if (source.preload != null) {
-        numImages += source.preload.length;
-      }
-    }
-    loadedSoFar = 0;
-    progress = function() {
-      loadedSoFar++;
-      if (loadedSoFar < numImages) {
-        return statusDom.innerHTML = "Loading... " + Math.floor(loadedSoFar / numImages * 100) + "%";
-      } else {
-        statusDom.innerHTML = "Loading complete!";
-        return setTimeout(function() {
-          callback();
-          return document.body.removeChild(statusContainer);
-        }, 10);
-      }
-    };
-    loadUrl = function(url, n) {
-      var e, img;
-      if (n == null) {
-        n = 0;
-      }
-      try {
-        img = new Image();
-        img.src = url;
-        img.onload = function() {
-          return progress();
-        };
-        return img.onerror = function() {
-          if (n < 3) {
-            return loadUrl(url, ++n);
-          } else {
-            return progress();
-          }
-        };
-      } catch (_error) {
-        e = _error;
-        if (n < 3) {
-          return loadUrl(url, ++n);
-        } else {
-          return progress();
-        }
-      }
-    };
-    _results = [];
-    for (_j = 0, _len1 = sources.length; _j < _len1; _j++) {
-      source = sources[_j];
       if (source.preload == null) {
         continue;
       }
-      _results.push((function() {
-        var _k, _len2, _ref, _results1;
-        _ref = source.preload;
-        _results1 = [];
-        for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
-          url = _ref[_k];
-          _results1.push(loadUrl(url));
-        }
-        return _results1;
-      })());
+      _ref = source.preload;
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        asset = _ref[_j];
+        assets.push(asset);
+      }
     }
-    return _results;
+    numImages = null;
+    loader = new PIXI.AssetLoader(assets);
+    loader.onProgress = function() {
+      if (!numImages) {
+        numImages = loader.loadCount + 1;
+      }
+      return statusDom.innerHTML = "Loading... " + Math.floor((numImages - loader.loadCount) / numImages * 100) + "%";
+    };
+    loader.onComplete = function() {
+      statusDom.innerHTML = "Loading complete!";
+      return setTimeout(function() {
+        callback();
+        return document.body.removeChild(statusContainer);
+      }, 10);
+    };
+    return loader.load();
+  },
+  mixOf: function() {
+    var Mixed, base, method, mixin, mixins, name, _i, _ref, _ref1;
+    base = arguments[0], mixins = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    Mixed = (function(_super) {
+      __extends(Mixed, _super);
+
+      function Mixed() {
+        _ref = Mixed.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      return Mixed;
+
+    })(base);
+    for (_i = mixins.length - 1; _i >= 0; _i += -1) {
+      mixin = mixins[_i];
+      _ref1 = mixin.prototype;
+      for (name in _ref1) {
+        method = _ref1[name];
+        Mixed.prototype[name] = method;
+      }
+    }
+    return Mixed;
   }
 };
-});
-
-;require.register("interactive/add-organism-button", function(exports, require, module) {
-var AddOrganismButton;
-
-module.exports = AddOrganismButton = (function() {
-  function AddOrganismButton(environment, toolbar, _arg) {
-    this.environment = environment;
-    this.toolbar = toolbar;
-    this.species = _arg.species, this.traits = _arg.traits, this.scatter = _arg.scatter, this.limit = _arg.limit, this.imagePath = _arg.imagePath, this.showRemoveButton = _arg.showRemoveButton;
-    if (!this.scatter) {
-      this.toolbar.registerModalButton(this);
-    }
-  }
-
-  AddOrganismButton.prototype.render = function() {
-    var image,
-      _this = this;
-    this.button = document.createElement('div');
-    this.button.classList.add('button');
-    if (this.showRemoveButton) {
-      this.button.classList.add('has-no-button');
-    }
-    this.button.addEventListener('click', function() {
-      return _this.action();
-    });
-    if (!this.scatter) {
-      this.button.classList.add('modal');
-    }
-    image = document.createElement('img');
-    image.setAttribute('src', this.imagePath);
-    this.button.appendChild(image);
-    return this.button;
-  };
-
-  AddOrganismButton.prototype.getView = function() {
-    return this.button;
-  };
-
-  AddOrganismButton.prototype._count = 0;
-
-  AddOrganismButton.prototype._disabled = false;
-
-  AddOrganismButton.prototype.disable = function() {
-    this._disabled = true;
-    return this.button.classList.add('disabled');
-  };
-
-  AddOrganismButton.prototype.reset = function() {
-    this._count = 0;
-    this._disabled = false;
-    return this.button.classList.remove('disabled');
-  };
-
-  AddOrganismButton.prototype.action = function() {
-    if (this._disabled) {
-      return;
-    }
-    if (this.scatter) {
-      return this.scatterOrganisms();
-    } else {
-      return this.enterAddOrganismsMode();
-    }
-  };
-
-  AddOrganismButton.prototype.scatterOrganisms = function() {
-    var agent, i, _i, _ref;
-    for (i = _i = 0, _ref = this.scatter; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-      if (this.limit && ++this._count >= this.limit) {
-        this.disable();
-        if (this._count > this.limit) {
-          return;
-        }
-      }
-      agent = this.species.createAgent(this.traits);
-      agent.environment = this.environment;
-      agent.setLocation(this.environment.randomLocation());
-      while (!this.environment.addAgent(agent)) {
-        agent.setLocation(this.environment.randomLocation());
-      }
-    }
-  };
-
-  AddOrganismButton.prototype.enterAddOrganismsMode = function() {
-    var _this = this;
-    this.toolbar.activateModalButton(this);
-    this.environment.setDefaultAgentCreator(this.species, this.traits, function() {
-      if (_this.limit && ++_this._count >= _this.limit) {
-        _this.environment.setDefaultAgentCreator(null);
-        _this.environment.setState(_this.environment.UI_STATE.NONE);
-        return _this.disable();
-      }
-    });
-    return this.environment.setState(this.environment.UI_STATE.ADD_AGENTS);
-  };
-
-  return AddOrganismButton;
-
-})();
-});
-
-;require.register("interactive/info-view", function(exports, require, module) {
-var InfoView;
-
-module.exports = InfoView = (function() {
-  InfoView._instances = [];
-
-  InfoView.instances = function() {
-    return InfoView._instances;
-  };
-
-  function InfoView(_arg) {
-    this.agent = _arg.agent;
-    InfoView._instances.push(this);
-  }
-
-  InfoView.prototype.view = null;
-
-  InfoView.prototype.setAgent = function(agent) {
-    this.agent = agent;
-    while (this._container.children.length > 0) {
-      this._container.removeChild(this._container.children[0]);
-    }
-    this.agent.getView().render(this._container, 'info-tool');
-    this._repositionAgent();
-    this._rescaleAgent();
-    if (this._details.firstChild != null) {
-      this._details.replaceChild(this.agent.getView().textView(), this._details.firstChild);
-    } else {
-      this._details.appendChild(this.agent.getView().textView());
-    }
-    return this.title.innerHTML = this.agent.label.charAt(0).toUpperCase() + this.agent.label.slice(1);
-  };
-
-  InfoView.prototype._repositionAgent = function() {
-    this._container.children[0].position = {
-      x: 0,
-      y: 0
-    };
-    return this._container.position = {
-      x: 52,
-      y: 70
-    };
-  };
-
-  InfoView.prototype._rescaleAgent = function() {
-    if (this.agent.species.defs.INFO_VIEW_SCALE != null) {
-      this._container.scale.x = this.agent.species.defs.INFO_VIEW_SCALE;
-      return this._container.scale.y = this.agent.species.defs.INFO_VIEW_SCALE;
-    } else {
-      this._container.scale.x = 1.25;
-      return this._container.scale.y = 1.25;
-    }
-  };
-
-  InfoView.prototype._redraw = function() {
-    var _this = this;
-    if (this._showing) {
-      requestAnimFrame(function() {
-        return _this._redraw();
-      });
-    }
-    return this._renderer.render(this._stage);
-  };
-
-  InfoView.prototype.render = function() {
-    var agentView, closeButton, content, titleBar,
-      _this = this;
-    this.view = document.createElement('div');
-    this.view.classList.add('bubble');
-    if (this.agent._x < this.agent.environment.width / 2) {
-      this.view.classList.add('left');
-    } else {
-      this.view.classList.add('right');
-    }
-    if (this.agent._y < this.agent.environment.height / 2) {
-      this.view.classList.add('top');
-    } else {
-      this.view.classList.add('bottom');
-    }
-    titleBar = document.createElement('div');
-    titleBar.classList.add('title-bar');
-    this.title = document.createElement('span');
-    this.title.classList.add('title');
-    this.title.innerHTML = this.agent.label.charAt(0).toUpperCase() + this.agent.label.slice(1);
-    closeButton = document.createElement('span');
-    closeButton.classList.add('close');
-    closeButton.innerHTML = "<i class='fa fa-times-circle-o'></i>";
-    closeButton.addEventListener('click', function() {
-      return _this.hide();
-    });
-    content = document.createElement('div');
-    content.classList.add('content');
-    this._details = document.createElement('div');
-    this._details.classList.add('details');
-    agentView = document.createElement('div');
-    agentView.classList.add('agent');
-    this._stage = new PIXI.Stage(0xFFFFFF, true);
-    this._renderer = new PIXI.CanvasRenderer(125, 160);
-    this._container = new PIXI.DisplayObjectContainer();
-    this._stage.addChild(this._container);
-    this.setAgent(this.agent);
-    this._redraw();
-    agentView.appendChild(this._renderer.view);
-    titleBar.appendChild(this.title);
-    titleBar.appendChild(closeButton);
-    content.appendChild(agentView);
-    content.appendChild(this._details);
-    this.view.appendChild(titleBar);
-    this.view.appendChild(content);
-    return this.view;
-  };
-
-  InfoView.prototype.hide = function() {
-    if (!this.view.classList.contains('hidden')) {
-      this.view.classList.add('hidden');
-    }
-    return this._showing = false;
-  };
-
-  InfoView.prototype.show = function() {
-    this.view.classList.remove('hidden');
-    this._showing = true;
-    return this._redraw();
-  };
-
-  InfoView.prototype.repaint = function() {
-    return this._renderer.render(this._stage);
-  };
-
-  return InfoView;
-
-})();
-});
-
-;require.register("interactive/interactive", function(exports, require, module) {
-var Environment, Events, InfoView, Interactive, SpeedSlider, Toolbar, defaultOptions, helpers;
-
-helpers = require("helpers");
-
-Toolbar = require("interactive/toolbar");
-
-InfoView = require("interactive/info-view");
-
-SpeedSlider = require("interactive/speed-slider");
-
-Events = require('events');
-
-Environment = require('models/environment');
-
-defaultOptions = {
-  environment: null,
-  playButton: true,
-  resetButton: true,
-  speedSlider: false,
-  addOrganismButtons: [],
-  toolButtons: []
-};
-
-module.exports = Interactive = (function() {
-  function Interactive(options) {
-    var ignoreEvent, phone,
-      _this = this;
-    this._opts = helpers.setDefaults(options, defaultOptions);
-    this.environment = this._opts.environment;
-    this.addOrganismButtons = this._opts.addOrganismButtons;
-    this.toolButtons = this._opts.toolButtons;
-    if (typeof Shutterbug !== "undefined" && Shutterbug !== null) {
-      window.shutterbug = new Shutterbug("body");
-      $(window).on('shutterbug-saycheese', function() {
-        return _this.repaint();
-      });
-    }
-    if (typeof iframePhone !== "undefined" && iframePhone !== null) {
-      phone = iframePhone.getIFrameEndpoint();
-      ignoreEvent = false;
-      phone.addListener('stop', function() {
-        ignoreEvent = true;
-        if (_this.environment._isRunning) {
-          _this.toolbar.toggleButtons['pause'].click();
-        }
-        return ignoreEvent = false;
-      });
-      phone.addListener('play', function() {
-        ignoreEvent = true;
-        if (!_this.environment._isRunning) {
-          _this.toolbar.toggleButtons['play'].click();
-        }
-        return ignoreEvent = false;
-      });
-      phone.addListener('reset', function() {
-        ignoreEvent = true;
-        _this.toolbar.toggleButtons['reset'].click();
-        return ignoreEvent = false;
-      });
-      Events.addEventListener(Environment.EVENTS.START, function() {
-        if (!ignoreEvent) {
-          return phone.post({
-            type: 'play'
-          });
-        }
-      });
-      Events.addEventListener(Environment.EVENTS.STOP, function() {
-        if (!ignoreEvent) {
-          return phone.post({
-            type: 'stop'
-          });
-        }
-      });
-      Events.addEventListener(Environment.EVENTS.RESET, function() {
-        if (!ignoreEvent) {
-          return phone.post({
-            type: 'reset'
-          });
-        }
-      });
-      phone.initialize();
-    }
-  }
-
-  Interactive.prototype.getEnvironmentPane = function() {
-    var speedSlider;
-    this.view = document.createElement('div');
-    this.view.setAttribute("style", "height: " + this.environment.height + "px;");
-    if (this._opts.speedSlider) {
-      speedSlider = new SpeedSlider(this.environment);
-      this.view.appendChild(speedSlider.getView());
-    }
-    this.view.appendChild(this.environment.getView().render());
-    this.toolbar = new Toolbar(this);
-    this.view.appendChild(this.toolbar.getView());
-    return this.view;
-  };
-
-  Interactive.prototype.showPlayButton = function() {
-    return this._opts.playButton;
-  };
-
-  Interactive.prototype.showResetButton = function() {
-    return this._opts.resetButton;
-  };
-
-  Interactive.prototype.repaint = function() {
-    var view, _i, _len, _ref;
-    _ref = InfoView.instances();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      view = _ref[_i];
-      view.repaint();
-    }
-    return this.environment.getView().repaint();
-  };
-
-  return Interactive;
-
-})();
-
-window.onerror = function(msg, url, line) {
-  var message;
-  message = "<div>There was an error in the model!<br/><pre>" + msg + "</pre></div>";
-  message += "<div>source: " + url + ", line: " + line + "</div>";
-  return helpers.showMessage(message, document.body);
-};
-});
-
-;require.register("interactive/ppslider", function(exports, require, module) {
-
-var PPSliderClass;
-(function ($) {
-
-  PPSliderClass = function (el, opts) {
-    var startMouse, lastElemPos;
-
-    if (typeof($) == 'undefined' || $ == null) {
-      console.warn('jQuery not loaded! PPSlider is not supported');
-      return;
-    }
-    var element = $(el);
-    var options = opts;
-    var isMouseDown = false;
-    var currentVal = 0;
-
-    element.wrap('<div/>')
-    var container = $(el).parent();
-
-    container.addClass('pp-slider');
-    if (opts.vertical) {
-      container.addClass('vertical');
-    }
-    container.addClass('clearfix');
-    var minLabel = '<div class="pp-slider-min">' + opts.minLabel + '</div>';
-    var maxLabel = '<div class="pp-slider-max">' + opts.maxLabel + '</div>';
-    var content = '';
-    if (opts.vertical) {
-      content  += maxLabel;
-    } else {
-      content  += minLabel;
-    }
-    content    += '<div class="pp-slider-scale">';
-    content    += '<div class="pp-slider-button';
-    if (options.moveable) {
-      content  += ' moveable';
-    }
-    content    += '"><div class="pp-slider-divies"></div></div>';
-    content    += '<div class="pp-slider-tooltip"></div>';
-    content    += '</div>';
-    if (opts.vertical) {
-      content  += minLabel;
-    } else {
-      content  += maxLabel;
-    }
-    container.append(content);
-
-    if (typeof(options) != 'undefined' && typeof(options.hideTooltip) != 'undefined' && options.hideTooltip == true)
-    {
-      container.find('.pp-slider-tooltip').hide();
-      container.addClass('noTooltip');
-    }
-
-    if (typeof(options.width) != 'undefined')
-    {
-      container.css('width',(options.width+'px'));
-    }
-    if (typeof(options.height) != 'undefined')
-    {
-      container.css('height',(options.height+'px'));
-    }
-    if (opts.vertical) {
-      container.find('.pp-slider-scale').css('height',(container.height()-30)+'px');
-    } else {
-      container.find('.pp-slider-scale').css('width',(container.width()-30)+'px');
-    }
-
-    var startSlide = function (e) {
-      if (!options.moveable) {
-        return true;
-      }
-      if (e.originalEvent && e.originalEvent instanceof TouchEvent) {
-        e.preventDefault();
-      }
-      isMouseDown = true;
-      var pos = getMousePosition(e);
-      if (options.vertical) {
-        startMouse = pos.y;
-        lastElemPos = ($(this).offset().top - $(this).parent().offset().top);
-      } else {
-        startMouse = pos.x;
-        lastElemPos = ($(this).offset().left - $(this).parent().offset().left);
-      }
-
-      updatePosition(e);
-
-      return false;
-    };
-
-    var getMousePosition = function (e) {
-      var posx = 0;
-      var posy = 0;
-
-      if (!e) var e = window.event;
-
-      if (e.originalEvent && e.originalEvent  instanceof TouchEvent) {
-        posx = e.originalEvent.changedTouches[0].pageX;
-        posy = e.originalEvent.changedTouches[0].pageY;
-      }
-      else if (e.pageX || e.pageY) {
-        posx = e.pageX;
-        posy = e.pageY;
-      }
-      else if (e.clientX || e.clientY) {
-        posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-        posy = e.clientY + document.body.scrollTop  + document.documentElement.scrollTop;
-      }
-
-      return { 'x': posx, 'y': posy };
-    };
-
-    var positionSlider = function(newPos, currentVal) {
-      if (options.vertical) {
-        container.find('.pp-slider-button').css("top", newPos);
-        container.find('.pp-slider-tooltip').html(currentVal+'%');
-        container.find('.pp-slider-tooltip').css('top', newPos-6);
-      } else {
-        container.find('.pp-slider-button').css("left", newPos);
-        container.find('.pp-slider-tooltip').html(currentVal+'%');
-        container.find('.pp-slider-tooltip').css('left', newPos-6);
-      }
-    };
-
-    var updatePosition = function (e) {
-      var pos = getMousePosition(e);
-      var newPos, upperBound;
-      if (options.vertical) {
-        var spanY = (pos.y - startMouse);
-        newPos = (lastElemPos + spanY)
-        upperBound = (container.find('.pp-slider-scale').height()-container.find('.pp-slider-button').height());
-      } else {
-        var spanX = (pos.x - startMouse);
-        newPos = (lastElemPos + spanX)
-        upperBound = (container.find('.pp-slider-scale').width()-container.find('.pp-slider-button').width());
-      }
-      newPos = Math.max(0,newPos);
-      newPos = Math.min(newPos,upperBound);
-      currentVal = Math.round((newPos/upperBound)*100,0);
-      if (options.vertical) {
-        // inverted when vertical
-        currentVal = 100 - currentVal;
-      }
-
-      positionSlider(newPos, currentVal);
-    };
-
-    var updatePositionByValue = function (val) {
-      currentVal = val;
-      var upperBound, newPos;
-      if (options.vertical) {
-        upperBound = (container.find('.pp-slider-scale').height()-container.find('.pp-slider-button').height());
-        newPos = ((100-val)/100)*upperBound;
-      } else {
-        upperBound = (container.find('.pp-slider-scale').width()-container.find('.pp-slider-button').width());
-        newPos = (val/100)*upperBound;
-      }
-
-      positionSlider(newPos, val);
-    };
-
-    var moving = function (e) {
-      if(isMouseDown){
-        if (e.originalEvent && e.originalEvent instanceof TouchEvent) {
-          e.preventDefault();
-        }
-        updatePosition(e);
-        return false;
-      }
-    };
-
-    var dropCallback = function (e) {
-      if (isMouseDown) {
-        if (e.originalEvent && e.originalEvent instanceof TouchEvent) {
-          e.preventDefault();
-        }
-        isMouseDown = false;
-        element.val(currentVal);
-        element.trigger("change");
-      }
-
-    };
-
-    updatePositionByValue(element.val());
-
-    container.find('.pp-slider-button').bind('mousedown',startSlide);
-    container.find('.pp-slider-button').bind('touchstart',startSlide);
-
-    $(document).mousemove(function(e) { moving(e); });
-    $(document).on('touchmove', function(e) { moving(e); });
-
-    $(document).mouseup(function(e){ dropCallback(e); });
-    $(document).on('touchend', function(e){ dropCallback(e); });
-
-    return {
-      updatePositionByValue: updatePositionByValue
-    }
-
-  };
-
-  /*******************************************************************************************************/
-
-  if (typeof($) == 'undefined' || $ == null) {
-    console.warn('jQuery not loaded! PPSlider is not supported');
-    return;
-  }
-
-  $.fn.PPSlider = function (options) {
-    var opts = $.extend({}, $.fn.PPSlider.defaults, options);
-
-    var ret;
-    this.each(function () {
-        ret = new PPSliderClass($(this), opts);
-    });
-    return ret;
-  }
-
-  $.fn.PPSlider.defaults = {
-    minLabel: '-',
-    maxLabel: '+',
-    moveable: true,
-    vertical: false,
-    hideTooltip: true
-  };
-
-
-})(jQuery);
-;
-module.exports = PPSliderClass;
-});
-
-;require.register("interactive/remove-organism-button", function(exports, require, module) {
-var Environment, Events, RemoveOrganismButton;
-
-Events = require('events');
-
-Environment = require('models/environment');
-
-module.exports = RemoveOrganismButton = (function() {
-  function RemoveOrganismButton(environment, toolbar, _arg) {
-    this.environment = environment;
-    this.toolbar = toolbar;
-    this.species = _arg.species, this.imagePath = _arg.imagePath;
-  }
-
-  RemoveOrganismButton.prototype.render = function() {
-    var image, noImage,
-      _this = this;
-    this.button = document.createElement('div');
-    this.button.classList.add('button');
-    this.button.classList.add('no-button');
-    this.button.addEventListener('click', function() {
-      return _this.action();
-    });
-    image = document.createElement('img');
-    image.setAttribute('src', this.imagePath);
-    this.button.appendChild(image);
-    noImage = document.createElement('div');
-    noImage.classList.add('no-sign');
-    this.button.appendChild(noImage);
-    return this.button;
-  };
-
-  RemoveOrganismButton.prototype.getView = function() {
-    return this.button;
-  };
-
-  RemoveOrganismButton.prototype._disabled = false;
-
-  RemoveOrganismButton.prototype.disable = function() {
-    this._disabled = true;
-    return this.button.classList.add('disabled');
-  };
-
-  RemoveOrganismButton.prototype.reset = function() {
-    this._disabled = false;
-    return this.button.classList.remove('disabled');
-  };
-
-  RemoveOrganismButton.prototype.action = function() {
-    if (this._disabled) {
-      return;
-    }
-    this.removeOrganisms();
-    return Events.dispatchEvent(Environment.EVENTS.USER_REMOVED_AGENTS, {
-      species: this.species
-    });
-  };
-
-  RemoveOrganismButton.prototype.removeOrganisms = function() {
-    var agent, _i, _len, _ref;
-    _ref = this.environment.agents;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      agent = _ref[_i];
-      if (agent.species === this.species) {
-        agent.die();
-      }
-    }
-    return this.environment.removeDeadAgents();
-  };
-
-  return RemoveOrganismButton;
-
-})();
-});
-
-;require.register("interactive/speed-slider", function(exports, require, module) {
-var PPSlider, SpeedSlider;
-
-PPSlider = require('interactive/ppslider');
-
-module.exports = SpeedSlider = (function() {
-  function SpeedSlider(env) {
-    var input,
-      _this = this;
-    this.view = document.createElement('div');
-    this.view.setAttribute("style", "height: 20px;");
-    input = document.createElement('input');
-    input.setAttribute("id", "speed-slider");
-    input.setAttribute("type", 'hidden');
-    input.setAttribute("value", 50);
-    this.view.appendChild(input);
-    $(document).ready(function() {
-      $(input).change(function() {
-        return env.setSpeed(parseInt($(this).val()));
-      });
-      return $(input).PPSlider({
-        width: env.width
-      });
-    });
-  }
-
-  SpeedSlider.prototype.getView = function() {
-    return this.view;
-  };
-
-  return SpeedSlider;
-
-})();
-});
-
-;require.register("interactive/tool-button", function(exports, require, module) {
-var InfoView, ToolButton;
-
-InfoView = require('interactive/info-view');
-
-module.exports = ToolButton = (function() {
-  ToolButton.INFO_TOOL = 'info-tool';
-
-  ToolButton.CARRY_TOOL = 'carry-tool';
-
-  ToolButton.prototype.state = null;
-
-  function ToolButton(environment, toolbar, _arg) {
-    this.environment = environment;
-    this.toolbar = toolbar;
-    this.type = _arg.type;
-    this.toolbar.registerModalButton(this);
-    this.state = this._getState();
-    this.environment.addState(this.type, this.state);
-  }
-
-  ToolButton.prototype.render = function() {
-    var image,
-      _this = this;
-    this.button = document.createElement('div');
-    this.button.classList.add('button');
-    this.button.addEventListener('click', function() {
-      return _this.action();
-    });
-    this.button.classList.add('modal');
-    image = document.createElement('div');
-    image.classList.add(this.type);
-    this.button.appendChild(image);
-    return this.button;
-  };
-
-  ToolButton.prototype.getView = function() {
-    return this.button;
-  };
-
-  ToolButton.prototype.action = function() {
-    this.toolbar.activateModalButton(this);
-    return this.environment.setState(this.type);
-  };
-
-  ToolButton.prototype._getState = function() {
-    return this._states[this.type];
-  };
-
-  ToolButton.prototype._states = {
-    'info-tool': {
-      enter: function() {
-        return this._view.setCursor("info-tool");
-      },
-      click: function(evt) {
-        var agent, style, _i, _len, _ref;
-        agent = this.getAgentAt(evt.envX, evt.envY);
-        if (agent == null) {
-          return;
-        }
-        if (this.infoPopup != null) {
-          this.infoPopup.setAgent(agent);
-        } else {
-          this.infoPopup = new InfoView({
-            agent: agent
-          });
-          document.getElementById('environment').appendChild(this.infoPopup.render());
-        }
-        _ref = ['top', 'left', 'bottom', 'right'];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          style = _ref[_i];
-          this.infoPopup.view.classList.remove(style);
-        }
-        if (evt.envX > this.width / 2) {
-          this.infoPopup.view.classList.add('right');
-          this.infoPopup.view.style.left = (evt.envX - 225) + "px";
-        } else {
-          this.infoPopup.view.classList.add('left');
-          this.infoPopup.view.style.left = (evt.envX + 35) + "px";
-        }
-        if (evt.envY > this.height / 2) {
-          this.infoPopup.view.classList.add('bottom');
-          this.infoPopup.view.style.top = (evt.envY - 162) + "px";
-        } else {
-          this.infoPopup.view.classList.add('top');
-          this.infoPopup.view.style.top = (evt.envY - 25) + "px";
-        }
-        return this.infoPopup.show();
-      }
-    },
-    'carry-tool': {
-      _agent: null,
-      _origin: null,
-      _agentOrigin: null,
-      enter: function() {
-        return this._view.setCursor("carry-tool");
-      },
-      mousedown: function(evt) {
-        var agent;
-        agent = this.getAgentAt(evt.envX, evt.envY);
-        if (agent == null) {
-          return;
-        }
-        this.pickUpAgent(agent);
-        this._agent = agent;
-        this._origin = {
-          x: evt.envX,
-          y: evt.envY
-        };
-        return this._agentOrigin = agent.getLocation();
-      },
-      mousemove: function(evt) {
-        var dX, dY;
-        if (this._agent == null) {
-          return;
-        }
-        dX = evt.envX - this._origin.x;
-        dY = evt.envY - this._origin.y;
-        return this._agent.setLocation({
-          x: this._agentOrigin.x + dX,
-          y: this._agentOrigin.y + dY
-        });
-      },
-      mouseup: function(evt) {
-        if (this._agent == null) {
-          return;
-        }
-        this.dropCarriedAgent();
-        return this._agent = null;
-      },
-      touchstart: function(evt) {
-        evt.preventDefault();
-        return this.send('mousedown', evt);
-      },
-      touchmove: function(evt) {
-        evt.preventDefault();
-        return this.send('mousemove', evt);
-      },
-      touchend: function(evt) {
-        evt.preventDefault();
-        return this.send('mouseup', evt);
-      }
-    }
-  };
-
-  return ToolButton;
-
-})();
-});
-
-;require.register("interactive/toolbar", function(exports, require, module) {
-var AddOrganismButton, Environment, Events, RemoveOrganismButton, ToolButton, Toolbar;
-
-AddOrganismButton = require("interactive/add-organism-button");
-
-RemoveOrganismButton = require("interactive/remove-organism-button");
-
-ToolButton = require('interactive/tool-button');
-
-Events = require('events');
-
-Environment = require('models/environment');
-
-module.exports = Toolbar = (function() {
-  function Toolbar(interactive) {
-    var button, env, opts, removeButton, _i, _j, _len, _len1, _ref, _ref1,
-      _this = this;
-    this.interactive = interactive;
-    env = this.interactive.environment;
-    this.modalButtons = [];
-    this.toggleButtons = [];
-    this.organismButtons = [];
-    this.view = document.createElement('div');
-    this.view.classList.add("toolbar");
-    this.view.setAttribute("style", "height: " + env.height + "px;");
-    if (this.interactive.showPlayButton()) {
-      this.addToggleButton("play", (function() {
-        return env.start();
-      }), "pause", (function() {
-        return env.stop();
-      }));
-      Events.addEventListener(Environment.EVENTS.PLAY, function() {
-        _this.toggleButtons['play'].style.display = "none";
-        return _this.toggleButtons['pause'].style.display = "";
-      });
-      Events.addEventListener(Environment.EVENTS.STOP, function() {
-        _this.toggleButtons['play'].style.display = "";
-        return _this.toggleButtons['pause'].style.display = "none";
-      });
-    }
-    _ref = this.interactive.addOrganismButtons;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      opts = _ref[_i];
-      button = new AddOrganismButton(env, this, opts);
-      this.view.appendChild(button.render());
-      this.organismButtons.push(button);
-      if (opts.showRemoveButton) {
-        removeButton = new RemoveOrganismButton(env, this, opts);
-        this.view.appendChild(removeButton.render());
-        this.organismButtons.push(removeButton);
-      }
-    }
-    _ref1 = this.interactive.toolButtons;
-    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-      opts = _ref1[_j];
-      button = new ToolButton(env, this, opts);
-      this.view.appendChild(button.render());
-    }
-    if (this.interactive.showResetButton()) {
-      this.addButton("reset", function() {
-        _this.reset();
-        return env.reset();
-      });
-    }
-  }
-
-  Toolbar.prototype.addButton = function(type, action) {
-    var button, innerButton;
-    button = document.createElement('div');
-    button.classList.add('button');
-    innerButton = document.createElement('div');
-    innerButton.classList.add(type);
-    button.appendChild(innerButton);
-    button.addEventListener('click', action);
-    this.toggleButtons[type] = button;
-    return this.view.appendChild(button);
-  };
-
-  Toolbar.prototype.addToggleButton = function(type1, action1, type2, action2) {
-    var button1, button2;
-    button1 = this.addButton(type1, action1);
-    button2 = this.addButton(type2, action2);
-    button2.style.display = "none";
-    button1.addEventListener('click', function() {
-      button1.style.display = "none";
-      return button2.style.display = "";
-    });
-    return button2.addEventListener('click', function() {
-      button1.style.display = "";
-      return button2.style.display = "none";
-    });
-  };
-
-  Toolbar.prototype.registerModalButton = function(btn) {
-    return this.modalButtons.push(btn);
-  };
-
-  Toolbar.prototype.activateModalButton = function(btn) {
-    var button, _i, _len, _ref, _results;
-    btn.getView().classList.add('modal-active');
-    _ref = this.modalButtons;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      button = _ref[_i];
-      if (button !== btn) {
-        _results.push(button.getView().classList.remove('modal-active'));
-      } else {
-        _results.push(void 0);
-      }
-    }
-    return _results;
-  };
-
-  Toolbar.prototype.reset = function() {
-    var button, env, _i, _j, _len, _len1, _ref, _ref1;
-    _ref = this.modalButtons;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      button = _ref[_i];
-      button.getView().classList.remove('modal-active');
-    }
-    _ref1 = this.organismButtons;
-    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-      button = _ref1[_j];
-      button.reset();
-    }
-    env = this.interactive.environment;
-    return env.setState(env.UI_STATE.NONE);
-  };
-
-  Toolbar.prototype.getView = function() {
-    return this.view;
-  };
-
-  return Toolbar;
-
-})();
 });
 
 ;require.register("models/agent", function(exports, require, module) {
@@ -1474,6 +567,9 @@ module.exports = Agent = (function() {
     this._view = new AgentView({
       agent: this
     });
+    if (this.species.viewLayer != null) {
+      this._viewLayer = this.species.viewLayer;
+    }
     if ((x != null) && (y != null)) {
       this.setLocation({
         x: x,
@@ -1707,7 +803,33 @@ module.exports = Agent = (function() {
 })();
 });
 
-;require.register("models/basic-animal", function(exports, require, module) {
+;require.register("models/agents/animated-agent", function(exports, require, module) {
+var AnimatedAgent;
+
+module.exports = AnimatedAgent = (function() {
+  function AnimatedAgent() {}
+
+  AnimatedAgent.MOVEMENTS = {
+    STOP: "stop",
+    MOVESTEP: "move-step"
+  };
+
+  AnimatedAgent.prototype.currentMovement = AnimatedAgent.MOVEMENTS.STOPPED;
+
+  AnimatedAgent.prototype.setMovement = function(currentMovement) {
+    this.currentMovement = currentMovement;
+  };
+
+  AnimatedAgent.prototype.getMovement = function() {
+    return this.currentMovement;
+  };
+
+  return AnimatedAgent;
+
+})();
+});
+
+;require.register("models/agents/basic-animal", function(exports, require, module) {
 var Agent, AgentDistance, BasicAnimal, Environment, Events, Trait, defaultProperties, helpers,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1863,7 +985,7 @@ module.exports = BasicAnimal = (function(_super) {
         return this._timeLastMated = this.environment.date;
       }
     } else {
-      return this.wander(this.get('speed') * 0.75);
+      return this.wander(this.get('speed') * Math.random() * 0.75);
     }
   };
 
@@ -1873,26 +995,30 @@ module.exports = BasicAnimal = (function(_super) {
       maxSpeed = this.get('speed');
       speed = (maxSpeed / 2) + ExtMath.randomGaussian() * (maxSpeed / 6);
     }
-    this.set('speed', speed);
-    this.set('direction', this.get('direction') + ExtMath.randomGaussian() / 2);
-    return this.move();
+    this.set('direction', this.get('direction') + ExtMath.randomGaussian() / 10);
+    return this.move(speed);
   };
 
   BasicAnimal.prototype.chase = function(agentDistance) {
-    this.set('direction', this._direction(this.getLocation(), agentDistance.agent.getLocation()));
-    this.set('speed', Math.min(this.get('speed'), Math.sqrt(agentDistance.distanceSq)));
-    return this.move();
+    var directionToAgent, directionToMove, speed;
+    directionToAgent = this._direction(this.getLocation(), agentDistance.agent.getLocation());
+    directionToMove = (this.get('direction') * 19 + directionToAgent) / 20;
+    this.set('direction', directionToMove);
+    speed = Math.min(this.get('speed'), Math.sqrt(agentDistance.distanceSq));
+    return this.move(speed);
   };
 
   BasicAnimal.prototype.runFrom = function(agentDistance) {
-    this.set('direction', this._direction(this.getLocation(), agentDistance.agent.getLocation())) + Math.PI + (ExtMath.randomGaussian / 2);
-    return this.move();
+    var directionToMove, directionToRunTo;
+    directionToRunTo = this._direction(this.getLocation(), agentDistance.agent.getLocation()) + Math.PI + (ExtMath.randomGaussian / 3);
+    directionToMove = (this.get('direction') * 19 + directionToRunTo) / 20;
+    this.set('direction', directionToMove);
+    return this.move(this.get('speed'));
   };
 
-  BasicAnimal.prototype.move = function() {
-    var dir, dx, dy, loc, newLoc, speed;
+  BasicAnimal.prototype.move = function(speed) {
+    var dir, dx, dy, loc, newLoc;
     dir = this.get('direction');
-    speed = this.get('speed');
     if (speed === 0) {
       return;
     }
@@ -2218,7 +1344,7 @@ AgentDistance = (function() {
 })();
 });
 
-;require.register("models/basic-plant", function(exports, require, module) {
+;require.register("models/agents/basic-plant", function(exports, require, module) {
 var Agent, BasicPlant, defaultProperties, helpers,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2323,35 +1449,70 @@ module.exports = BasicPlant = (function(_super) {
 })(Agent);
 });
 
-;require.register("models/environment-feature", function(exports, require, module) {
-var Agent, EnvironmentFeature, _ref,
+;require.register("models/agents/fast-plant", function(exports, require, module) {
+var Agent, FastPlant, defaultProperties, helpers,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Agent = require('models/agent');
 
+helpers = require('helpers');
+
+defaultProperties = {
+  'growth rate': 0.5,
+  'min offspring': 1,
+  'max offspring': 2,
+  'max offspring distance': 150,
+  'food quantity': 20
+};
+
 /*
-  The base class of an environment feature
+  The base class of a simple plant
 */
 
 
-module.exports = EnvironmentFeature = (function(_super) {
-  __extends(EnvironmentFeature, _super);
+module.exports = FastPlant = (function(_super) {
+  __extends(FastPlant, _super);
 
-  function EnvironmentFeature() {
-    _ref = EnvironmentFeature.__super__.constructor.apply(this, arguments);
-    return _ref;
+  FastPlant.prototype.label = 'plant';
+
+  FastPlant.prototype._hasSeeded = false;
+
+  function FastPlant(args) {
+    FastPlant.__super__.constructor.call(this, args);
+    this._props = helpers.setDefaults(helpers.clone(defaultProperties), this._props);
   }
 
-  EnvironmentFeature.prototype.label = "environment feature";
+  FastPlant.prototype.getSize = function() {
+    return 1;
+  };
 
-  EnvironmentFeature.prototype._viewLayer = 0;
+  FastPlant.prototype.makeNewborn = function() {
+    this.set('age', 10);
+    this.set('chance of survival', 1.0);
+    return this.set('resource deficit', 0);
+  };
 
-  EnvironmentFeature.prototype.step = function() {};
+  FastPlant.prototype.step = function() {
+    var food;
+    food = this.getEnvironmentProperty('food');
+    if (food > 0) {
+      if (ExtMath.randomFloat(1) < this.get('growth rate')) {
+        this.reproduce();
+      }
+    }
+    return this._checkSurvival();
+  };
 
-  EnvironmentFeature.prototype._consumeResources = null;
+  FastPlant.prototype._checkSurvival = function() {
+    var chance;
+    chance = this.get('chance of survival');
+    if (ExtMath.randomFloat(1) > chance) {
+      return this.die();
+    }
+  };
 
-  return EnvironmentFeature;
+  return FastPlant;
 
 })(Agent);
 });
@@ -2619,6 +1780,9 @@ module.exports = Environment = (function(_super) {
 
   Environment.prototype.crossesBarrier = function(start, finish) {
     var barrier, dx, dy, line, m, _i, _len, _ref;
+    if ((!this.wrapEastWest && (0 > finish.x || finish.x > this.width)) || (!this.wrapNorthSouth && (0 > finish.y || finish.y > this.height))) {
+      return true;
+    }
     dx = finish.x - start.x;
     dy = finish.y - start.y;
     if (dx !== 0) {
@@ -3034,70 +2198,35 @@ AddAgentsState = {
 };
 });
 
-;require.register("models/fast-plant", function(exports, require, module) {
-var Agent, FastPlant, defaultProperties, helpers,
+;require.register("models/inanimate", function(exports, require, module) {
+var Agent, Inanimate, _ref,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Agent = require('models/agent');
 
-helpers = require('helpers');
-
-defaultProperties = {
-  'growth rate': 0.5,
-  'min offspring': 1,
-  'max offspring': 2,
-  'max offspring distance': 150,
-  'food quantity': 20
-};
-
 /*
-  The base class of a simple plant
+  The base class of an inanimate object
 */
 
 
-module.exports = FastPlant = (function(_super) {
-  __extends(FastPlant, _super);
+module.exports = Inanimate = (function(_super) {
+  __extends(Inanimate, _super);
 
-  FastPlant.prototype.label = 'plant';
-
-  FastPlant.prototype._hasSeeded = false;
-
-  function FastPlant(args) {
-    FastPlant.__super__.constructor.call(this, args);
-    this._props = helpers.setDefaults(helpers.clone(defaultProperties), this._props);
+  function Inanimate() {
+    _ref = Inanimate.__super__.constructor.apply(this, arguments);
+    return _ref;
   }
 
-  FastPlant.prototype.getSize = function() {
-    return 1;
-  };
+  Inanimate.prototype.label = "inanimate";
 
-  FastPlant.prototype.makeNewborn = function() {
-    this.set('age', 10);
-    this.set('chance of survival', 1.0);
-    return this.set('resource deficit', 0);
-  };
+  Inanimate.prototype._viewLayer = 0;
 
-  FastPlant.prototype.step = function() {
-    var food;
-    food = this.getEnvironmentProperty('food');
-    if (food > 0) {
-      if (ExtMath.randomFloat(1) < this.get('growth rate')) {
-        this.reproduce();
-      }
-    }
-    return this._checkSurvival();
-  };
+  Inanimate.prototype.step = function() {};
 
-  FastPlant.prototype._checkSurvival = function() {
-    var chance;
-    chance = this.get('chance of survival');
-    if (ExtMath.randomFloat(1) > chance) {
-      return this.die();
-    }
-  };
+  Inanimate.prototype._consumeResources = null;
 
-  return FastPlant;
+  return Inanimate;
 
 })(Agent);
 });
@@ -3146,7 +2275,7 @@ defaultDefs = {
 
 module.exports = Species = (function() {
   function Species(_arg) {
-    this.speciesName = _arg.speciesName, this.individualName = _arg.individualName, this.agentClass = _arg.agentClass, this.traits = _arg.traits, this.imageRules = _arg.imageRules, this.defs = _arg.defs, this.reproductiveStrategy = _arg.reproductiveStrategy, this.mutationChance = _arg.mutationChance;
+    this.speciesName = _arg.speciesName, this.individualName = _arg.individualName, this.agentClass = _arg.agentClass, this.traits = _arg.traits, this.viewLayer = _arg.viewLayer, this.imageProperties = _arg.imageProperties, this.imageRules = _arg.imageRules, this.defs = _arg.defs, this.reproductiveStrategy = _arg.reproductiveStrategy, this.mutationChance = _arg.mutationChance;
     this.defs = helpers.setDefaults(this.defs || {}, defaultDefs);
     this._parsePreloads();
   }
@@ -3245,7 +2374,7 @@ module.exports = Species = (function() {
   };
 
   Species.prototype._parsePreloads = function() {
-    var imageRule, layer, _i, _len, _ref, _results;
+    var animation, imageRule, layer, _i, _len, _ref, _results;
     this.preload = [];
     if (this.imageRules == null) {
       return;
@@ -3258,16 +2387,31 @@ module.exports = Species = (function() {
         continue;
       }
       _results.push((function() {
-        var _j, _len1, _ref1, _ref2, _results1;
+        var _j, _len1, _ref1, _ref2, _ref3, _results1;
         _ref1 = layer.rules;
         _results1 = [];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           imageRule = _ref1[_j];
           if (((_ref2 = imageRule.image) != null ? _ref2.path : void 0) != null) {
-            _results1.push(this.preload.push(imageRule.image.path));
-          } else {
-            _results1.push(void 0);
+            this.preload.push(imageRule.image.path);
           }
+          if (((_ref3 = imageRule.image) != null ? _ref3.animations : void 0) == null) {
+            continue;
+          }
+          _results1.push((function() {
+            var _k, _len2, _ref4, _results2;
+            _ref4 = imageRule.image.animations;
+            _results2 = [];
+            for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
+              animation = _ref4[_k];
+              if (animation.path != null) {
+                _results2.push(this.preload.push(animation.path));
+              } else {
+                _results2.push(void 0);
+              }
+            }
+            return _results2;
+          }).call(this));
         }
         return _results1;
       }).call(this));
@@ -3430,15 +2574,1009 @@ module.exports = StateMachine = (function() {
 })();
 });
 
+;require.register("ui/add-organism-button", function(exports, require, module) {
+var AddOrganismButton;
+
+module.exports = AddOrganismButton = (function() {
+  function AddOrganismButton(environment, toolbar, _arg) {
+    this.environment = environment;
+    this.toolbar = toolbar;
+    this.species = _arg.species, this.traits = _arg.traits, this.scatter = _arg.scatter, this.limit = _arg.limit, this.imagePath = _arg.imagePath, this.showRemoveButton = _arg.showRemoveButton;
+    if (!this.scatter) {
+      this.toolbar.registerModalButton(this);
+    }
+  }
+
+  AddOrganismButton.prototype.render = function() {
+    var image,
+      _this = this;
+    this.button = document.createElement('div');
+    this.button.classList.add('button');
+    if (this.showRemoveButton) {
+      this.button.classList.add('has-no-button');
+    }
+    this.button.addEventListener('click', function() {
+      return _this.action();
+    });
+    if (!this.scatter) {
+      this.button.classList.add('modal');
+    }
+    image = document.createElement('img');
+    image.setAttribute('src', this.imagePath);
+    this.button.appendChild(image);
+    return this.button;
+  };
+
+  AddOrganismButton.prototype.getView = function() {
+    return this.button;
+  };
+
+  AddOrganismButton.prototype._count = 0;
+
+  AddOrganismButton.prototype._disabled = false;
+
+  AddOrganismButton.prototype.disable = function() {
+    this._disabled = true;
+    return this.button.classList.add('disabled');
+  };
+
+  AddOrganismButton.prototype.reset = function() {
+    this._count = 0;
+    this._disabled = false;
+    return this.button.classList.remove('disabled');
+  };
+
+  AddOrganismButton.prototype.action = function() {
+    if (this._disabled) {
+      return;
+    }
+    if (this.scatter) {
+      return this.scatterOrganisms();
+    } else {
+      return this.enterAddOrganismsMode();
+    }
+  };
+
+  AddOrganismButton.prototype.scatterOrganisms = function() {
+    var agent, i, _i, _ref;
+    for (i = _i = 0, _ref = this.scatter; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      if (this.limit && ++this._count >= this.limit) {
+        this.disable();
+        if (this._count > this.limit) {
+          return;
+        }
+      }
+      agent = this.species.createAgent(this.traits);
+      agent.environment = this.environment;
+      agent.setLocation(this.environment.randomLocation());
+      while (!this.environment.addAgent(agent)) {
+        agent.setLocation(this.environment.randomLocation());
+      }
+    }
+  };
+
+  AddOrganismButton.prototype.enterAddOrganismsMode = function() {
+    var _this = this;
+    this.toolbar.activateModalButton(this);
+    this.environment.setDefaultAgentCreator(this.species, this.traits, function() {
+      if (_this.limit && ++_this._count >= _this.limit) {
+        _this.environment.setDefaultAgentCreator(null);
+        _this.environment.setState(_this.environment.UI_STATE.NONE);
+        return _this.disable();
+      }
+    });
+    return this.environment.setState(this.environment.UI_STATE.ADD_AGENTS);
+  };
+
+  return AddOrganismButton;
+
+})();
+});
+
+;require.register("ui/info-view", function(exports, require, module) {
+var InfoView;
+
+module.exports = InfoView = (function() {
+  InfoView._instances = [];
+
+  InfoView.instances = function() {
+    return InfoView._instances;
+  };
+
+  function InfoView(_arg) {
+    this.agent = _arg.agent;
+    InfoView._instances.push(this);
+  }
+
+  InfoView.prototype.view = null;
+
+  InfoView.prototype.setAgent = function(agent) {
+    this.agent = agent;
+    while (this._container.children.length > 0) {
+      this._container.removeChild(this._container.children[0]);
+    }
+    this.agent.getView().render(this._container, 'info-tool');
+    this._repositionAgent();
+    this._rescaleAgent();
+    if (this._details.firstChild != null) {
+      this._details.replaceChild(this.agent.getView().textView(), this._details.firstChild);
+    } else {
+      this._details.appendChild(this.agent.getView().textView());
+    }
+    return this.title.innerHTML = this.agent.label.charAt(0).toUpperCase() + this.agent.label.slice(1);
+  };
+
+  InfoView.prototype._repositionAgent = function() {
+    this._container.children[0].position = {
+      x: 0,
+      y: 0
+    };
+    return this._container.position = {
+      x: 52,
+      y: 70
+    };
+  };
+
+  InfoView.prototype._rescaleAgent = function() {
+    if (this.agent.species.defs.INFO_VIEW_SCALE != null) {
+      this._container.scale.x = this.agent.species.defs.INFO_VIEW_SCALE;
+      return this._container.scale.y = this.agent.species.defs.INFO_VIEW_SCALE;
+    } else {
+      this._container.scale.x = 1.25;
+      return this._container.scale.y = 1.25;
+    }
+  };
+
+  InfoView.prototype._redraw = function() {
+    var _this = this;
+    if (this._showing) {
+      requestAnimFrame(function() {
+        return _this._redraw();
+      });
+    }
+    return this._renderer.render(this._stage);
+  };
+
+  InfoView.prototype.render = function() {
+    var agentView, closeButton, content, titleBar,
+      _this = this;
+    this.view = document.createElement('div');
+    this.view.classList.add('bubble');
+    if (this.agent._x < this.agent.environment.width / 2) {
+      this.view.classList.add('left');
+    } else {
+      this.view.classList.add('right');
+    }
+    if (this.agent._y < this.agent.environment.height / 2) {
+      this.view.classList.add('top');
+    } else {
+      this.view.classList.add('bottom');
+    }
+    titleBar = document.createElement('div');
+    titleBar.classList.add('title-bar');
+    this.title = document.createElement('span');
+    this.title.classList.add('title');
+    this.title.innerHTML = this.agent.label.charAt(0).toUpperCase() + this.agent.label.slice(1);
+    closeButton = document.createElement('span');
+    closeButton.classList.add('close');
+    closeButton.innerHTML = "<i class='fa fa-times-circle-o'></i>";
+    closeButton.addEventListener('click', function() {
+      return _this.hide();
+    });
+    content = document.createElement('div');
+    content.classList.add('content');
+    this._details = document.createElement('div');
+    this._details.classList.add('details');
+    agentView = document.createElement('div');
+    agentView.classList.add('agent');
+    this._stage = new PIXI.Stage(0xFFFFFF, true);
+    this._renderer = new PIXI.CanvasRenderer(125, 160);
+    this._container = new PIXI.DisplayObjectContainer();
+    this._stage.addChild(this._container);
+    this.setAgent(this.agent);
+    this._redraw();
+    agentView.appendChild(this._renderer.view);
+    titleBar.appendChild(this.title);
+    titleBar.appendChild(closeButton);
+    content.appendChild(agentView);
+    content.appendChild(this._details);
+    this.view.appendChild(titleBar);
+    this.view.appendChild(content);
+    return this.view;
+  };
+
+  InfoView.prototype.hide = function() {
+    if (!this.view.classList.contains('hidden')) {
+      this.view.classList.add('hidden');
+    }
+    return this._showing = false;
+  };
+
+  InfoView.prototype.show = function() {
+    this.view.classList.remove('hidden');
+    this._showing = true;
+    return this._redraw();
+  };
+
+  InfoView.prototype.repaint = function() {
+    return this._renderer.render(this._stage);
+  };
+
+  return InfoView;
+
+})();
+});
+
+;require.register("ui/interactive", function(exports, require, module) {
+var Environment, Events, InfoView, Interactive, SpeedSlider, Toolbar, defaultOptions, helpers;
+
+helpers = require("helpers");
+
+Toolbar = require("ui/toolbar");
+
+InfoView = require("ui/info-view");
+
+SpeedSlider = require("ui/speed-slider");
+
+Events = require('events');
+
+Environment = require('models/environment');
+
+defaultOptions = {
+  environment: null,
+  playButton: true,
+  resetButton: true,
+  speedSlider: false,
+  addOrganismButtons: [],
+  toolButtons: []
+};
+
+module.exports = Interactive = (function() {
+  function Interactive(options) {
+    var ignoreEvent, phone,
+      _this = this;
+    this._opts = helpers.setDefaults(options, defaultOptions);
+    this.environment = this._opts.environment;
+    this.addOrganismButtons = this._opts.addOrganismButtons;
+    this.toolButtons = this._opts.toolButtons;
+    if (typeof Shutterbug !== "undefined" && Shutterbug !== null) {
+      window.shutterbug = new Shutterbug("body");
+      $(window).on('shutterbug-saycheese', function() {
+        return _this.repaint();
+      });
+    }
+    if (typeof iframePhone !== "undefined" && iframePhone !== null) {
+      phone = iframePhone.getIFrameEndpoint();
+      ignoreEvent = false;
+      phone.addListener('stop', function() {
+        ignoreEvent = true;
+        if (_this.environment._isRunning) {
+          _this.toolbar.toggleButtons['pause'].click();
+        }
+        return ignoreEvent = false;
+      });
+      phone.addListener('play', function() {
+        ignoreEvent = true;
+        if (!_this.environment._isRunning) {
+          _this.toolbar.toggleButtons['play'].click();
+        }
+        return ignoreEvent = false;
+      });
+      phone.addListener('reset', function() {
+        ignoreEvent = true;
+        _this.toolbar.toggleButtons['reset'].click();
+        return ignoreEvent = false;
+      });
+      Events.addEventListener(Environment.EVENTS.START, function() {
+        if (!ignoreEvent) {
+          return phone.post({
+            type: 'play'
+          });
+        }
+      });
+      Events.addEventListener(Environment.EVENTS.STOP, function() {
+        if (!ignoreEvent) {
+          return phone.post({
+            type: 'stop'
+          });
+        }
+      });
+      Events.addEventListener(Environment.EVENTS.RESET, function() {
+        if (!ignoreEvent) {
+          return phone.post({
+            type: 'reset'
+          });
+        }
+      });
+      phone.initialize();
+    }
+  }
+
+  Interactive.prototype.getEnvironmentPane = function() {
+    var speedSlider;
+    this.view = document.createElement('div');
+    this.view.setAttribute("style", "height: " + this.environment.height + "px;");
+    if (this._opts.speedSlider) {
+      speedSlider = new SpeedSlider(this.environment);
+      this.view.appendChild(speedSlider.getView());
+    }
+    this.view.appendChild(this.environment.getView().render());
+    this.toolbar = new Toolbar(this);
+    this.view.appendChild(this.toolbar.getView());
+    return this.view;
+  };
+
+  Interactive.prototype.showPlayButton = function() {
+    return this._opts.playButton;
+  };
+
+  Interactive.prototype.showResetButton = function() {
+    return this._opts.resetButton;
+  };
+
+  Interactive.prototype.repaint = function() {
+    var view, _i, _len, _ref;
+    _ref = InfoView.instances();
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      view = _ref[_i];
+      view.repaint();
+    }
+    return this.environment.getView().repaint();
+  };
+
+  return Interactive;
+
+})();
+
+window.onerror = function(msg, url, line) {
+  var message;
+  message = "<div>There was an error in the model!<br/><pre>" + msg + "</pre></div>";
+  message += "<div>source: " + url + ", line: " + line + "</div>";
+  return helpers.showMessage(message, document.body);
+};
+});
+
+;require.register("ui/ppslider", function(exports, require, module) {
+
+var PPSliderClass;
+(function ($) {
+
+  PPSliderClass = function (el, opts) {
+    var startMouse, lastElemPos;
+
+    if (typeof($) == 'undefined' || $ == null) {
+      console.warn('jQuery not loaded! PPSlider is not supported');
+      return;
+    }
+    var element = $(el);
+    var options = opts;
+    var isMouseDown = false;
+    var currentVal = 0;
+
+    element.wrap('<div/>')
+    var container = $(el).parent();
+
+    container.addClass('pp-slider');
+    if (opts.vertical) {
+      container.addClass('vertical');
+    }
+    container.addClass('clearfix');
+    var minLabel = '<div class="pp-slider-min">' + opts.minLabel + '</div>';
+    var maxLabel = '<div class="pp-slider-max">' + opts.maxLabel + '</div>';
+    var content = '';
+    if (opts.vertical) {
+      content  += maxLabel;
+    } else {
+      content  += minLabel;
+    }
+    content    += '<div class="pp-slider-scale">';
+    content    += '<div class="pp-slider-button';
+    if (options.moveable) {
+      content  += ' moveable';
+    }
+    content    += '"><div class="pp-slider-divies"></div></div>';
+    content    += '<div class="pp-slider-tooltip"></div>';
+    content    += '</div>';
+    if (opts.vertical) {
+      content  += minLabel;
+    } else {
+      content  += maxLabel;
+    }
+    container.append(content);
+
+    if (typeof(options) != 'undefined' && typeof(options.hideTooltip) != 'undefined' && options.hideTooltip == true)
+    {
+      container.find('.pp-slider-tooltip').hide();
+      container.addClass('noTooltip');
+    }
+
+    if (typeof(options.width) != 'undefined')
+    {
+      container.css('width',(options.width+'px'));
+    }
+    if (typeof(options.height) != 'undefined')
+    {
+      container.css('height',(options.height+'px'));
+    }
+    if (opts.vertical) {
+      container.find('.pp-slider-scale').css('height',(container.height()-30)+'px');
+    } else {
+      container.find('.pp-slider-scale').css('width',(container.width()-30)+'px');
+    }
+
+    var startSlide = function (e) {
+      if (!options.moveable) {
+        return true;
+      }
+      if (e.originalEvent && e.originalEvent instanceof TouchEvent) {
+        e.preventDefault();
+      }
+      isMouseDown = true;
+      var pos = getMousePosition(e);
+      if (options.vertical) {
+        startMouse = pos.y;
+        lastElemPos = ($(this).offset().top - $(this).parent().offset().top);
+      } else {
+        startMouse = pos.x;
+        lastElemPos = ($(this).offset().left - $(this).parent().offset().left);
+      }
+
+      updatePosition(e);
+
+      return false;
+    };
+
+    var getMousePosition = function (e) {
+      var posx = 0;
+      var posy = 0;
+
+      if (!e) var e = window.event;
+
+      if (e.originalEvent && e.originalEvent  instanceof TouchEvent) {
+        posx = e.originalEvent.changedTouches[0].pageX;
+        posy = e.originalEvent.changedTouches[0].pageY;
+      }
+      else if (e.pageX || e.pageY) {
+        posx = e.pageX;
+        posy = e.pageY;
+      }
+      else if (e.clientX || e.clientY) {
+        posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+        posy = e.clientY + document.body.scrollTop  + document.documentElement.scrollTop;
+      }
+
+      return { 'x': posx, 'y': posy };
+    };
+
+    var positionSlider = function(newPos, currentVal) {
+      if (options.vertical) {
+        container.find('.pp-slider-button').css("top", newPos);
+        container.find('.pp-slider-tooltip').html(currentVal+'%');
+        container.find('.pp-slider-tooltip').css('top', newPos-6);
+      } else {
+        container.find('.pp-slider-button').css("left", newPos);
+        container.find('.pp-slider-tooltip').html(currentVal+'%');
+        container.find('.pp-slider-tooltip').css('left', newPos-6);
+      }
+    };
+
+    var updatePosition = function (e) {
+      var pos = getMousePosition(e);
+      var newPos, upperBound;
+      if (options.vertical) {
+        var spanY = (pos.y - startMouse);
+        newPos = (lastElemPos + spanY)
+        upperBound = (container.find('.pp-slider-scale').height()-container.find('.pp-slider-button').height());
+      } else {
+        var spanX = (pos.x - startMouse);
+        newPos = (lastElemPos + spanX)
+        upperBound = (container.find('.pp-slider-scale').width()-container.find('.pp-slider-button').width());
+      }
+      newPos = Math.max(0,newPos);
+      newPos = Math.min(newPos,upperBound);
+      currentVal = Math.round((newPos/upperBound)*100,0);
+      if (options.vertical) {
+        // inverted when vertical
+        currentVal = 100 - currentVal;
+      }
+
+      positionSlider(newPos, currentVal);
+    };
+
+    var updatePositionByValue = function (val) {
+      currentVal = val;
+      var upperBound, newPos;
+      if (options.vertical) {
+        upperBound = (container.find('.pp-slider-scale').height()-container.find('.pp-slider-button').height());
+        newPos = ((100-val)/100)*upperBound;
+      } else {
+        upperBound = (container.find('.pp-slider-scale').width()-container.find('.pp-slider-button').width());
+        newPos = (val/100)*upperBound;
+      }
+
+      positionSlider(newPos, val);
+    };
+
+    var moving = function (e) {
+      if(isMouseDown){
+        if (e.originalEvent && e.originalEvent instanceof TouchEvent) {
+          e.preventDefault();
+        }
+        updatePosition(e);
+        return false;
+      }
+    };
+
+    var dropCallback = function (e) {
+      if (isMouseDown) {
+        if (e.originalEvent && e.originalEvent instanceof TouchEvent) {
+          e.preventDefault();
+        }
+        isMouseDown = false;
+        element.val(currentVal);
+        element.trigger("change");
+      }
+
+    };
+
+    updatePositionByValue(element.val());
+
+    container.find('.pp-slider-button').bind('mousedown',startSlide);
+    container.find('.pp-slider-button').bind('touchstart',startSlide);
+
+    $(document).mousemove(function(e) { moving(e); });
+    $(document).on('touchmove', function(e) { moving(e); });
+
+    $(document).mouseup(function(e){ dropCallback(e); });
+    $(document).on('touchend', function(e){ dropCallback(e); });
+
+    return {
+      updatePositionByValue: updatePositionByValue
+    }
+
+  };
+
+  /*******************************************************************************************************/
+
+  if (typeof($) == 'undefined' || $ == null) {
+    console.warn('jQuery not loaded! PPSlider is not supported');
+    return;
+  }
+
+  $.fn.PPSlider = function (options) {
+    var opts = $.extend({}, $.fn.PPSlider.defaults, options);
+
+    var ret;
+    this.each(function () {
+        ret = new PPSliderClass($(this), opts);
+    });
+    return ret;
+  }
+
+  $.fn.PPSlider.defaults = {
+    minLabel: '-',
+    maxLabel: '+',
+    moveable: true,
+    vertical: false,
+    hideTooltip: true
+  };
+
+
+})(jQuery);
+;
+module.exports = PPSliderClass;
+});
+
+;require.register("ui/remove-organism-button", function(exports, require, module) {
+var Environment, Events, RemoveOrganismButton;
+
+Events = require('events');
+
+Environment = require('models/environment');
+
+module.exports = RemoveOrganismButton = (function() {
+  function RemoveOrganismButton(environment, toolbar, _arg) {
+    this.environment = environment;
+    this.toolbar = toolbar;
+    this.species = _arg.species, this.imagePath = _arg.imagePath;
+  }
+
+  RemoveOrganismButton.prototype.render = function() {
+    var image, noImage,
+      _this = this;
+    this.button = document.createElement('div');
+    this.button.classList.add('button');
+    this.button.classList.add('no-button');
+    this.button.addEventListener('click', function() {
+      return _this.action();
+    });
+    image = document.createElement('img');
+    image.setAttribute('src', this.imagePath);
+    this.button.appendChild(image);
+    noImage = document.createElement('div');
+    noImage.classList.add('no-sign');
+    this.button.appendChild(noImage);
+    return this.button;
+  };
+
+  RemoveOrganismButton.prototype.getView = function() {
+    return this.button;
+  };
+
+  RemoveOrganismButton.prototype._disabled = false;
+
+  RemoveOrganismButton.prototype.disable = function() {
+    this._disabled = true;
+    return this.button.classList.add('disabled');
+  };
+
+  RemoveOrganismButton.prototype.reset = function() {
+    this._disabled = false;
+    return this.button.classList.remove('disabled');
+  };
+
+  RemoveOrganismButton.prototype.action = function() {
+    if (this._disabled) {
+      return;
+    }
+    this.removeOrganisms();
+    return Events.dispatchEvent(Environment.EVENTS.USER_REMOVED_AGENTS, {
+      species: this.species
+    });
+  };
+
+  RemoveOrganismButton.prototype.removeOrganisms = function() {
+    var agent, _i, _len, _ref;
+    _ref = this.environment.agents;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      agent = _ref[_i];
+      if (agent.species === this.species) {
+        agent.die();
+      }
+    }
+    return this.environment.removeDeadAgents();
+  };
+
+  return RemoveOrganismButton;
+
+})();
+});
+
+;require.register("ui/speed-slider", function(exports, require, module) {
+var PPSlider, SpeedSlider;
+
+PPSlider = require('ui/ppslider');
+
+module.exports = SpeedSlider = (function() {
+  function SpeedSlider(env) {
+    var input,
+      _this = this;
+    this.view = document.createElement('div');
+    this.view.setAttribute("style", "height: 20px;");
+    input = document.createElement('input');
+    input.setAttribute("id", "speed-slider");
+    input.setAttribute("type", 'hidden');
+    input.setAttribute("value", 50);
+    this.view.appendChild(input);
+    $(document).ready(function() {
+      $(input).change(function() {
+        return env.setSpeed(parseInt($(this).val()));
+      });
+      return $(input).PPSlider({
+        width: env.width
+      });
+    });
+  }
+
+  SpeedSlider.prototype.getView = function() {
+    return this.view;
+  };
+
+  return SpeedSlider;
+
+})();
+});
+
+;require.register("ui/tool-button", function(exports, require, module) {
+var InfoView, ToolButton;
+
+InfoView = require('ui/info-view');
+
+module.exports = ToolButton = (function() {
+  ToolButton.INFO_TOOL = 'info-tool';
+
+  ToolButton.CARRY_TOOL = 'carry-tool';
+
+  ToolButton.prototype.state = null;
+
+  function ToolButton(environment, toolbar, _arg) {
+    this.environment = environment;
+    this.toolbar = toolbar;
+    this.type = _arg.type;
+    this.toolbar.registerModalButton(this);
+    this.state = this._getState();
+    this.environment.addState(this.type, this.state);
+  }
+
+  ToolButton.prototype.render = function() {
+    var image,
+      _this = this;
+    this.button = document.createElement('div');
+    this.button.classList.add('button');
+    this.button.addEventListener('click', function() {
+      return _this.action();
+    });
+    this.button.classList.add('modal');
+    image = document.createElement('div');
+    image.classList.add(this.type);
+    this.button.appendChild(image);
+    return this.button;
+  };
+
+  ToolButton.prototype.getView = function() {
+    return this.button;
+  };
+
+  ToolButton.prototype.action = function() {
+    this.toolbar.activateModalButton(this);
+    return this.environment.setState(this.type);
+  };
+
+  ToolButton.prototype._getState = function() {
+    return this._states[this.type];
+  };
+
+  ToolButton.prototype._states = {
+    'info-tool': {
+      enter: function() {
+        return this._view.setCursor("info-tool");
+      },
+      click: function(evt) {
+        var agent, style, _i, _len, _ref;
+        agent = this.getAgentAt(evt.envX, evt.envY);
+        if (agent == null) {
+          return;
+        }
+        if (this.infoPopup != null) {
+          this.infoPopup.setAgent(agent);
+        } else {
+          this.infoPopup = new InfoView({
+            agent: agent
+          });
+          document.getElementById('environment').appendChild(this.infoPopup.render());
+        }
+        _ref = ['top', 'left', 'bottom', 'right'];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          style = _ref[_i];
+          this.infoPopup.view.classList.remove(style);
+        }
+        if (evt.envX > this.width / 2) {
+          this.infoPopup.view.classList.add('right');
+          this.infoPopup.view.style.left = (evt.envX - 225) + "px";
+        } else {
+          this.infoPopup.view.classList.add('left');
+          this.infoPopup.view.style.left = (evt.envX + 35) + "px";
+        }
+        if (evt.envY > this.height / 2) {
+          this.infoPopup.view.classList.add('bottom');
+          this.infoPopup.view.style.top = (evt.envY - 162) + "px";
+        } else {
+          this.infoPopup.view.classList.add('top');
+          this.infoPopup.view.style.top = (evt.envY - 25) + "px";
+        }
+        return this.infoPopup.show();
+      }
+    },
+    'carry-tool': {
+      _agent: null,
+      _origin: null,
+      _agentOrigin: null,
+      enter: function() {
+        return this._view.setCursor("carry-tool");
+      },
+      mousedown: function(evt) {
+        var agent;
+        agent = this.getAgentAt(evt.envX, evt.envY);
+        if (agent == null) {
+          return;
+        }
+        this.pickUpAgent(agent);
+        this._agent = agent;
+        this._origin = {
+          x: evt.envX,
+          y: evt.envY
+        };
+        return this._agentOrigin = agent.getLocation();
+      },
+      mousemove: function(evt) {
+        var dX, dY;
+        if (this._agent == null) {
+          return;
+        }
+        dX = evt.envX - this._origin.x;
+        dY = evt.envY - this._origin.y;
+        return this._agent.setLocation({
+          x: this._agentOrigin.x + dX,
+          y: this._agentOrigin.y + dY
+        });
+      },
+      mouseup: function(evt) {
+        if (this._agent == null) {
+          return;
+        }
+        this.dropCarriedAgent();
+        return this._agent = null;
+      },
+      touchstart: function(evt) {
+        evt.preventDefault();
+        return this.send('mousedown', evt);
+      },
+      touchmove: function(evt) {
+        evt.preventDefault();
+        return this.send('mousemove', evt);
+      },
+      touchend: function(evt) {
+        evt.preventDefault();
+        return this.send('mouseup', evt);
+      }
+    }
+  };
+
+  return ToolButton;
+
+})();
+});
+
+;require.register("ui/toolbar", function(exports, require, module) {
+var AddOrganismButton, Environment, Events, RemoveOrganismButton, ToolButton, Toolbar;
+
+AddOrganismButton = require("ui/add-organism-button");
+
+RemoveOrganismButton = require("ui/remove-organism-button");
+
+ToolButton = require('ui/tool-button');
+
+Events = require('events');
+
+Environment = require('models/environment');
+
+module.exports = Toolbar = (function() {
+  function Toolbar(interactive) {
+    var button, env, opts, removeButton, _i, _j, _len, _len1, _ref, _ref1,
+      _this = this;
+    this.interactive = interactive;
+    env = this.interactive.environment;
+    this.modalButtons = [];
+    this.toggleButtons = [];
+    this.organismButtons = [];
+    this.view = document.createElement('div');
+    this.view.classList.add("toolbar");
+    this.view.setAttribute("style", "height: " + env.height + "px;");
+    if (this.interactive.showPlayButton()) {
+      this.addToggleButton("play", (function() {
+        return env.start();
+      }), "pause", (function() {
+        return env.stop();
+      }));
+      Events.addEventListener(Environment.EVENTS.PLAY, function() {
+        _this.toggleButtons['play'].style.display = "none";
+        return _this.toggleButtons['pause'].style.display = "";
+      });
+      Events.addEventListener(Environment.EVENTS.STOP, function() {
+        _this.toggleButtons['play'].style.display = "";
+        return _this.toggleButtons['pause'].style.display = "none";
+      });
+    }
+    _ref = this.interactive.addOrganismButtons;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      opts = _ref[_i];
+      button = new AddOrganismButton(env, this, opts);
+      this.view.appendChild(button.render());
+      this.organismButtons.push(button);
+      if (opts.showRemoveButton) {
+        removeButton = new RemoveOrganismButton(env, this, opts);
+        this.view.appendChild(removeButton.render());
+        this.organismButtons.push(removeButton);
+      }
+    }
+    _ref1 = this.interactive.toolButtons;
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      opts = _ref1[_j];
+      button = new ToolButton(env, this, opts);
+      this.view.appendChild(button.render());
+    }
+    if (this.interactive.showResetButton()) {
+      this.addButton("reset", function() {
+        _this.reset();
+        return env.reset();
+      });
+    }
+  }
+
+  Toolbar.prototype.addButton = function(type, action) {
+    var button, innerButton;
+    button = document.createElement('div');
+    button.classList.add('button');
+    innerButton = document.createElement('div');
+    innerButton.classList.add(type);
+    button.appendChild(innerButton);
+    button.addEventListener('click', action);
+    this.toggleButtons[type] = button;
+    return this.view.appendChild(button);
+  };
+
+  Toolbar.prototype.addToggleButton = function(type1, action1, type2, action2) {
+    var button1, button2;
+    button1 = this.addButton(type1, action1);
+    button2 = this.addButton(type2, action2);
+    button2.style.display = "none";
+    button1.addEventListener('click', function() {
+      button1.style.display = "none";
+      return button2.style.display = "";
+    });
+    return button2.addEventListener('click', function() {
+      button1.style.display = "";
+      return button2.style.display = "none";
+    });
+  };
+
+  Toolbar.prototype.registerModalButton = function(btn) {
+    return this.modalButtons.push(btn);
+  };
+
+  Toolbar.prototype.activateModalButton = function(btn) {
+    var button, _i, _len, _ref, _results;
+    btn.getView().classList.add('modal-active');
+    _ref = this.modalButtons;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      button = _ref[_i];
+      if (button !== btn) {
+        _results.push(button.getView().classList.remove('modal-active'));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
+  Toolbar.prototype.reset = function() {
+    var button, env, _i, _j, _len, _len1, _ref, _ref1;
+    _ref = this.modalButtons;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      button = _ref[_i];
+      button.getView().classList.remove('modal-active');
+    }
+    _ref1 = this.organismButtons;
+    for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+      button = _ref1[_j];
+      button.reset();
+    }
+    env = this.interactive.environment;
+    return env.setState(env.UI_STATE.NONE);
+  };
+
+  Toolbar.prototype.getView = function() {
+    return this.view;
+  };
+
+  return Toolbar;
+
+})();
+});
+
 ;require.register("views/agent-view", function(exports, require, module) {
 var AgentView, helpers,
   __hasProp = {}.hasOwnProperty;
 
 helpers = require('helpers');
 
+require('animated-sprite');
+
 module.exports = AgentView = (function() {
   function AgentView(_arg) {
     this.agent = _arg.agent;
+    this.imageProperties = this.agent.species.imageProperties || {};
   }
 
   AgentView.prototype._images = null;
@@ -3459,7 +3597,8 @@ module.exports = AgentView = (function() {
     });
     for (_i = 0, _len = images.length; _i < _len; _i++) {
       layer = images[_i];
-      sprite = this._createSprite(layer.selectedImage);
+      sprite = this._createSprite(layer.selectedImage, layer.name);
+      this._setSpriteProperties(sprite, layer.selectedImage);
       sprites[layer.name] = sprite;
       container.addChild(sprite);
     }
@@ -3475,7 +3614,7 @@ module.exports = AgentView = (function() {
   };
 
   AgentView.prototype.rerender = function(stage, context) {
-    var i, layer, name, names, newImages, sprite, texture, _i, _len, _ref;
+    var i, layer, name, names, newImages, sequence, sprite, texture, _i, _j, _len, _len1, _ref;
     if (context == null) {
       context = 'environment';
     }
@@ -3494,12 +3633,12 @@ module.exports = AgentView = (function() {
         sprite = this._createSprite(layer.selectedImage);
         this._sprites[layer.name] = sprite;
         this._container.addChildAt(sprite, i);
-      } else if (layer.selectedImage.path !== this._sprites[layer.name].texture.baseTexture.source.src) {
+      } else if ((layer.selectedImage.path != null) && layer.selectedImage.path !== this._sprites[layer.name].texture.baseTexture.source.src) {
         texture = PIXI.Texture.fromImage(layer.selectedImage.path);
         sprite = this._sprites[layer.name];
         sprite.setTexture(texture);
-        this._setSpriteProperties(sprite, layer.selectedImage);
       }
+      this._setSpriteProperties(this._sprites[layer.name], layer.selectedImage);
     }
     _ref = this._sprites;
     for (name in _ref) {
@@ -3511,7 +3650,25 @@ module.exports = AgentView = (function() {
       }
     }
     this._container.position.x = this.agent._x;
-    return this._container.position.y = this.agent._y;
+    this._container.position.y = this.agent._y;
+    for (i = _j = 0, _len1 = newImages.length; _j < _len1; i = ++_j) {
+      layer = newImages[i];
+      if (((sprite = this._sprites[layer.name]) != null) && sprite instanceof PIXI.AnimatedSprite) {
+        window.sprite = sprite;
+        sequence = this.agent.getMovement();
+        if (!sequence) {
+          return;
+        }
+        if (sequence !== sprite.currentSequence) {
+          if (!sprite.playing) {
+            sprite.gotoAndPlay(sequence);
+          } else {
+            sprite.nextSequence = sequence;
+          }
+        }
+        sprite.advanceTime();
+      }
+    }
   };
 
   AgentView.prototype.remove = function(stage) {
@@ -3576,20 +3733,93 @@ module.exports = AgentView = (function() {
     return container;
   };
 
-  AgentView.prototype._createSprite = function(image) {
-    var sprite, texture;
-    texture = PIXI.Texture.fromImage(image.path);
-    sprite = new PIXI.Sprite(texture);
-    this._setSpriteProperties(sprite, image);
+  AgentView.prototype._createSprite = function(image, layerName) {
+    var animation, i, sequences, sprite, spriteTextures, texture, _i, _j, _len, _ref, _ref1;
+    if (!image.animations) {
+      texture = PIXI.Texture.fromImage(image.path);
+      sprite = new PIXI.Sprite(texture);
+    } else {
+      sprite = null;
+      _ref = image.animations;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        animation = _ref[_i];
+        spriteTextures = [];
+        for (i = _j = 0, _ref1 = animation.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+          spriteTextures.push(PIXI.Texture.fromFrame(animation.animationName + "-" + i));
+        }
+        if (!sprite) {
+          sequences = {};
+          sequences[animation.movement] = {
+            frames: spriteTextures
+          };
+          if (animation.frameRate) {
+            sequences[animation.movement].frameRate = animation.frameRate;
+          }
+          if (animation.loop) {
+            sequences[animation.movement].loop = animation.loop;
+          }
+          sprite = new PIXI.AnimatedSprite(sequences);
+        } else {
+          sprite.sequences[animation.movement] = {
+            frames: spriteTextures
+          };
+          if (animation.frameRate) {
+            sprite.sequences[animation.movement].frameRate = animation.frameRate;
+          }
+          if (animation.loop) {
+            sprite.sequences[animation.movement].loop = animation.loop;
+          }
+        }
+        sprite.nextSequence = null;
+        sprite.onComplete = function(sequence) {
+          if (!sprite.sequences[sequence].loop) {
+            if (sprite.nextSequence) {
+              sprite.gotoAndPlay(sprite.nextSequence);
+              return sprite.nextSequence = null;
+            }
+          }
+        };
+      }
+    }
     return sprite;
   };
 
   AgentView.prototype._setSpriteProperties = function(sprite, image) {
-    var scale, _ref, _ref1, _ref2, _ref3;
+    var d, dd, initialDirection, scale, _ref, _ref1, _ref2, _ref3;
     scale = image.scale || 1;
     scale *= this.agent.getSize();
     sprite.scale.x = scale;
     sprite.scale.y = scale;
+    if (this.imageProperties.initialFlipDirection) {
+      d = ExtMath.normalizeRads(this.agent.get('direction'));
+      switch (this.imageProperties.initialFlipDirection) {
+        case "left":
+          if ((-ExtMath.HALF_PI < d && d < ExtMath.HALF_PI)) {
+            sprite.scale.x *= -1;
+          }
+          break;
+        case "right":
+          if (-ExtMath.HALF_PI > d || d > ExtMath.HALF_PI) {
+            sprite.scale.x *= -1;
+          }
+          break;
+        case "up":
+          if ((0 < d && d < Math.PI)) {
+            sprite.scale.y *= -1;
+          }
+          break;
+        case "down":
+          if ((-Math.PI < d && d < 0)) {
+            sprite.scale.y *= -1;
+          }
+      }
+    }
+    if (this.imageProperties.rotate) {
+      initialDirection = this.imageProperties.initialRotationDirection || 0;
+      d = ExtMath.normalizeRads(this.agent.get('direction'));
+      dd = d - initialDirection;
+      sprite.rotation = dd;
+    }
     sprite.anchor.x = ((_ref = image.anchor) != null ? _ref.x : void 0) != null ? image.anchor.x : 0.5;
     sprite.anchor.y = ((_ref1 = image.anchor) != null ? _ref1.y : void 0) != null ? image.anchor.y : 0.5;
     sprite.position.x = ((_ref2 = image.position) != null ? _ref2.x : void 0) != null ? image.position.x : 0;

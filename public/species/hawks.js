@@ -3,7 +3,7 @@
   require.register("species/hawks", function(exports, require, module) {
     var BasicAnimal, Species, Trait;
     Species = require('models/species');
-    BasicAnimal = require('models/basic-animal');
+    BasicAnimal = require('models/agents/basic-animal');
     Trait = require('models/trait');
     return module.exports = new Species({
       speciesName: "hawks",
@@ -46,6 +46,11 @@
           "default": 0
         })
       ],
+      viewLayer: 5,
+      imageProperties: {
+        rotate: true,
+        initialRotationDirection: -Math.PI / 2
+      },
       imageRules: [
         {
           name: 'hawk',
