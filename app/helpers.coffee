@@ -172,7 +172,8 @@ module.exports =
 
   # sources is an array of objects, each which have a 'preload' property.
   # the 'preload' property is an array of strings which will be treated as urls.
-  # ex: preload([{preload: ["foo.jpg", "bar.png"]},{preload: ["baz.png","biz.png"]}], function() {})
+  # The strings can be image paths or paths to json files specifying assets
+  # ex: preload([{preload: ["foo.jpg", "bar.png"]},{preload: ["baz.json"]}], function() {/**all done**/})
   preload: (sources, callback)->
     statusContainer = document.createElement 'div'
     statusContainer.classList.add 'preload-message'
@@ -182,42 +183,31 @@ module.exports =
     statusContainer.appendChild statusDom
     document.body.appendChild statusContainer
 
-    numImages = 0
-    for source in sources
-      numImages += source.preload.length if source.preload?
-
-    loadedSoFar = 0
-    progress = ->
-      loadedSoFar++
-      if loadedSoFar < numImages
-        statusDom.innerHTML = "Loading... "+Math.floor(loadedSoFar/numImages*100)+"%"
-      else
-        statusDom.innerHTML = "Loading complete!"
-        setTimeout ->
-          callback()
-          document.body.removeChild statusContainer
-        , 10
-    loadUrl = (url, n=0)=>
-      try
-        img = new Image()
-        img.src = url
-        img.onload = ->
-          progress()
-        img.onerror = ->
-          if n < 3
-            loadUrl url, ++n
-          else
-            # give up
-            progress()
-      catch e
-        if n < 3
-          loadUrl url, ++n
-        else
-          # give up
-          progress()
-
+    assets = []
     for source in sources
       continue unless source.preload?
-      for url in source.preload
-        loadUrl url
+      for asset in source.preload
+        assets.push asset
 
+    numImages = null
+
+    loader = new PIXI.AssetLoader(assets)
+
+    loader.onProgress = ->
+      if not numImages
+        numImages = loader.loadCount + 1
+      statusDom.innerHTML = "Loading... "+Math.floor((numImages-loader.loadCount)/numImages*100)+"%"
+    loader.onComplete = ->
+      statusDom.innerHTML = "Loading complete!"
+      setTimeout ->
+        callback()
+        document.body.removeChild statusContainer
+      , 10
+    loader.load()
+
+  mixOf: (base, mixins...) ->
+    class Mixed extends base
+    for mixin in mixins by -1 #earlier mixins override later ones
+      for name, method of mixin::
+        Mixed::[name] = method
+    Mixed
