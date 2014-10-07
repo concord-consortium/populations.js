@@ -26,6 +26,8 @@ require.register "species/white-brown-rabbits", (exports, require, module) ->
       new Trait {name: 'resource consumption rate', default:  35 }
       new Trait {name: 'metabolism', default:  0.5 }
     ]
+    imageProperties:
+      initialFlipDirection: "right"
     imageRules: [
       {
         name: 'rabbit'

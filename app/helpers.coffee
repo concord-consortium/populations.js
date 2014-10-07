@@ -75,6 +75,12 @@ ExtMath.randomGaussian= (opts={}) ->
 ExtMath.flip = ->
   ExtMath.randomInt(2)
 
+ExtMath.HALF_PI = Math.PI / 2
+ExtMath.TWO_PI  = Math.PI * 2
+
+ExtMath.normalizeRads = (t) ->
+  t - ExtMath.TWO_PI * Math.floor((t + Math.PI) / ExtMath.TWO_PI)
+
 module.exports =
 
   ###

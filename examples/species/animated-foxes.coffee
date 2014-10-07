@@ -42,6 +42,8 @@ require.register "species/animated-foxes", (exports, require, module) ->
       new Trait {name: 'speed', default: 30 }
       new Trait {name: 'chance-hop', float: true, min: 0.01, max: 0.2 }
     ]
+    imageProperties:
+      initialFlipDirection: "left"
     imageRules: [
       {
         name: 'fox'

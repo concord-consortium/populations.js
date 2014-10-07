@@ -4,6 +4,7 @@ require 'animated-sprite'
 module.exports = class AgentView
 
   constructor: ({@agent}) ->
+    @imageProperties = @agent.species.imageProperties || {}
 
   _images: null
   _sprites: null
@@ -16,6 +17,7 @@ module.exports = class AgentView
     images = @agent.getImages({context: context})
     for layer in images
       sprite = @_createSprite layer.selectedImage, layer.name
+      @_setSpriteProperties(sprite, layer.selectedImage)
       sprites[layer.name] = sprite
       container.addChild(sprite)
 
@@ -47,7 +49,7 @@ module.exports = class AgentView
         texture = PIXI.Texture.fromImage layer.selectedImage.path
         sprite = @_sprites[layer.name]
         sprite.setTexture texture
-        @_setSpriteProperties(sprite, layer.selectedImage)
+      @_setSpriteProperties(@_sprites[layer.name], layer.selectedImage)
 
     # remove the no-longer-needed sprites
     for own name,sprite of @_sprites
@@ -116,7 +118,6 @@ module.exports = class AgentView
     if not image.animations
       texture = PIXI.Texture.fromImage image.path
       sprite = new PIXI.Sprite(texture)
-      @_setSpriteProperties(sprite, image)
     else
       sprite = null
       for animation in image.animations
@@ -142,7 +143,6 @@ module.exports = class AgentView
               sprite.gotoAndPlay sprite.nextSequence
               sprite.nextSequence = null
 
-      @_setSpriteProperties(sprite, image)
     return sprite
 
   _setSpriteProperties: (sprite, image)->
@@ -151,6 +151,18 @@ module.exports = class AgentView
     scale *= @agent.getSize()
     sprite.scale.x = scale
     sprite.scale.y = scale
+
+    if @imageProperties.initialFlipDirection
+      d = ExtMath.normalizeRads @agent.get('direction')
+      switch @imageProperties.initialFlipDirection
+        when "left"
+          sprite.scale.x *= -1 if -ExtMath.HALF_PI < d < ExtMath.HALF_PI
+        when "right"
+          sprite.scale.x *= -1 if -ExtMath.HALF_PI > d || d > ExtMath.HALF_PI
+        when "up"
+          sprite.scale.y *= -1 if 0 < d < Math.PI
+        when "down"
+          sprite.scale.y *= -1 if -Math.PI < d < 0
 
     # default anchor of 0.5 -- the image is centered on the container's position
     sprite.anchor.x = if image.anchor?.x? then image.anchor.x else 0.5

@@ -12,6 +12,7 @@ module.exports = class Species
       @individualName
       @agentClass
       @traits
+      @imageProperties
       @imageRules
       @defs
       @reproductiveStrategy

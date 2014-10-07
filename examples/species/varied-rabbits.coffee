@@ -26,6 +26,8 @@ require.register "species/varied-rabbits", (exports, require, module) ->
       new Trait {name: 'glow',  possibleValues: [true, false], default: false }
       new Trait {name: 'size', possibleValues: [1,2,3]}
     ]
+    imageProperties:
+      initialFlipDirection: "right"
     imageRules: [
       {
         name: 'glow'

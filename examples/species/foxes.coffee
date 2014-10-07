@@ -20,6 +20,8 @@ require.register "species/foxes", (exports, require, module) ->
       new Trait {name: 'resource consumption rate', default:  10 }
       new Trait {name: 'metabolism', default:  0.5 }
     ]
+    imageProperties:
+      initialFlipDirection: "right"
     imageRules: [
       {
         name: 'fox'
