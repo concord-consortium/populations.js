@@ -1000,9 +1000,10 @@ module.exports = BasicAnimal = (function(_super) {
   };
 
   BasicAnimal.prototype.chase = function(agentDistance) {
-    var directionToAgent, directionToMove, speed;
+    var directionRelativeToMe, directionToAgent, directionToMove, speed;
     directionToAgent = this._direction(this.getLocation(), agentDistance.agent.getLocation());
-    directionToMove = (this.get('direction') * 19 + directionToAgent) / 20;
+    directionRelativeToMe = ExtMath.normalizeRads(directionToAgent - this.get('direction'));
+    directionToMove = this.get('direction') + directionRelativeToMe / 15;
     this.set('direction', directionToMove);
     speed = Math.min(this.get('speed'), Math.sqrt(agentDistance.distanceSq));
     return this.move(speed);
@@ -1046,7 +1047,7 @@ module.exports = BasicAnimal = (function(_super) {
     var dx, dy;
     dx = to.x - from.x;
     dy = to.y - from.y;
-    return Math.atan2(dy, dx);
+    return ExtMath.normalizeRads(Math.atan2(dy, dx));
   };
 
   BasicAnimal.prototype._eatPrey = function(agent) {
@@ -3833,7 +3834,8 @@ module.exports = AgentView = (function() {
 });
 
 ;require.register("views/environment-view", function(exports, require, module) {
-var EnvironmentView, cursorsClasses;
+var EnvironmentView, cursorsClasses,
+  __hasProp = {}.hasOwnProperty;
 
 cursorsClasses = ["add-agents", "info-tool", "carry-tool"];
 
@@ -4002,13 +4004,23 @@ module.exports = EnvironmentView = (function() {
   };
 
   EnvironmentView.prototype._getOrCreateLayer = function(idx) {
-    var layer;
+    var key, layer, layerNo, _ref;
     if (this._layers[idx] == null) {
       layer = new PIXI.DisplayObjectContainer;
       this._layers[idx] = layer;
       if (this.stage != null) {
         try {
-          this.stage.addChildAt(layer, idx);
+          layerNo = 0;
+          _ref = this._layers;
+          for (key in _ref) {
+            if (!__hasProp.call(_ref, key)) continue;
+            if (idx > key) {
+              layerNo++;
+            } else {
+              break;
+            }
+          }
+          this.stage.addChildAt(layer, layerNo);
         } catch (_error) {
           this.stage.addChild(layer);
         }
