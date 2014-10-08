@@ -129,7 +129,8 @@ module.exports = class BasicAnimal extends Agent
 
   chase: (agentDistance)->
     directionToAgent =  @_direction(@getLocation(), agentDistance.agent.getLocation())
-    directionToMove = (@get('direction')*19 + directionToAgent) / 20
+    directionRelativeToMe = ExtMath.normalizeRads(directionToAgent - this.get('direction'))
+    directionToMove = @get('direction') + directionRelativeToMe / 15
     @set('direction', directionToMove)
     speed = Math.min(@get('speed'), Math.sqrt(agentDistance.distanceSq))
     @move(speed)
@@ -160,7 +161,7 @@ module.exports = class BasicAnimal extends Agent
     dx = to.x - from.x
     dy = to.y - from.y
 
-    return Math.atan2(dy, dx)
+    return ExtMath.normalizeRads(Math.atan2(dy, dx))
 
   _eatPrey: (agent)->
     food = agent.get('food')

@@ -139,7 +139,10 @@ module.exports = class EnvironmentView
       @_layers[idx] = layer
       if @stage?
         try
-          @stage.addChildAt layer, idx
+          layerNo = 0
+          for own key of @._layers
+            if idx > key then layerNo++ else break
+          @stage.addChildAt layer, layerNo
         catch
           @stage.addChild layer
     return @_layers[idx]
