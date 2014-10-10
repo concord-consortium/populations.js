@@ -130,7 +130,7 @@ module.exports = class BasicAnimal extends Agent
   chase: (agentDistance)->
     directionToAgent =  @_direction(@getLocation(), agentDistance.agent.getLocation())
     directionRelativeToMe = ExtMath.normalizeRads(directionToAgent - this.get('direction'))
-    directionToMove = @get('direction') + directionRelativeToMe / 15
+    directionToMove = @get('direction') + directionRelativeToMe / 10
     @set('direction', directionToMove)
     speed = Math.min(@get('speed'), Math.sqrt(agentDistance.distanceSq))
     @move(speed)
