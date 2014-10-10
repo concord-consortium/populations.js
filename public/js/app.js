@@ -1003,7 +1003,7 @@ module.exports = BasicAnimal = (function(_super) {
     var directionRelativeToMe, directionToAgent, directionToMove, speed;
     directionToAgent = this._direction(this.getLocation(), agentDistance.agent.getLocation());
     directionRelativeToMe = ExtMath.normalizeRads(directionToAgent - this.get('direction'));
-    directionToMove = this.get('direction') + directionRelativeToMe / 15;
+    directionToMove = this.get('direction') + directionRelativeToMe / 10;
     this.set('direction', directionToMove);
     speed = Math.min(this.get('speed'), Math.sqrt(agentDistance.distanceSq));
     return this.move(speed);
@@ -2851,21 +2851,17 @@ module.exports = Interactive = (function() {
       ignoreEvent = false;
       phone.addListener('stop', function() {
         ignoreEvent = true;
-        if (_this.environment._isRunning) {
-          _this.toolbar.toggleButtons['pause'].click();
-        }
+        _this.stop();
         return ignoreEvent = false;
       });
       phone.addListener('play', function() {
         ignoreEvent = true;
-        if (!_this.environment._isRunning) {
-          _this.toolbar.toggleButtons['play'].click();
-        }
+        _this.play();
         return ignoreEvent = false;
       });
       phone.addListener('reset', function() {
         ignoreEvent = true;
-        _this.toolbar.toggleButtons['reset'].click();
+        _this.reset();
         return ignoreEvent = false;
       });
       Events.addEventListener(Environment.EVENTS.START, function() {
@@ -2923,6 +2919,22 @@ module.exports = Interactive = (function() {
       view.repaint();
     }
     return this.environment.getView().repaint();
+  };
+
+  Interactive.prototype.play = function() {
+    if (!this.environment._isRunning) {
+      return this.toolbar.toggleButtons['play'].click();
+    }
+  };
+
+  Interactive.prototype.stop = function() {
+    if (this.environment._isRunning) {
+      return this.toolbar.toggleButtons['pause'].click();
+    }
+  };
+
+  Interactive.prototype.reset = function() {
+    return this.toolbar.toggleButtons['reset'].click();
   };
 
   return Interactive;
