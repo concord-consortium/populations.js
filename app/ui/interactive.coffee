@@ -36,15 +36,15 @@ module.exports = class Interactive
       ignoreEvent = false
       phone.addListener 'stop', =>
         ignoreEvent = true
-        @toolbar.toggleButtons['pause'].click() if @environment._isRunning
+        @stop()
         ignoreEvent = false
       phone.addListener 'play', =>
         ignoreEvent = true
-        @toolbar.toggleButtons['play'].click() unless @environment._isRunning
+        @play()
         ignoreEvent = false
       phone.addListener 'reset', =>
         ignoreEvent = true
-        @toolbar.toggleButtons['reset'].click()
+        @reset()
         ignoreEvent = false
       Events.addEventListener Environment.EVENTS.START, =>
         phone.post({type: 'play'}) unless ignoreEvent
@@ -77,6 +77,15 @@ module.exports = class Interactive
     for view in InfoView.instances()
       view.repaint()
     @environment.getView().repaint()
+
+  play: ->
+    @toolbar.toggleButtons['play'].click() unless @environment._isRunning
+
+  stop: ->
+    @toolbar.toggleButtons['pause'].click() if @environment._isRunning
+
+  reset: ->
+    @toolbar.toggleButtons['reset'].click()
 
 window.onerror = (msg, url, line)->
   message = "<div>There was an error in the model!<br/><pre>" + msg + "</pre></div>"
