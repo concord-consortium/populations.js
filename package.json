@@ -23,5 +23,11 @@
     "karma-ng-scenario": "~0.0.2",
     "after-brunch": "*",
     "stylus-brunch": "*"
+  },
+  "coffeelintConfig": {
+    "max_line_length":     { "level": "ignore" },
+    "no_empty_functions":  { "level": "warn" },
+    "no_empty_param_list": { "level": "warn" },
+    "no_throwing_strings": { "level": "ignore" }
   }
 }

@@ -7,6 +7,7 @@ defaultDefs =
 
 module.exports = class Species
 
+  # coffeelint: disable=indentation
   constructor: ({
       @speciesName
       @individualName
@@ -20,6 +21,7 @@ module.exports = class Species
       @mutationChance}) ->
     @defs = helpers.setDefaults(@defs || {}, defaultDefs)
     @_parsePreloads()
+  # coffeelint: enable=indentation
 
   ###
     Create an agent of this species, with the traits defined in

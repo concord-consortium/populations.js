@@ -79,8 +79,8 @@ window.model =
     # Instantiate and draw our chart, passing in some options.
     options1 = @_getChartOptions("top")
     options2 = @_getChartOptions("bottom")
-    @chart1 = new google.visualization.ColumnChart(document.getElementById('chart1'));
-    @chart2 = new google.visualization.ColumnChart(document.getElementById('chart2'));
+    @chart1 = new google.visualization.ColumnChart(document.getElementById('chart1'))
+    @chart2 = new google.visualization.ColumnChart(document.getElementById('chart2'))
     @chart1.draw(@chartData1, options1)
     @chart2.draw(@chartData2, options2)
 
@@ -162,7 +162,7 @@ window.model =
     bigHighlightRadio.onclick = =>
       @_highlight 3
 
-    Events.addEventListener Environment.EVENTS.RESET, =>
+    Events.addEventListener Environment.EVENTS.RESET, ->
       noneHighlightRadio.click()
 
   _highlight: (size)->
@@ -196,7 +196,7 @@ window.model =
       else if t % changeInterval isnt 0
         backgroundChangeable = true
 
-    Events.addEventListener Environment.EVENTS.RESET, =>
+    Events.addEventListener Environment.EVENTS.RESET, ->
       backgroundChangeable = false
       yearSpan.innerHTML = "1"
       waterLevelIndicator.style.height = "100%"
@@ -204,10 +204,6 @@ window.model =
   _changeBackground: (n)->
     return unless 0 < n < 11
     @env.setBackground("images/environments/dam-year"+n+".png")
-
-  _setAgentProperty: (agents, prop, val)->
-    for a in agents
-      a.set prop, val
 
   _setAgentProperty: (agents, prop, val)->
     for a in agents
@@ -240,7 +236,7 @@ window.model =
     allPlants = @_agentsOfSpecies @plantSpecies
     if allPlants.length < 1
       @_plantsExist = false
-      return;
+      return
     else
       @_plantsExist = true
 

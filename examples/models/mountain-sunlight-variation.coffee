@@ -180,7 +180,7 @@ window.model =
                   env.stop()
                   shownMessage = true
 
-  _getSideIsExtinct: ()->
+  _getSideIsExtinct: ->
     eastAlive = false
     westAlive = false
     for agent in @env.agents
@@ -193,7 +193,7 @@ window.model =
         return false
     return true
 
-  _getWillAnyoneSurvive: ()->
+  _getWillAnyoneSurvive: ->
     for agent in @env.agents
       healthy = agent.get("health") > 0.99
       if healthy
@@ -265,8 +265,8 @@ window.model =
         height: 400
 
       # Instantiate and draw our chart, passing in some options.
-      @chart = new google.visualization.ColumnChart(domChart);
-      @chart.draw(@chartData, options);
+      @chart = new google.visualization.ColumnChart(domChart)
+      @chart.draw(@chartData, options)
 
       Events.addEventListener Environment.EVENTS.STEP, =>
         unless @env.get(0, 0, "season") is "summer" then return

@@ -36,16 +36,16 @@ describe 'An agent in an environment', ->
             env.set col, row, "sunlight", row
 
         env.addRule new Rule
-            test: (agent) ->
-              return agent.getEnvironmentProperty('sunlight') >= 2
-            action: (agent) ->
-              agent.set 'health', 1
+          test: (agent) ->
+            return agent.getEnvironmentProperty('sunlight') >= 2
+          action: (agent) ->
+            agent.set 'health', 1
 
         env.addRule new Rule
-            test: (agent) ->
-              return agent.getEnvironmentProperty('sunlight') < 2
-            action: (agent) ->
-              agent.set 'health', 0
+          test: (agent) ->
+            return agent.getEnvironmentProperty('sunlight') < 2
+          action: (agent) ->
+            agent.set 'health', 0
 
         agent = new Agent {}
         agent.set('is immortal', true)

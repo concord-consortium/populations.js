@@ -18,10 +18,8 @@ module.exports = class Toolbar
     @view.setAttribute "style", "height: #{env.height}px;"
 
     if @interactive.showPlayButton()
-      @addToggleButton "play", (->
-          env.start()),
-        "pause", (->
-          env.stop())
+      @addToggleButton "play", (-> env.start()),
+        "pause", (-> env.stop())
       # make sure we keep the button state in sync with the environment state
       Events.addEventListener Environment.EVENTS.PLAY, =>
         @toggleButtons['play'].style.display="none"

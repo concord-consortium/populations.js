@@ -46,6 +46,7 @@ describe 'A state machine', ->
   it 'throws an error when no current state is set and we try to send an event', ->
     states.addState "state1",
       click: ->
+        undefined
 
     expect( ->
       states.send "click"

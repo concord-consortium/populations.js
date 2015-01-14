@@ -106,12 +106,12 @@ module.exports = class EnvironmentView
 
     @view.parentElement.classList.add name
 
-  addWinterImage: () ->
+  addWinterImage: ->
     @showingWinter = true
     layer = @_getOrCreateLayer(101)
     layer.addChild(@winterImgSprite) unless !@winterImgSprite
 
-  removeWinterImage: () ->
+  removeWinterImage: ->
     @showingWinter = false
     layer = @_getOrCreateLayer(101)
     layer.removeChild(@winterImgSprite) unless !@winterImgSprite

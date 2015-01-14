@@ -111,7 +111,7 @@ module.exports = class Agent
   ###
   createOffspring: (mate) ->
     offspring = @_clone()
-    offspring._mutate();
+    offspring._mutate()
     offspring.makeNewborn()
     offspring.bred = true
 
@@ -134,7 +134,7 @@ module.exports = class Agent
         mutatedVal = trait.mutate currentVal
         @set trait.name, mutatedVal
 
-  _findOffspringLocation: () ->
+  _findOffspringLocation: ->
     loc = @getLocation()
 
     minD = @get 'min offspring distance'

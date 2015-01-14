@@ -244,6 +244,7 @@ module.exports = class Environment extends StateMachine
   # Used for setting the default species and traits for
   # creating and adding agents.
   setDefaultAgentCreator: (@defaultSpecies, @defaultTraits, @agentAdderCallback) ->
+    undefined
 
   addDefaultAgent: (x, y) ->
     return unless @defaultSpecies?
@@ -376,7 +377,7 @@ module.exports = class Environment extends StateMachine
 
   _remapSeasonLengths: ->
     # re-map seasonLenths into end-dates for efficient access later
-    @_totalSeasonLengths = [];
+    @_totalSeasonLengths = []
     @_totalSeasonLengths[i] = length + (@_totalSeasonLengths[i-1] || 0) for length, i in @seasonLengths
 
     @usingSeasons = @_totalSeasonLengths.length > 0

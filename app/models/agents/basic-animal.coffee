@@ -339,3 +339,5 @@ module.exports = class BasicAnimal extends Agent
 
 class AgentDistance
   constructor: (@agent, @distanceSq)->
+    undefined
+
