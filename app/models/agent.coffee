@@ -26,6 +26,7 @@ module.exports = class Agent
     @_viewLayer = @species.viewLayer if @species?.viewLayer?
     if x? && y?
       @setLocation({x,y})
+    @alleles = {}
     @makeNewborn()
 
   getView: ->
@@ -113,6 +114,7 @@ module.exports = class Agent
     offspring = @_clone()
     offspring._mutate()
     offspring.makeNewborn()
+    offspring.resetGeneticTraits()
     offspring.bred = true
 
     if @environment
@@ -121,18 +123,39 @@ module.exports = class Agent
 
     return offspring
 
+  resetGeneticTraits: ->
+    if @species.geneticSpecies?
+      desired_sex = (if @hasProp('sex') && @get('sex') == 'male' then BioLogica.MALE else BioLogica.FEMALE)
+      allele_set = []
+      allele_set.push(allele) for own trait, allele of @alleles
+      @organism = new BioLogica.Organism @species.geneticSpecies, allele_set.join(), desired_sex
+      for trait in @species.traits
+        if trait.isGenetic
+          characteristic = @organism.getCharacteristic(trait.name)
+          if trait.isNumeric
+            @set trait.name, (if trait.float then parseFloat(characteristic) else parseInt(characteristic))
+          else
+            @set trait.name, characteristic
+
   _clone: ->
     clone = @species.createAgent()
     for prop of @_props
       clone.set prop, @_props[prop]
+    for trait, allele of @alleles
+      clone.alleles[trait] = allele
     return clone
 
   _mutate: ->
     for trait in @species.traits
       if trait.mutatable and Math.random() < @species.defs.CHANCE_OF_MUTATION
-        currentVal = @get trait.name
-        mutatedVal = trait.mutate currentVal
-        @set trait.name, mutatedVal
+        if trait.isGenetic
+          currentVal = @alleles[trait.name]
+          mutatedVal = trait.mutate currentVal
+          @alleles[trait.name] = mutatedVal
+        else
+          currentVal = @get trait.name
+          mutatedVal = trait.mutate currentVal
+          @set trait.name, mutatedVal
 
   _findOffspringLocation: ->
     loc = @getLocation()

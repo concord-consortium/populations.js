@@ -18,6 +18,7 @@ module.exports = class Species
       @imageRules
       @defs
       @reproductiveStrategy
+      @geneticSpecies
       @mutationChance}) ->
     @defs = helpers.setDefaults(@defs || {}, defaultDefs)
     @_parsePreloads()
@@ -31,9 +32,17 @@ module.exports = class Species
     agent = new @agentClass {species: this}
 
     for trait in @traits
-      agent.set trait.name, trait.getDefaultValue()
+      if trait.isGenetic
+        agent.alleles[trait.name] = trait.getDefaultValue()
+      else
+        agent.set trait.name, trait.getDefaultValue()
     for trait in extraTraits
-      agent.set trait.name, trait.getDefaultValue()
+      if trait.isGenetic
+        agent.alleles[trait.name] = trait.getDefaultValue()
+      else
+        agent.set trait.name, trait.getDefaultValue()
+
+    agent.resetGeneticTraits()
 
     return agent
 

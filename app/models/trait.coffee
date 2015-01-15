@@ -21,7 +21,7 @@ require 'helpers'
 
 module.exports = class Trait
 
-  constructor: ({@name, @possibleValues, @min, @max, @default, @float, @mutatable}) ->
+  constructor: ({@name, @possibleValues, @min, @max, @default, @float, @mutatable, @isGenetic, @isNumeric}) ->
     undefined
 
   getDefaultValue: ->
