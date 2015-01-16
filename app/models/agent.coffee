@@ -107,14 +107,12 @@ module.exports = class Agent
 
   ###
     Returns an offspring and places it in the environment
-
-    Only asexual reproduction for now
   ###
   createOffspring: (mate) ->
-    offspring = @_clone()
-    offspring._mutate()
+    offspring = @_breed(mate)
+    offspring._mutate(offspring.organism?)
     offspring.makeNewborn()
-    offspring.resetGeneticTraits()
+    offspring.resetGeneticTraits(!offspring.organism?)
     offspring.bred = true
 
     if @environment
@@ -123,12 +121,13 @@ module.exports = class Agent
 
     return offspring
 
-  resetGeneticTraits: ->
+  resetGeneticTraits: (createOrganism=true)->
     if @species.geneticSpecies?
-      desired_sex = (if @hasProp('sex') && @get('sex') == 'male' then BioLogica.MALE else BioLogica.FEMALE)
-      allele_set = []
-      allele_set.push(allele) for own trait, allele of @alleles
-      @organism = new BioLogica.Organism @species.geneticSpecies, allele_set.join(), desired_sex
+      if createOrganism
+        desired_sex = (if @hasProp('sex') && @get('sex') == 'male' then BioLogica.MALE else BioLogica.FEMALE)
+        allele_set = []
+        allele_set.push(allele) for own trait, allele of @alleles
+        @organism = new BioLogica.Organism @species.geneticSpecies, allele_set.join(), desired_sex
       for trait in @species.traits
         if trait.isGenetic
           characteristic = @organism.getCharacteristic(trait.name)
@@ -145,10 +144,30 @@ module.exports = class Agent
       clone.alleles[trait] = allele
     return clone
 
-  _mutate: ->
+  _breed: (mate)->
+    child = @_clone()
+    if @species.geneticSpecies? && @organism? && mate?.organism?
+      if @hasProp('sex') && @get('sex') is 'male'
+        mother = mate.organism
+        father = @organism
+      else
+        mother = @organism
+        father = mate.organism
+      child.organism = BioLogica.breed(mother, father, false) # TODO Support crossing over?
+      if child.hasProp('sex')
+        child.set('sex', if child.organism.sex is BioLogica.FEMALE then 'female' else 'male')
+      for trait in @species.traits
+        if trait.isGenetic
+          # find the alleles and set them on the organism
+          alleleStr = child.organism.getAlleleStringForTrait(trait.name)
+          child.alleles[trait.name] = alleleStr
+    return child
+
+  _mutate: (skipGenetic=false)->
     for trait in @species.traits
       if trait.mutatable and Math.random() < @species.defs.CHANCE_OF_MUTATION
         if trait.isGenetic
+          continue if skipGenetic
           currentVal = @alleles[trait.name]
           mutatedVal = trait.mutate currentVal
           @alleles[trait.name] = mutatedVal

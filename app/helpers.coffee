@@ -37,7 +37,13 @@ ExtMath.randomInt = (max) ->
 ExtMath.randomFloat = (max=1) ->
   Math.random() * max
 
-ExtMath.randomValue = (min, max) ->
+ExtMath.randomValue = (a, b) ->
+  if a <= b
+    min = a
+    max = b
+  else
+    min = b
+    max = a
   min + Math.random() * (max - min)
 
 ExtMath.randomGaussianIrwinHall = (opts={}) ->

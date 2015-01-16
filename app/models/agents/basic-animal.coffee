@@ -114,7 +114,7 @@ module.exports = class BasicAnimal extends Agent
       if nearest.distanceSq < Math.pow(@get('mating distance'), 2)
         max = @get('max offspring')
         @set 'max offspring', Math.max(max/2, 1)
-        @reproduce()
+        @reproduce(nearest)
         @set 'max offspring', max
         @_timeLastMated = @environment.date
     else
