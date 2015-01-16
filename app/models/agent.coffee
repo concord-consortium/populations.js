@@ -23,7 +23,7 @@ module.exports = class Agent
     @_props = helpers.clone defaultProperties
     @_props = helpers.setDefaults(@_props, additionalDefaults) if additionalDefaults?
     @_view = new AgentView({agent: @})
-    @_viewLayer = @species.viewLayer if @species.viewLayer?
+    @_viewLayer = @species.viewLayer if @species?.viewLayer?
     if x? && y?
       @setLocation({x,y})
     @makeNewborn()
@@ -49,7 +49,7 @@ module.exports = class Agent
     if @hasProp(prop) then val = @_props[prop]
     else val = @getEnvironmentProperty prop
 
-    if !val? then throw "Cannot find property "+prop
+    if !val? then throw new Error("Cannot find property "+prop)
     return val
 
   hasProp: (prop) ->

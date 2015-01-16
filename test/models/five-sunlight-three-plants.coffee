@@ -28,7 +28,7 @@ angular.scenario.dsl 'clickInModel', ->
       canvas = document.getElementsByTagName("canvas")[0]
       event = document.createEvent("MouseEvent")
       event.initMouseEvent("click", true, true, window, 0, 0, 0, loc.x, loc.y)
-      canvas.dispatchEvent(event);
+      canvas.dispatchEvent(event)
       done();
 
 angular.scenario.dsl 'step', ->
@@ -38,11 +38,18 @@ angular.scenario.dsl 'step', ->
         $window.model.env.step()
       done()
 
+angular.scenario.dsl 'loiter', ->
+  return (ms) ->
+    return this.addFutureAction 'wait for ' + ms, ($window, $document, done) ->
+      setTimeout ->
+        done()
+      , ms
 
 describe 'The Five Flowerboxes Three Plants model', ->
 
   beforeEach ->
-    browser().navigateTo ( "/five-sunlight-three-plants.html" )
+    browser().navigateTo( "/five-sunlight-three-plants.html" )
+    loiter(300)
 
   it 'should exist and have three AddOrganism buttons', ->
     expect(browser().window().path()).toBe "/five-sunlight-three-plants.html"

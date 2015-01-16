@@ -4,7 +4,11 @@ Environment = require 'models/environment'
 testAction = (test, shouldBeCalled=true)->
   rule = new Rule
     test: test
-    action: jasmine.createSpy("action spy")
+    action: ->
+      undefined
+
+  spyOn(rule, '_test').and.callThrough()
+  spyOn(rule, '_action').and.callThrough()
 
   rule.execute(null)
   expect(rule._test).toHaveBeenCalled()
@@ -27,25 +31,30 @@ describe 'Rule', ->
 
   it 'should evaluate test() on execution', ->
     rule = new Rule
-      test: jasmine.createSpy("test spy").andReturn(false)
+      test: ->
+        false
       action: ->
         1 + 1
+
+    spyOn(rule, '_test').and.callThrough()
 
     rule.execute(null)
     expect(rule._test).toHaveBeenCalled()
 
   it 'should evaluate action() on execution when test() returns true', ->
-    testAction jasmine.createSpy("test spy").andReturn(true), true
+    testAction (-> true), true
 
   it 'should evaluate action() on execution when test() does not exist', ->
     rule = new Rule
-      action: jasmine.createSpy("action spy").andReturn(false)
+      action: (-> false)
+
+    spyOn(rule, '_action').and.callThrough()
 
     rule.execute(null)
     expect(rule._action).toHaveBeenCalled()
 
   it 'should not evaluate action() on execution when test() returns false', ->
-    testAction jasmine.createSpy("test spy").andReturn(false), false
+    testAction (-> false), false
 
   describe 'invalid setup', ->
 
@@ -66,15 +75,15 @@ describe 'Rule', ->
 
   describe 'edge conditions', ->
     it 'should execute action() when test() returns a truthy value', ->
-      testAction jasmine.createSpy("test spy").andReturn(true), true
-      testAction jasmine.createSpy("test spy").andReturn("something"), true
-      testAction jasmine.createSpy("test spy").andReturn("false"), true
-      testAction jasmine.createSpy("test spy").andReturn(9), true
-      testAction jasmine.createSpy("test spy").andReturn({foo: "foo"}), true
+      testAction (-> true), true
+      testAction (-> "something"), true
+      testAction (-> "false"), true
+      testAction (-> 9), true
+      testAction (-> {foo: "foo"}), true
 
     it 'should not execute action() when test() returns a falsy value', ->
-      testAction jasmine.createSpy("test spy").andReturn(false), false
-      testAction jasmine.createSpy("test spy").andReturn(null), false
-      testAction jasmine.createSpy("test spy").andReturn(0), false
-      testAction jasmine.createSpy("test spy").andReturn(""), false
-      testAction jasmine.createSpy("test spy").andReturn(NaN), false
+      testAction (-> false), false
+      testAction (-> null), false
+      testAction (-> 0), false
+      testAction (-> ""), false
+      testAction (-> NaN), false

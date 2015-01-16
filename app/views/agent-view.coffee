@@ -4,7 +4,7 @@ require 'animated-sprite'
 module.exports = class AgentView
 
   constructor: ({@agent}) ->
-    @imageProperties = @agent.species.imageProperties || {}
+    @imageProperties = @agent.species?.imageProperties || {}
 
   _images: null
   _sprites: null

@@ -17,8 +17,8 @@ require.register "species/animated-foxes", (exports, require, module) ->
       dir = @get 'direction'
       speed ?= @get 'speed'
       return if speed is 0
-      throw 'invalid speed' unless typeof(speed) is 'number'
-      throw 'invalid direction' unless typeof(dir) is 'number'
+      throw new Error('invalid speed') unless typeof(speed) is 'number'
+      throw new Error('invalid direction') unless typeof(dir) is 'number'
       loc = @getLocation()
       dx = speed * Math.cos(dir)
       dy = speed * Math.sin(dir)

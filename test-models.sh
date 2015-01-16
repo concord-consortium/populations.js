@@ -1,3 +1,3 @@
 #!/bin/bash
 
-node_modules/.bin/karma start test/karma.models-e2e.conf.js
+node_modules/karma/bin/karma start test/karma.models-e2e.conf.js

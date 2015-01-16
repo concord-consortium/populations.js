@@ -82,7 +82,7 @@ describe 'A state machine', ->
     states.send "click"
 
     expect(click2).toHaveBeenCalled()
-    expect(click1.calls.length).toEqual(1)
+    expect(click1.calls.count()).toEqual(1)
 
   it 'sends an event with the appropriate context', ->
     TellState =

@@ -1,7 +1,7 @@
 // Karma configuration
 
 module.exports = function(karma) {
-  karma.configure({
+  karma.set({
 
     // base path, that will be used to resolve files and exclude
     basePath: '../',
@@ -23,6 +23,18 @@ module.exports = function(karma) {
     exclude: [
         // 'vendor/angular-mocks/angular-mocks.min.js',
     ],
+
+    preprocessors: {
+      '**/*.coffee': 'coffee'
+    },
+
+    coffeePreprocessor: {
+      // options passed to the coffee compiler
+      options: {
+        bare: true,
+        sourceMap: true
+      }
+    },
 
 
     // test results reporter to use

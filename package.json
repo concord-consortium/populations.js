@@ -5,7 +5,7 @@
   "repository": "",
   "scripts": {
     "start": "node_modules/.bin/brunch watch --server",
-    "test": "node_modules/.bin/karma start test/karma.conf.js"
+    "test": "node_modules/karma/bin/karma start test/karma.conf.js"
   },
   "dependencies": {
     "javascript-brunch": "~1.6.0",
@@ -17,9 +17,10 @@
   },
   "devDependencies": {
     "brunch": "*",
-    "karma": "~0.9.4",
-    "karma-coffee-preprocessor": "~0.0.2",
-    "karma-ng-scenario": "~0.0.2",
+    "karma": "~0.12.31",
+    "karma-jasmine": "~0.3.0",
+    "karma-coffee-preprocessor": "~0.2.1",
+    "karma-ng-scenario": "~0.1.0",
     "after-brunch": "*",
     "stylus-brunch": "*"
   },
@@ -27,6 +28,6 @@
     "max_line_length":     { "level": "ignore" },
     "no_empty_functions":  { "level": "warn" },
     "no_empty_param_list": { "level": "warn" },
-    "no_throwing_strings": { "level": "ignore" }
+    "no_throwing_strings": { "level": "error" }
   }
 }
