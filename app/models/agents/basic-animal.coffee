@@ -111,7 +111,7 @@ module.exports = class BasicAnimal extends Agent
     nearest = @_nearestMate()
     if nearest?
       @chase(nearest)
-      if nearest.distanceSq < Math.pow(@get('mating distance'), 2)
+      if nearest.distanceSq < Math.pow(@get('mating distance'), 2) and (not @species.defs.CHANCE_OF_MATING? or Math.random() < @species.defs.CHANCE_OF_MATING)
         max = @get('max offspring')
         @set 'max offspring', Math.max(max/2, 1)
         @reproduce(nearest)
