@@ -10,13 +10,13 @@ stylesheets, and other assets.
 
 ### Dependencies
 
-* [Node](http://nodejs.org/) `brew install node`
-* [Bower](http://bower.io/) `npm install -g bower`
+* [Node](http://nodejs.org/) [Download an installer](http://nodejs.org/download/) or run `brew install node`
+* [Bower](http://bower.io/) Run `npm install -g bower`
 
 ### Setup Brunch and Project Libraries
 
 You'll need to install the plugins required for the brunch project, as well
-as libraries the project depends on.
+as libraries the project depends on. Run these commands:
 
 ```
   npm install
@@ -31,7 +31,7 @@ Run this command:
   npm start
 ```
 
-Now open http://localhost:3333. Whenever you make a change to a file the
+Now open http://localhost:3333 in your browser. Whenever you make a change to a file the
 browser will be automatically refreshed. Thanks
 [auto-reload-brunch](https://github.com/brunch/auto-reload-brunch).
 
