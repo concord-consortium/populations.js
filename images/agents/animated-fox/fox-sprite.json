@@ -1,0 +1,38 @@
+{
+  "frames": {
+    "walk-0" : {
+      "frame": {"x":0,"y":0,"w":59,"h":86},
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {"x":0,"y":0,"w":59,"h":86},
+      "sourceSize": {"w":59,"h":86}
+    },
+    "walk-1" : {
+      "frame": {"x":59,"y":0,"w":59,"h":86},
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {"x":0,"y":0,"w":59,"h":86},
+      "sourceSize": {"w":59,"h":86}
+    },
+    "walk-2" : {
+      "frame": {"x":118,"y":0,"w":59,"h":86},
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {"x":0,"y":0,"w":59,"h":86},
+      "sourceSize": {"w":59,"h":86}
+    },
+    "walk-3" : {
+      "frame": {"x":177,"y":0,"w":59,"h":86},
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {"x":0,"y":0,"w":59,"h":86},
+      "sourceSize": {"w":59,"h":86}
+    }
+  },
+  "meta": {
+    "image": "fox-sprite.png",
+    "format": "RGBA8888",
+    "size": {"w":239,"h":86},
+    "scale": "1"
+  }
+}
