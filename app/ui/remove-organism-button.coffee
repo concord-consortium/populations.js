@@ -4,6 +4,7 @@ Environment = require 'models/environment'
 module.exports = class RemoveOrganismButton
 
   constructor: (@environment, @toolbar, {@species, @imagePath}) ->
+    undefined
 
   render: ->
     @button = document.createElement 'div'

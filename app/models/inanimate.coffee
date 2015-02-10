@@ -7,6 +7,6 @@ module.exports = class Inanimate extends Agent
   label: "inanimate"
   _viewLayer: 0
   step: ->
-    # NOOP
+    undefined
 
   _consumeResources: null

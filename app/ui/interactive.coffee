@@ -46,11 +46,11 @@ module.exports = class Interactive
         ignoreEvent = true
         @reset()
         ignoreEvent = false
-      Events.addEventListener Environment.EVENTS.START, =>
+      Events.addEventListener Environment.EVENTS.START, ->
         phone.post({type: 'play'}) unless ignoreEvent
-      Events.addEventListener Environment.EVENTS.STOP, =>
+      Events.addEventListener Environment.EVENTS.STOP, ->
         phone.post({type: 'stop'}) unless ignoreEvent
-      Events.addEventListener Environment.EVENTS.RESET, =>
+      Events.addEventListener Environment.EVENTS.RESET, ->
         phone.post({type: 'reset'}) unless ignoreEvent
       phone.initialize()
 

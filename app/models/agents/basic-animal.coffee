@@ -144,8 +144,8 @@ module.exports = class BasicAnimal extends Agent
   move: (speed) ->
     dir = @get 'direction'
     return if speed is 0
-    throw 'invalid speed' unless typeof(speed) is 'number'
-    throw 'invalid direction' unless typeof(dir) is 'number'
+    throw new Error('invalid speed') unless typeof(speed) is 'number'
+    throw new Error('invalid direction') unless typeof(dir) is 'number'
     loc = @getLocation()
     dx = speed * Math.cos(dir)
     dy = speed * Math.sin(dir)
@@ -296,14 +296,14 @@ module.exports = class BasicAnimal extends Agent
       quantity: 3
       crossBarriers: false
 
-    throw "Must pass agent types array" unless opts.types? or typeof(opts.types) isnt 'object' or not opts.types.length?
+    throw new Error("Must pass agent types array") unless opts.types? or typeof(opts.types) isnt 'object' or not opts.types.length?
 
     nearest = @_nearestAgents()
     returnedAgents = []
     for agentDistance in nearest
       agent = agentDistance.agent
       for type in opts.types
-        throw "types array must be an array of objects in format {name: 'foo', traits: []}" if typeof(type) isnt 'object' or not type.name?
+        throw new Error("types array must be an array of objects in format {name: 'foo', traits: []}") if typeof(type) isnt 'object' or not type.name?
         continue if type.name isnt agent.species.speciesName
 
         continue if agent is @
@@ -339,3 +339,5 @@ module.exports = class BasicAnimal extends Agent
 
 class AgentDistance
   constructor: (@agent, @distanceSq)->
+    undefined
+

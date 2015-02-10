@@ -27,7 +27,7 @@ module.exports = class StateMachine
 
   setState: (currentState) ->
     if !@_states[currentState]?
-      throw "No such state: #{currentState}"
+      throw new Error("No such state: #{currentState}")
 
     @currentState = currentState
     if @_states[@currentState].enter?
@@ -35,7 +35,7 @@ module.exports = class StateMachine
 
   send: (evtName, evt) ->
     if !@currentState?
-      throw "No current state exists to handle '#{evtName}'"
+      throw new Error("No current state exists to handle '#{evtName}'")
 
     if @_states[@currentState][evtName]?
       @_states[@currentState][evtName].apply @, [evt]

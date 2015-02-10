@@ -5,9 +5,10 @@ Trait   = require 'models/trait'
 describe 'A species', ->
 
   beforeEach ->
-    @addMatchers
-      toBeOneOf: (arr) ->
-        arr.indexOf(this.actual) != -1
+    jasmine.addMatchers
+      toBeOneOf: (util, customEqualityTesters) ->
+        compare: (actual, expected) ->
+          { pass: actual in expected, message: "Expected #{actual} to be one of [ #{expected} ]" }
 
   it 'can create an agent with specific properties', ->
     plantSpecies = new Species

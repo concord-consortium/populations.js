@@ -7,6 +7,7 @@ module.exports = class AnimatedAgent
   currentMovement: AnimatedAgent.MOVEMENTS.STOPPED
 
   setMovement: (@currentMovement) ->
+    undefined
 
   getMovement: ->
     @currentMovement

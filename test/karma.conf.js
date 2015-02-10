@@ -28,6 +28,18 @@ module.exports = function(config) {
     exclude: [
     ],
 
+    preprocessors: {
+      '**/*.coffee': 'coffee'
+    },
+
+    coffeePreprocessor: {
+      // options passed to the coffee compiler
+      options: {
+        bare: true,
+        sourceMap: true
+      }
+    },
+
 
     // test results reporter to use
     // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'

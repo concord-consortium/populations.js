@@ -40,15 +40,15 @@ module.exports = class Environment extends StateMachine
     @preload.push @winterImgPath if @winterImgPath
 
     if @columns and @width
-      throw "You can set columns and rows, or width and height, but not both"
+      throw new Error("You can set columns and rows, or width and height, but not both")
     if @columns
       @width = @columns * @_columnWidth
       @height = @rows * @_rowHeight
     if @width
       if not (@width % @_columnWidth == 0)
-        throw "Width #{@width} is not evenly divisible by the column width #{@_columnWidth}"
+        throw new Error("Width #{@width} is not evenly divisible by the column width #{@_columnWidth}")
       if not (@height % @_rowHeight == 0)
-        throw "Height #{@height} is not evenly divisible by the row height #{@_rowHeight}"
+        throw new Error("Height #{@height} is not evenly divisible by the row height #{@_rowHeight}")
       @columns = @width / @_columnWidth
       @rows = @height / @_rowHeight
 
@@ -123,7 +123,7 @@ module.exports = class Environment extends StateMachine
         i++
 
   agentsWithin: ({x,y,width,height})->
-    throw "Invalid rectangle definition!" unless x? and y? and width? and height?
+    throw new Error("Invalid rectangle definition!") unless x? and y? and width? and height?
     area = new Barrier(x,y,width,height)
     found = []
     for agent in @agents
@@ -218,7 +218,7 @@ module.exports = class Environment extends StateMachine
       when "summer",1 then idx = 1
       when "fall",2 then idx = 2
       when "winter",3 then idx = 3
-      else throw "Invalid season '" + season + "'"
+      else throw new Error("Invalid season '" + season + "'")
 
     @seasonLengths[idx] = length
     @_remapSeasonLengths()
@@ -244,6 +244,7 @@ module.exports = class Environment extends StateMachine
   # Used for setting the default species and traits for
   # creating and adding agents.
   setDefaultAgentCreator: (@defaultSpecies, @defaultTraits, @agentAdderCallback) ->
+    undefined
 
   addDefaultAgent: (x, y) ->
     return unless @defaultSpecies?
@@ -376,7 +377,7 @@ module.exports = class Environment extends StateMachine
 
   _remapSeasonLengths: ->
     # re-map seasonLenths into end-dates for efficient access later
-    @_totalSeasonLengths = [];
+    @_totalSeasonLengths = []
     @_totalSeasonLengths[i] = length + (@_totalSeasonLengths[i-1] || 0) for length, i in @seasonLengths
 
     @usingSeasons = @_totalSeasonLengths.length > 0

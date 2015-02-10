@@ -4,7 +4,7 @@ module.exports = class Rule
   #       if test is not defined, rule is always executed
   # action: a function that will be called if test returns true. Will be passed an Agent.
   constructor: ({test, action}) ->
-    throw "action is not a function!" unless action? and typeof(action) is 'function'
+    throw new Error("action is not a function!") unless action? and typeof(action) is 'function'
     @_test = test
     @_action = action
 

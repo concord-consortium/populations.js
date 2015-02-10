@@ -3,7 +3,7 @@
   Each agent in a species has a specific value for each of these traits. This set
   is the agent's properties.
 
-  For example, the species Plant might have the traits 
+  For example, the species Plant might have the traits
     "health": 0-1
     "number of leaves": 0, 2, 4
     "leaf color": ["green", "red"]
@@ -22,6 +22,7 @@ require 'helpers'
 module.exports = class Trait
 
   constructor: ({@name, @possibleValues, @min, @max, @default, @float, @mutatable}) ->
+    undefined
 
   getDefaultValue: ->
     if @default? then @default

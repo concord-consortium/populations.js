@@ -1,6 +1,6 @@
 module.exports = class InfoView
   @_instances: []
-  @instances: ()->
+  @instances: ->
     return InfoView._instances
 
   constructor: ({@agent})->

@@ -15,7 +15,7 @@ module.exports = class SpeedSlider
     @view.appendChild input
 
     # TODO Remove jQuery once we're no longer relying on it.
-    $( document ).ready =>
+    $( document ).ready ->
       $(input).change ->
         env.setSpeed(parseInt($(@).val()))
 

@@ -1,5 +1,5 @@
 Agent = require 'models/agent'
-BasicPlant = require 'models/basic-plant'
+BasicPlant = require 'models/agents/basic-plant'
 Environment = require 'models/environment'
 Species = require 'models/species'
 Trait   = require 'models/trait'
