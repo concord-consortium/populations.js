@@ -35,10 +35,10 @@
           return;
         }
         if (typeof speed !== 'number') {
-          throw 'invalid speed';
+          throw new Error('invalid speed');
         }
         if (typeof dir !== 'number') {
-          throw 'invalid direction';
+          throw new Error('invalid direction');
         }
         loc = this.getLocation();
         dx = speed * Math.cos(dir);

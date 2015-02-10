@@ -210,11 +210,9 @@
           return _this._highlight(3);
         };
       })(this);
-      return Events.addEventListener(Environment.EVENTS.RESET, (function(_this) {
-        return function() {
-          return noneHighlightRadio.click();
-        };
-      })(this));
+      return Events.addEventListener(Environment.EVENTS.RESET, function() {
+        return noneHighlightRadio.click();
+      });
     },
     _highlight: function(size) {
       var agent, _i, _len, _ref, _results;
@@ -259,28 +257,17 @@
           }
         };
       })(this));
-      return Events.addEventListener(Environment.EVENTS.RESET, (function(_this) {
-        return function() {
-          backgroundChangeable = false;
-          yearSpan.innerHTML = "1";
-          return waterLevelIndicator.style.height = "100%";
-        };
-      })(this));
+      return Events.addEventListener(Environment.EVENTS.RESET, function() {
+        backgroundChangeable = false;
+        yearSpan.innerHTML = "1";
+        return waterLevelIndicator.style.height = "100%";
+      });
     },
     _changeBackground: function(n) {
       if (!((0 < n && n < 11))) {
         return;
       }
       return this.env.setBackground("images/environments/dam-year" + n + ".png");
-    },
-    _setAgentProperty: function(agents, prop, val) {
-      var a, _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = agents.length; _i < _len; _i++) {
-        a = agents[_i];
-        _results.push(a.set(prop, val));
-      }
-      return _results;
     },
     _setAgentProperty: function(agents, prop, val) {
       var a, _i, _len, _results;

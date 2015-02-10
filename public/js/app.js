@@ -558,7 +558,7 @@ module.exports = Agent = (function() {
   Agent.prototype._viewLayer = 1;
 
   function Agent(_arg) {
-    var additionalDefaults, x, y;
+    var additionalDefaults, x, y, _ref;
     this.name = _arg.name, this.environment = _arg.environment, this.species = _arg.species, x = _arg.x, y = _arg.y, additionalDefaults = _arg.additionalDefaults;
     this._props = helpers.clone(defaultProperties);
     if (additionalDefaults != null) {
@@ -567,7 +567,7 @@ module.exports = Agent = (function() {
     this._view = new AgentView({
       agent: this
     });
-    if (this.species.viewLayer != null) {
+    if (((_ref = this.species) != null ? _ref.viewLayer : void 0) != null) {
       this._viewLayer = this.species.viewLayer;
     }
     if ((x != null) && (y != null)) {
@@ -615,7 +615,7 @@ module.exports = Agent = (function() {
       val = this.getEnvironmentProperty(prop);
     }
     if (val == null) {
-      throw "Cannot find property " + prop;
+      throw new Error("Cannot find property " + prop);
     }
     return val;
   };
@@ -818,6 +818,7 @@ module.exports = AnimatedAgent = (function() {
 
   AnimatedAgent.prototype.setMovement = function(currentMovement) {
     this.currentMovement = currentMovement;
+    return void 0;
   };
 
   AnimatedAgent.prototype.getMovement = function() {
@@ -1024,10 +1025,10 @@ module.exports = BasicAnimal = (function(_super) {
       return;
     }
     if (typeof speed !== 'number') {
-      throw 'invalid speed';
+      throw new Error('invalid speed');
     }
     if (typeof dir !== 'number') {
-      throw 'invalid direction';
+      throw new Error('invalid direction');
     }
     loc = this.getLocation();
     dx = speed * Math.cos(dir);
@@ -1262,7 +1263,7 @@ module.exports = BasicAnimal = (function(_super) {
       crossBarriers: false
     });
     if (!((opts.types != null) || typeof opts.types !== 'object' || (opts.types.length == null))) {
-      throw "Must pass agent types array";
+      throw new Error("Must pass agent types array");
     }
     nearest = this._nearestAgents();
     returnedAgents = [];
@@ -1273,7 +1274,7 @@ module.exports = BasicAnimal = (function(_super) {
       for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
         type = _ref[_j];
         if (typeof type !== 'object' || (type.name == null)) {
-          throw "types array must be an array of objects in format {name: 'foo', traits: []}";
+          throw new Error("types array must be an array of objects in format {name: 'foo', traits: []}");
         }
         if (type.name !== agent.species.speciesName) {
           continue;
@@ -1338,6 +1339,7 @@ AgentDistance = (function() {
   function AgentDistance(agent, distanceSq) {
     this.agent = agent;
     this.distanceSq = distanceSq;
+    void 0;
   }
 
   return AgentDistance;
@@ -1569,7 +1571,7 @@ module.exports = Environment = (function(_super) {
       this.preload.push(this.winterImgPath);
     }
     if (this.columns && this.width) {
-      throw "You can set columns and rows, or width and height, but not both";
+      throw new Error("You can set columns and rows, or width and height, but not both");
     }
     if (this.columns) {
       this.width = this.columns * this._columnWidth;
@@ -1577,10 +1579,10 @@ module.exports = Environment = (function(_super) {
     }
     if (this.width) {
       if (!(this.width % this._columnWidth === 0)) {
-        throw "Width " + this.width + " is not evenly divisible by the column width " + this._columnWidth;
+        throw new Error("Width " + this.width + " is not evenly divisible by the column width " + this._columnWidth);
       }
       if (!(this.height % this._rowHeight === 0)) {
-        throw "Height " + this.height + " is not evenly divisible by the row height " + this._rowHeight;
+        throw new Error("Height " + this.height + " is not evenly divisible by the row height " + this._rowHeight);
       }
       this.columns = this.width / this._columnWidth;
       this.rows = this.height / this._rowHeight;
@@ -1670,7 +1672,7 @@ module.exports = Environment = (function(_super) {
     var agent, area, found, height, loc, width, x, y, _i, _len, _ref;
     x = _arg.x, y = _arg.y, width = _arg.width, height = _arg.height;
     if (!((x != null) && (y != null) && (width != null) && (height != null))) {
-      throw "Invalid rectangle definition!";
+      throw new Error("Invalid rectangle definition!");
     }
     area = new Barrier(x, y, width, height);
     found = [];
@@ -1833,7 +1835,7 @@ module.exports = Environment = (function(_super) {
         idx = 3;
         break;
       default:
-        throw "Invalid season '" + season + "'";
+        throw new Error("Invalid season '" + season + "'");
     }
     this.seasonLengths[idx] = length;
     return this._remapSeasonLengths();
@@ -1869,6 +1871,7 @@ module.exports = Environment = (function(_super) {
     this.defaultSpecies = defaultSpecies;
     this.defaultTraits = defaultTraits;
     this.agentAdderCallback = agentAdderCallback;
+    return void 0;
   };
 
   Environment.prototype.addDefaultAgent = function(x, y) {
@@ -2223,7 +2226,9 @@ module.exports = Inanimate = (function(_super) {
 
   Inanimate.prototype._viewLayer = 0;
 
-  Inanimate.prototype.step = function() {};
+  Inanimate.prototype.step = function() {
+    return void 0;
+  };
 
   Inanimate.prototype._consumeResources = null;
 
@@ -2240,7 +2245,7 @@ module.exports = Rule = (function() {
     var action, test;
     test = _arg.test, action = _arg.action;
     if (!((action != null) && typeof action === 'function')) {
-      throw "action is not a function!";
+      throw new Error("action is not a function!");
     }
     this._test = test;
     this._action = action;
@@ -2431,7 +2436,7 @@ module.exports = Species = (function() {
   Each agent in a species has a specific value for each of these traits. This set
   is the agent's properties.
 
-  For example, the species Plant might have the traits 
+  For example, the species Plant might have the traits
     "health": 0-1
     "number of leaves": 0, 2, 4
     "leaf color": ["green", "red"]
@@ -2452,6 +2457,7 @@ require('helpers');
 module.exports = Trait = (function() {
   function Trait(_arg) {
     this.name = _arg.name, this.possibleValues = _arg.possibleValues, this.min = _arg.min, this.max = _arg.max, this["default"] = _arg["default"], this.float = _arg.float, this.mutatable = _arg.mutatable;
+    void 0;
   }
 
   Trait.prototype.getDefaultValue = function() {
@@ -2550,7 +2556,7 @@ module.exports = StateMachine = (function() {
 
   StateMachine.prototype.setState = function(currentState) {
     if (this._states[currentState] == null) {
-      throw "No such state: " + currentState;
+      throw new Error("No such state: " + currentState);
     }
     this.currentState = currentState;
     if (this._states[this.currentState].enter != null) {
@@ -2560,7 +2566,7 @@ module.exports = StateMachine = (function() {
 
   StateMachine.prototype.send = function(evtName, evt) {
     if (this.currentState == null) {
-      throw "No current state exists to handle '" + evtName + "'";
+      throw new Error("No current state exists to handle '" + evtName + "'");
     }
     if (this._states[this.currentState][evtName] != null) {
       return this._states[this.currentState][evtName].apply(this, [evt]);
@@ -3192,6 +3198,7 @@ module.exports = RemoveOrganismButton = (function() {
     this.environment = environment;
     this.toolbar = toolbar;
     this.species = _arg.species, this.imagePath = _arg.imagePath;
+    void 0;
   }
 
   RemoveOrganismButton.prototype.render = function() {
@@ -3262,8 +3269,7 @@ PPSlider = require('ui/ppslider');
 
 module.exports = SpeedSlider = (function() {
   function SpeedSlider(env) {
-    var input,
-      _this = this;
+    var input;
     this.view = document.createElement('div');
     this.view.setAttribute("style", "height: 20px;");
     input = document.createElement('input');
@@ -3588,8 +3594,9 @@ require('animated-sprite');
 
 module.exports = AgentView = (function() {
   function AgentView(_arg) {
+    var _ref;
     this.agent = _arg.agent;
-    this.imageProperties = this.agent.species.imageProperties || {};
+    this.imageProperties = ((_ref = this.agent.species) != null ? _ref.imageProperties : void 0) || {};
   }
 
   AgentView.prototype._images = null;

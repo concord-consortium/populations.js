@@ -13,7 +13,7 @@
         "mountain-sunlight-variation-chart.html": "Plant variation with mountains",
         "dam-plants-rabbits.html":                "Dam model",
         "super-model-foxes-open.html":            "Open model: grass, rabbits, hawks and foxes"
-      }
+      };
 
       var modelDivs = [], phone;
 
@@ -21,7 +21,7 @@
         var modelCollection, i, ii, j, jj, zoom, phone, play, stop;
 
         modelCollection = document.getElementsByClassName("model-collection")[0];
-        for (model in models) {
+        for (var model in models) {
           if (!models.hasOwnProperty(model)) continue;
           createModelDiv(model, modelCollection);
 
@@ -42,7 +42,7 @@
         });
 
         initPhone(iframe);
-      }
+      };
 
       initPhone = function(iframe) {
         if (phone && phone.removeAllListeners) {
@@ -65,7 +65,7 @@
           // Send reset event via iframe-phone
           phone.post({type: 'reset'});
         });
-      }
+      };
 
       createModelDiv = function(model, container) {
         var el = document.createElement('div'),
@@ -76,10 +76,10 @@
         linkDiv.innerHTML = "<a href="+model+">link";
         el.appendChild(linkDiv);
         el.appendChild(title);
-        el.addEventListener('click', function(){loadModel(model, el)});
+        el.addEventListener('click', function(){loadModel(model, el); });
         modelDivs.push(el);
         container.appendChild(el);
-      }
+      };
 
       loadModel = function(model, el) {
         var iframe = document.getElementById("model-iframe");
@@ -89,7 +89,7 @@
         el.classList.add("active");
         iframe.setAttribute("src", model);
         setTimeout(function() { initPhone(iframe); }, 50);
-      }
+      };
 
     </script>
     <style type="text/css">

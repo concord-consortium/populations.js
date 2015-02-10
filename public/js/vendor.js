@@ -10430,7 +10430,7 @@ return jQuery;
 
 ;/*
  * classList.js: Cross-browser full element.classList implementation.
- * 2014-01-31
+ * 2014-12-13
  *
  * By Eli Grey, http://eligrey.com
  * Public Domain.
@@ -10439,9 +10439,12 @@ return jQuery;
 
 /*global self, document, DOMException */
 
-/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js*/
+/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
 
-if ("document" in self && !("classList" in document.createElement("_"))) {
+if ("document" in self) {
+
+// Full polyfill for browsers with no classList support
+if (!("classList" in document.createElement("_"))) {
 
 (function (view) {
 
@@ -10547,13 +10550,15 @@ classListProto.remove = function () {
 		, l = tokens.length
 		, token
 		, updated = false
+		, index
 	;
 	do {
 		token = tokens[i] + "";
-		var index = checkTokenAndGetIndex(this, token);
-		if (index !== -1) {
+		index = checkTokenAndGetIndex(this, token);
+		while (index !== -1) {
 			this.splice(index, 1);
 			updated = true;
+			index = checkTokenAndGetIndex(this, token);
 		}
 	}
 	while (++i < l);
@@ -10577,7 +10582,11 @@ classListProto.toggle = function (token, force) {
 		this[method](token);
 	}
 
-	return !result;
+	if (force === true || force === false) {
+		return force;
+	} else {
+		return !result;
+	}
 };
 classListProto.toString = function () {
 	return this.join(" ");
@@ -10603,7 +10612,60 @@ if (objCtr.defineProperty) {
 
 }(self));
 
+} else {
+// There is full or partial native classList support, so just check if we need
+// to normalize the add/remove and toggle APIs.
+
+(function () {
+	"use strict";
+
+	var testElement = document.createElement("_");
+
+	testElement.classList.add("c1", "c2");
+
+	// Polyfill for IE 10/11 and Firefox <26, where classList.add and
+	// classList.remove exist but support only one argument at a time.
+	if (!testElement.classList.contains("c2")) {
+		var createMethod = function(method) {
+			var original = DOMTokenList.prototype[method];
+
+			DOMTokenList.prototype[method] = function(token) {
+				var i, len = arguments.length;
+
+				for (i = 0; i < len; i++) {
+					token = arguments[i];
+					original.call(this, token);
+				}
+			};
+		};
+		createMethod('add');
+		createMethod('remove');
+	}
+
+	testElement.classList.toggle("c3", false);
+
+	// Polyfill for IE 10 and Firefox <24, where classList.toggle does not
+	// support the second argument.
+	if (testElement.classList.contains("c3")) {
+		var _toggle = DOMTokenList.prototype.toggle;
+
+		DOMTokenList.prototype.toggle = function(token, force) {
+			if (1 in arguments && !this.contains(token) === !force) {
+				return force;
+			} else {
+				return _toggle.call(this, token);
+			}
+		};
+
+	}
+
+	testElement = null;
+}());
+
 }
+
+}
+
 
 ;!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.iframePhone=e():"undefined"!=typeof global?global.iframePhone=e():"undefined"!=typeof self&&(self.iframePhone=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var structuredClone = require('./structured-clone');
@@ -14035,215 +14097,5 @@ else for(var o=0;o<a.length;o+=2)b=a[o],c=a[o+1],g=g>b-n?b-n:g,h=b+n>h?b+n:h,i=i
     return shutterbugInstance;
   };
 })();
-;!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.jade=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-'use strict';
-
-/**
- * Merge two attribute objects giving precedence
- * to values in object `b`. Classes are special-cased
- * allowing for arrays and merging/joining appropriately
- * resulting in a string.
- *
- * @param {Object} a
- * @param {Object} b
- * @return {Object} a
- * @api private
- */
-
-exports.merge = function merge(a, b) {
-  if (arguments.length === 1) {
-    var attrs = a[0];
-    for (var i = 1; i < a.length; i++) {
-      attrs = merge(attrs, a[i]);
-    }
-    return attrs;
-  }
-  var ac = a['class'];
-  var bc = b['class'];
-
-  if (ac || bc) {
-    ac = ac || [];
-    bc = bc || [];
-    if (!Array.isArray(ac)) ac = [ac];
-    if (!Array.isArray(bc)) bc = [bc];
-    a['class'] = ac.concat(bc).filter(nulls);
-  }
-
-  for (var key in b) {
-    if (key != 'class') {
-      a[key] = b[key];
-    }
-  }
-
-  return a;
-};
-
-/**
- * Filter null `val`s.
- *
- * @param {*} val
- * @return {Boolean}
- * @api private
- */
-
-function nulls(val) {
-  return val != null && val !== '';
-}
-
-/**
- * join array as classes.
- *
- * @param {*} val
- * @return {String}
- */
-exports.joinClasses = joinClasses;
-function joinClasses(val) {
-  return Array.isArray(val) ? val.map(joinClasses).filter(nulls).join(' ') : val;
-}
-
-/**
- * Render the given classes.
- *
- * @param {Array} classes
- * @param {Array.<Boolean>} escaped
- * @return {String}
- */
-exports.cls = function cls(classes, escaped) {
-  var buf = [];
-  for (var i = 0; i < classes.length; i++) {
-    if (escaped && escaped[i]) {
-      buf.push(exports.escape(joinClasses([classes[i]])));
-    } else {
-      buf.push(joinClasses(classes[i]));
-    }
-  }
-  var text = joinClasses(buf);
-  if (text.length) {
-    return ' class="' + text + '"';
-  } else {
-    return '';
-  }
-};
-
-/**
- * Render the given attribute.
- *
- * @param {String} key
- * @param {String} val
- * @param {Boolean} escaped
- * @param {Boolean} terse
- * @return {String}
- */
-exports.attr = function attr(key, val, escaped, terse) {
-  if ('boolean' == typeof val || null == val) {
-    if (val) {
-      return ' ' + (terse ? key : key + '="' + key + '"');
-    } else {
-      return '';
-    }
-  } else if (0 == key.indexOf('data') && 'string' != typeof val) {
-    return ' ' + key + "='" + JSON.stringify(val).replace(/'/g, '&apos;') + "'";
-  } else if (escaped) {
-    return ' ' + key + '="' + exports.escape(val) + '"';
-  } else {
-    return ' ' + key + '="' + val + '"';
-  }
-};
-
-/**
- * Render the given attributes object.
- *
- * @param {Object} obj
- * @param {Object} escaped
- * @return {String}
- */
-exports.attrs = function attrs(obj, terse){
-  var buf = [];
-
-  var keys = Object.keys(obj);
-
-  if (keys.length) {
-    for (var i = 0; i < keys.length; ++i) {
-      var key = keys[i]
-        , val = obj[key];
-
-      if ('class' == key) {
-        if (val = joinClasses(val)) {
-          buf.push(' ' + key + '="' + val + '"');
-        }
-      } else {
-        buf.push(exports.attr(key, val, false, terse));
-      }
-    }
-  }
-
-  return buf.join('');
-};
-
-/**
- * Escape the given string of `html`.
- *
- * @param {String} html
- * @return {String}
- * @api private
- */
-
-exports.escape = function escape(html){
-  var result = String(html)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-  if (result === '' + html) return html;
-  else return result;
-};
-
-/**
- * Re-throw the given `err` in context to the
- * the jade in `filename` at the given `lineno`.
- *
- * @param {Error} err
- * @param {String} filename
- * @param {String} lineno
- * @api private
- */
-
-exports.rethrow = function rethrow(err, filename, lineno, str){
-  if (!(err instanceof Error)) throw err;
-  if ((typeof window != 'undefined' || !filename) && !str) {
-    err.message += ' on line ' + lineno;
-    throw err;
-  }
-  try {
-    str =  str || _dereq_('fs').readFileSync(filename, 'utf8')
-  } catch (ex) {
-    rethrow(err, null, lineno)
-  }
-  var context = 3
-    , lines = str.split('\n')
-    , start = Math.max(lineno - context, 0)
-    , end = Math.min(lines.length, lineno + context);
-
-  // Error context
-  var context = lines.slice(start, end).map(function(line, i){
-    var curr = i + start + 1;
-    return (curr == lineno ? '  > ' : '    ')
-      + curr
-      + '| '
-      + line;
-  }).join('\n');
-
-  // Alter exception message
-  err.path = filename;
-  err.message = (filename || 'Jade') + ':' + lineno
-    + '\n' + context + '\n\n' + err.message;
-  throw err;
-};
-
-},{"fs":2}],2:[function(_dereq_,module,exports){
-
-},{}]},{},[1])
-(1)
-});
 ;
 //# sourceMappingURL=vendor.js.map
