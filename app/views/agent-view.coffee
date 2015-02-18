@@ -138,10 +138,12 @@ module.exports = class AgentView
 
         sprite.nextSequence = null
         sprite.onComplete = (sequence) ->
-          if not sprite.sequences[sequence].loop
-            if sprite.nextSequence
-              sprite.gotoAndPlay sprite.nextSequence
-              sprite.nextSequence = null
+          if sprite.nextSequence
+            sprite.gotoAndPlay sprite.nextSequence
+            sprite.nextSequence = null
+          else
+            if not sprite.sequences[sequence].loop
+              sprite.currentSequence = null
 
     return sprite
 
