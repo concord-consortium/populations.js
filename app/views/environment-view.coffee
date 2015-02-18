@@ -34,6 +34,8 @@ module.exports = class EnvironmentView
     @_backgroundSprite.position.x = 0
     @_backgroundSprite.position.y = 0
 
+    @scaleBackground()
+
     layer.addChild(@_backgroundSprite)
 
     @renderBarriers(layer)
@@ -132,6 +134,21 @@ module.exports = class EnvironmentView
   updateBackground: ->
     texture = PIXI.Texture.fromImage @environment.imgPath
     @_backgroundSprite.setTexture texture
+    @scaleBackground()
+
+  # scales background relative to actual env size
+  scaleBackground: ->
+    [origWidth, origHeight] = [@_backgroundSprite.width, @_backgroundSprite.height]
+    if @environment.backgroundScaleX?
+      @_backgroundSprite.width = @environment.width * @environment.backgroundScaleX
+      if @environment.backgroundScaleY
+        @_backgroundSprite.height = @environment.height * @environment.backgroundScaleY
+      else
+        @_backgroundSprite.height *= (@_backgroundSprite.width / origWidth)
+    else if @environment.backgroundScaleY?
+      @_backgroundSprite.height = @environment.height * @environment.backgroundScaleY
+      @_backgroundSprite.width *= (@_backgroundSprite.height / origHeight)
+
 
   _getOrCreateLayer: (idx)->
     if not @_layers[idx]?
