@@ -69,7 +69,10 @@ module.exports = class AgentView
           if not sprite.playing
             sprite.gotoAndPlay sequence
           else
-            sprite.nextSequence = sequence
+            if sprite.sequences[sprite.currentSequence].interruptible
+              sprite.gotoAndPlay sequence
+            else
+              sprite.nextSequence = sequence
         sprite.advanceTime()
 
   remove: (stage)->
@@ -127,21 +130,25 @@ module.exports = class AgentView
 
         if not sprite
           sequences = {}
-          sequences[animation.movement]           = {frames: spriteTextures}
-          sequences[animation.movement].frameRate = animation.frameRate if animation.frameRate
-          sequences[animation.movement].loop      = animation.loop if animation.loop
+          sequences[animation.movement]               = {frames: spriteTextures}
+          sequences[animation.movement].frameRate     = animation.frameRate if animation.frameRate
+          sequences[animation.movement].loop          = animation.loop if animation.loop
+          sequences[animation.movement].interruptible = animation.interruptible
           sprite = new PIXI.AnimatedSprite sequences
         else
-          sprite.sequences[animation.movement]           = {frames: spriteTextures}
-          sprite.sequences[animation.movement].frameRate = animation.frameRate if animation.frameRate
-          sprite.sequences[animation.movement].loop      = animation.loop if animation.loop
+          sprite.sequences[animation.movement]                = {frames: spriteTextures}
+          sprite.sequences[animation.movement].frameRate      = animation.frameRate if animation.frameRate
+          sprite.sequences[animation.movement].loop           = animation.loop if animation.loop
+          sprite.sequences[animation.movement].interruptible  = animation.interruptible
 
         sprite.nextSequence = null
         sprite.onComplete = (sequence) ->
-          if not sprite.sequences[sequence].loop
-            if sprite.nextSequence
-              sprite.gotoAndPlay sprite.nextSequence
-              sprite.nextSequence = null
+          if sprite.nextSequence
+            sprite.gotoAndPlay sprite.nextSequence
+            sprite.nextSequence = null
+          else
+            if not sprite.sequences[sequence].loop
+              sprite.currentSequence = null
 
     return sprite
 
