@@ -3683,7 +3683,11 @@ module.exports = AgentView = (function() {
           if (!sprite.playing) {
             sprite.gotoAndPlay(sequence);
           } else {
-            sprite.nextSequence = sequence;
+            if (sprite.sequences[sprite.currentSequence].interruptible) {
+              sprite.gotoAndPlay(sequence);
+            } else {
+              sprite.nextSequence = sequence;
+            }
           }
         }
         sprite.advanceTime();
@@ -3778,6 +3782,7 @@ module.exports = AgentView = (function() {
           if (animation.loop) {
             sequences[animation.movement].loop = animation.loop;
           }
+          sequences[animation.movement].interruptible = animation.interruptible;
           sprite = new PIXI.AnimatedSprite(sequences);
         } else {
           sprite.sequences[animation.movement] = {
@@ -3789,13 +3794,16 @@ module.exports = AgentView = (function() {
           if (animation.loop) {
             sprite.sequences[animation.movement].loop = animation.loop;
           }
+          sprite.sequences[animation.movement].interruptible = animation.interruptible;
         }
         sprite.nextSequence = null;
         sprite.onComplete = function(sequence) {
-          if (!sprite.sequences[sequence].loop) {
-            if (sprite.nextSequence) {
-              sprite.gotoAndPlay(sprite.nextSequence);
-              return sprite.nextSequence = null;
+          if (sprite.nextSequence) {
+            sprite.gotoAndPlay(sprite.nextSequence);
+            return sprite.nextSequence = null;
+          } else {
+            if (!sprite.sequences[sequence].loop) {
+              return sprite.currentSequence = null;
             }
           }
         };
@@ -3890,6 +3898,7 @@ module.exports = EnvironmentView = (function() {
     this._backgroundSprite.anchor.y = 0;
     this._backgroundSprite.position.x = 0;
     this._backgroundSprite.position.y = 0;
+    this.scaleBackground();
     layer.addChild(this._backgroundSprite);
     this.renderBarriers(layer);
     this.renderAgents();
@@ -4019,7 +4028,24 @@ module.exports = EnvironmentView = (function() {
   EnvironmentView.prototype.updateBackground = function() {
     var texture;
     texture = PIXI.Texture.fromImage(this.environment.imgPath);
-    return this._backgroundSprite.setTexture(texture);
+    this._backgroundSprite.setTexture(texture);
+    return this.scaleBackground();
+  };
+
+  EnvironmentView.prototype.scaleBackground = function() {
+    var origHeight, origWidth, _ref;
+    _ref = [this._backgroundSprite.width, this._backgroundSprite.height], origWidth = _ref[0], origHeight = _ref[1];
+    if (this.environment.backgroundScaleX != null) {
+      this._backgroundSprite.width = this.environment.width * this.environment.backgroundScaleX;
+      if (this.environment.backgroundScaleY) {
+        return this._backgroundSprite.height = this.environment.height * this.environment.backgroundScaleY;
+      } else {
+        return this._backgroundSprite.height *= this._backgroundSprite.width / origWidth;
+      }
+    } else if (this.environment.backgroundScaleY != null) {
+      this._backgroundSprite.height = this.environment.height * this.environment.backgroundScaleY;
+      return this._backgroundSprite.width *= this._backgroundSprite.height / origHeight;
+    }
   };
 
   EnvironmentView.prototype._getOrCreateLayer = function(idx) {
