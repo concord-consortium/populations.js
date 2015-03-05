@@ -1,5 +1,6 @@
-helpers = require 'helpers'
 require 'animated-sprite'
+helpers       = require 'helpers'
+AnimatedAgent = require 'models/agents/animated-agent'
 
 module.exports = class AgentView
 
@@ -16,7 +17,7 @@ module.exports = class AgentView
     # create a texture from set of image paths
     images = @agent.getImages({context: context})
     for layer in images
-      sprite = @_createSprite layer.selectedImage, layer.name
+      sprite = @_createOrUpdateSprite layer.selectedImage
       @_setSpriteProperties(sprite, layer.selectedImage)
       sprites[layer.name] = sprite
       container.addChild(sprite)
@@ -42,13 +43,19 @@ module.exports = class AgentView
     for layer,i in newImages
       names.push layer.name
       if not @_sprites[layer.name]?
-        sprite = @_createSprite layer.selectedImage
+        sprite = @_createOrUpdateSprite layer.selectedImage
         @_sprites[layer.name] = sprite
         @_container.addChildAt(sprite,i)
       else if layer.selectedImage.path? and layer.selectedImage.path != @_sprites[layer.name].texture.baseTexture.source.src
-        texture = PIXI.Texture.fromImage layer.selectedImage.path
-        sprite = @_sprites[layer.name]
-        sprite.setTexture texture
+        @_createOrUpdateSprite layer.selectedImage, @_sprites[layer.name]
+      else if @_sprites[layer.name] instanceof PIXI.AnimatedSprite
+        currentMovement = @agent.getMovement()
+        # i = _i for animation, _i in layer.selectedImage.animations when animation.movement is currentMovement
+        animation = _animation for _animation in layer.selectedImage.animations when _animation.movement is currentMovement
+        if animation and animation.path != @_sprites[layer.name].sequences[animation.movement].path
+          # this._sprites[layer.name].sequences[layer.selectedImage.animations[0].movement]
+          sprite = @_sprites[layer.name]
+          @_createOrUpdateSprite layer.selectedImage, sprite
       @_setSpriteProperties(@_sprites[layer.name], layer.selectedImage)
 
     # remove the no-longer-needed sprites
@@ -62,8 +69,7 @@ module.exports = class AgentView
 
     for layer,i in newImages
       if (sprite = @_sprites[layer.name])? and sprite instanceof PIXI.AnimatedSprite
-        window.sprite = sprite
-        sequence = @agent.getMovement()
+        sequence = if (@agent.environment._isRunning) then @agent.getMovement() else AnimatedAgent.MOVEMENTS.STOPPED
         return unless sequence
         if sequence isnt sprite.currentSequence
           if not sprite.playing
@@ -116,13 +122,15 @@ module.exports = class AgentView
     container.appendChild(val)
     return container
 
-  _createSprite: (image, layerName)->
+  _createOrUpdateSprite: (image, sprite)->
     # create a new Sprite using the texture
     if not image.animations
       texture = PIXI.Texture.fromImage image.path
-      sprite = new PIXI.Sprite(texture)
+      if not sprite
+        sprite = new PIXI.Sprite(texture)
+      else
+        sprite.setTexture texture
     else
-      sprite = null
       for animation in image.animations
         spriteTextures = []
         for i in [0...animation.length]
@@ -134,12 +142,14 @@ module.exports = class AgentView
           sequences[animation.movement].frameRate     = animation.frameRate if animation.frameRate
           sequences[animation.movement].loop          = animation.loop if animation.loop
           sequences[animation.movement].interruptible = animation.interruptible
+          sequences[animation.movement].path          = animation.path
           sprite = new PIXI.AnimatedSprite sequences
         else
           sprite.sequences[animation.movement]                = {frames: spriteTextures}
           sprite.sequences[animation.movement].frameRate      = animation.frameRate if animation.frameRate
           sprite.sequences[animation.movement].loop           = animation.loop if animation.loop
           sprite.sequences[animation.movement].interruptible  = animation.interruptible
+          sprite.sequences[animation.movement].path           = animation.path
 
         sprite.nextSequence = null
         sprite.onComplete = (sequence) ->
