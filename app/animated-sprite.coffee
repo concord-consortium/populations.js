@@ -32,6 +32,7 @@ PIXI.AnimatedSprite::gotoAndPlay = (where) ->
     @frameRate = @sequences[where].frameRate || 60
     @loop = @sequences[where].loop || false
   else
+    @frames = @sequences[@currentSequence].frames
     @currentFrame = where
   @playing = true
   return

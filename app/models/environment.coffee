@@ -178,6 +178,22 @@ module.exports = class Environment extends StateMachine
         return agent
     return null
 
+  getAgentCloseTo: (x, y, maxDistance=10, speciesName)->
+    area = {x: x - maxDistance, y: y - maxDistance, width: maxDistance*2, height: maxDistance*2}
+    agents = @agentsWithin(area)
+    return null unless agents.length
+    if speciesName
+      _agents = []
+      for agent in agents
+        if agent.species.speciesName is speciesName then _agents.push agent
+      agents = _agents
+    for agent in agents
+      agent.__distance = ExtMath.distanceSquared agent.getLocation(), {x, y}
+    agents = agents.sort (a,b)->
+      return a.__distance - b.__distance
+    return agents[0]
+
+
   setBarriers: (bars)->
     barriers = bars.slice()
     @barriers = []
