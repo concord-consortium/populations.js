@@ -107,7 +107,7 @@
         fontScaleRelativeToParent: true,
         sampleInterval: Environment.DEFAULT_RUN_LOOP_DELAY / 1000,
         dataType: 'samples',
-        dataColors: [[153, 153, 153], [153, 85, 0]]
+        dataColors: ["#999999", "#995500"]
       };
       this.outputGraph = LabGrapher('#graph', outputOptions);
       this.outputGraph.addSamples([this.startingRabbits, this.startingRabbits]);
