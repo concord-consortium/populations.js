@@ -90,9 +90,9 @@ window.model =
       sampleInterval: (Environment.DEFAULT_RUN_LOOP_DELAY/1000)
       dataType: 'samples'
       dataColors: [
-        [153, 153, 153]
-        [153,  85,   0]
-        [255,   0,   0]
+        "#999999"
+        "#995500"
+        "#F00"
       ]
 
     @outputGraph = LabGrapher '#graph', outputOptions

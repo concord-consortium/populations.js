@@ -1,7 +1,7 @@
 module.exports = class AnimatedAgent
 
   @MOVEMENTS:
-    STOP: "stop"
+    STOPPED: "stop"
     MOVESTEP: "move-step"
 
   currentMovement: AnimatedAgent.MOVEMENTS.STOPPED
