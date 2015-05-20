@@ -126,6 +126,7 @@ PIXI.AnimatedSprite.prototype.gotoAndPlay = function(where) {
     this.frameRate = this.sequences[where].frameRate || 60;
     this.loop = this.sequences[where].loop || false;
   } else {
+    this.frames = this.sequences[this.currentSequence].frames;
     this.currentFrame = where;
   }
   this.playing = true;
@@ -362,6 +363,13 @@ ExtMath.TWO_PI = Math.PI * 2;
 
 ExtMath.normalizeRads = function(t) {
   return t - ExtMath.TWO_PI * Math.floor((t + Math.PI) / ExtMath.TWO_PI);
+};
+
+ExtMath.distanceSquared = function(p1, p2) {
+  var dx, dy;
+  dx = p1.x - p2.x;
+  dy = p1.y - p2.y;
+  return dx * dx + dy * dy;
 };
 
 module.exports = {
@@ -810,7 +818,7 @@ module.exports = AnimatedAgent = (function() {
   function AnimatedAgent() {}
 
   AnimatedAgent.MOVEMENTS = {
-    STOP: "stop",
+    STOPPED: "stop",
     MOVESTEP: "move-step"
   };
 
@@ -1012,7 +1020,7 @@ module.exports = BasicAnimal = (function(_super) {
 
   BasicAnimal.prototype.runFrom = function(agentDistance) {
     var directionToMove, directionToRunTo;
-    directionToRunTo = this._direction(this.getLocation(), agentDistance.agent.getLocation()) + Math.PI + (ExtMath.randomGaussian / 3);
+    directionToRunTo = this._direction(this.getLocation(), agentDistance.agent.getLocation()) + Math.PI + (ExtMath.randomGaussian() / 3);
     directionToMove = (this.get('direction') * 19 + directionToRunTo) / 20;
     this.set('direction', directionToMove);
     return this.move(this.get('speed'));
@@ -1761,6 +1769,44 @@ module.exports = Environment = (function(_super) {
       }
     }
     return null;
+  };
+
+  Environment.prototype.getAgentCloseTo = function(x, y, maxDistance, speciesName) {
+    var agent, agents, area, _agents, _i, _j, _len, _len1;
+    if (maxDistance == null) {
+      maxDistance = 10;
+    }
+    area = {
+      x: x - maxDistance,
+      y: y - maxDistance,
+      width: maxDistance * 2,
+      height: maxDistance * 2
+    };
+    agents = this.agentsWithin(area);
+    if (!agents.length) {
+      return null;
+    }
+    if (speciesName) {
+      _agents = [];
+      for (_i = 0, _len = agents.length; _i < _len; _i++) {
+        agent = agents[_i];
+        if (agent.species.speciesName === speciesName) {
+          _agents.push(agent);
+        }
+      }
+      agents = _agents;
+    }
+    for (_j = 0, _len1 = agents.length; _j < _len1; _j++) {
+      agent = agents[_j];
+      agent.__distance = ExtMath.distanceSquared(agent.getLocation(), {
+        x: x,
+        y: y
+      });
+    }
+    agents = agents.sort(function(a, b) {
+      return a.__distance - b.__distance;
+    });
+    return agents[0];
   };
 
   Environment.prototype.setBarriers = function(bars) {
@@ -3585,12 +3631,14 @@ module.exports = Toolbar = (function() {
 });
 
 ;require.register("views/agent-view", function(exports, require, module) {
-var AgentView, helpers,
+var AgentView, AnimatedAgent, helpers,
   __hasProp = {}.hasOwnProperty;
+
+require('animated-sprite');
 
 helpers = require('helpers');
 
-require('animated-sprite');
+AnimatedAgent = require('models/agents/animated-agent');
 
 module.exports = AgentView = (function() {
   function AgentView(_arg) {
@@ -3617,8 +3665,7 @@ module.exports = AgentView = (function() {
     });
     for (_i = 0, _len = images.length; _i < _len; _i++) {
       layer = images[_i];
-      sprite = this._createSprite(layer.selectedImage, layer.name);
-      this._setSpriteProperties(sprite, layer.selectedImage);
+      sprite = this._createOrUpdateSprite(layer.selectedImage);
       sprites[layer.name] = sprite;
       container.addChild(sprite);
     }
@@ -3634,7 +3681,7 @@ module.exports = AgentView = (function() {
   };
 
   AgentView.prototype.rerender = function(stage, context) {
-    var i, layer, name, names, newImages, sequence, sprite, texture, _i, _j, _len, _len1, _ref;
+    var animation, currentMovement, i, layer, name, names, newImages, sequence, sprite, _animation, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
     if (context == null) {
       context = 'environment';
     }
@@ -3650,20 +3697,34 @@ module.exports = AgentView = (function() {
       layer = newImages[i];
       names.push(layer.name);
       if (this._sprites[layer.name] == null) {
-        sprite = this._createSprite(layer.selectedImage);
+        sprite = this._createOrUpdateSprite(layer.selectedImage);
         this._sprites[layer.name] = sprite;
         this._container.addChildAt(sprite, i);
       } else if ((layer.selectedImage.path != null) && layer.selectedImage.path !== this._sprites[layer.name].texture.baseTexture.source.src) {
-        texture = PIXI.Texture.fromImage(layer.selectedImage.path);
-        sprite = this._sprites[layer.name];
-        sprite.setTexture(texture);
+        this._createOrUpdateSprite(layer.selectedImage, this._sprites[layer.name]);
+      } else if (this._sprites[layer.name] instanceof PIXI.AnimatedSprite) {
+        currentMovement = this.agent.getMovement();
+        _ref = layer.selectedImage.animations;
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          _animation = _ref[_j];
+          if (_animation.movement === currentMovement) {
+            animation = _animation;
+          }
+        }
+        if (animation && animation.path !== this._sprites[layer.name].sequences[animation.movement].path) {
+          sprite = this._sprites[layer.name];
+          this._createOrUpdateSprite(layer.selectedImage, sprite);
+        } else {
+          this._setSpriteProperties(this._sprites[layer.name], layer.selectedImage);
+        }
+      } else {
+        this._setSpriteProperties(this._sprites[layer.name], layer.selectedImage);
       }
-      this._setSpriteProperties(this._sprites[layer.name], layer.selectedImage);
     }
-    _ref = this._sprites;
-    for (name in _ref) {
-      if (!__hasProp.call(_ref, name)) continue;
-      sprite = _ref[name];
+    _ref1 = this._sprites;
+    for (name in _ref1) {
+      if (!__hasProp.call(_ref1, name)) continue;
+      sprite = _ref1[name];
       if (names.indexOf(name) === -1) {
         this._container.removeChild(sprite);
         delete this._sprites[name];
@@ -3671,11 +3732,10 @@ module.exports = AgentView = (function() {
     }
     this._container.position.x = this.agent._x;
     this._container.position.y = this.agent._y;
-    for (i = _j = 0, _len1 = newImages.length; _j < _len1; i = ++_j) {
+    for (i = _k = 0, _len2 = newImages.length; _k < _len2; i = ++_k) {
       layer = newImages[i];
       if (((sprite = this._sprites[layer.name]) != null) && sprite instanceof PIXI.AnimatedSprite) {
-        window.sprite = sprite;
-        sequence = this.agent.getMovement();
+        sequence = this.agent.environment._isRunning ? this.agent.getMovement() : AnimatedAgent.MOVEMENTS.STOPPED;
         if (!sequence) {
           return;
         }
@@ -3757,56 +3817,87 @@ module.exports = AgentView = (function() {
     return container;
   };
 
-  AgentView.prototype._createSprite = function(image, layerName) {
-    var animation, i, sequences, sprite, spriteTextures, texture, _i, _j, _len, _ref, _ref1;
+  AgentView.prototype._createOrUpdateSprite = function(image, sprite) {
+    var setupAnimatedSprite, texture,
+      _this = this;
     if (!image.animations) {
       texture = PIXI.Texture.fromImage(image.path);
-      sprite = new PIXI.Sprite(texture);
+      if (!sprite) {
+        sprite = new PIXI.Sprite(texture);
+      } else {
+        sprite.setTexture(texture);
+      }
+      this._setSpriteProperties(sprite, image);
     } else {
-      sprite = null;
-      _ref = image.animations;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        animation = _ref[_i];
-        spriteTextures = [];
-        for (i = _j = 0, _ref1 = animation.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-          spriteTextures.push(PIXI.Texture.fromFrame(animation.animationName + "-" + i));
-        }
-        if (!sprite) {
-          sequences = {};
-          sequences[animation.movement] = {
-            frames: spriteTextures
-          };
-          if (animation.frameRate) {
-            sequences[animation.movement].frameRate = animation.frameRate;
+      setupAnimatedSprite = function(image, sprite) {
+        var animation, i, sequences, spriteTextures, _i, _j, _len, _ref, _ref1;
+        _ref = image.animations;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          animation = _ref[_i];
+          spriteTextures = [];
+          for (i = _j = 0, _ref1 = animation.length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+            spriteTextures.push(PIXI.Texture.fromFrame(animation.animationName + "-" + i));
           }
-          if (animation.loop) {
-            sequences[animation.movement].loop = animation.loop;
+          if (!sprite) {
+            sequences = {};
+            sequences[animation.movement] = {
+              frames: spriteTextures
+            };
+            if (animation.frameRate) {
+              sequences[animation.movement].frameRate = animation.frameRate;
+            }
+            if (animation.loop) {
+              sequences[animation.movement].loop = animation.loop;
+            }
+            if (animation.onComplete) {
+              sequences[animation.movement].onComplete = animation.onComplete;
+            }
+            sequences[animation.movement].interruptible = animation.interruptible;
+            sequences[animation.movement].path = animation.path;
+            sprite = new PIXI.AnimatedSprite(sequences);
+          } else {
+            sprite.sequences[animation.movement] = {
+              frames: spriteTextures
+            };
+            if (animation.frameRate) {
+              sprite.sequences[animation.movement].frameRate = animation.frameRate;
+            }
+            if (animation.loop) {
+              sprite.sequences[animation.movement].loop = animation.loop;
+            }
+            if (animation.onComplete) {
+              sprite.sequences[animation.movement].onComplete = animation.onComplete;
+            }
+            sprite.sequences[animation.movement].interruptible = animation.interruptible;
+            sprite.sequences[animation.movement].path = animation.path;
           }
-          sequences[animation.movement].interruptible = animation.interruptible;
-          sprite = new PIXI.AnimatedSprite(sequences);
-        } else {
-          sprite.sequences[animation.movement] = {
-            frames: spriteTextures
-          };
-          if (animation.frameRate) {
-            sprite.sequences[animation.movement].frameRate = animation.frameRate;
-          }
-          if (animation.loop) {
-            sprite.sequences[animation.movement].loop = animation.loop;
-          }
-          sprite.sequences[animation.movement].interruptible = animation.interruptible;
         }
         sprite.nextSequence = null;
         sprite.onComplete = function(sequence) {
+          var func;
+          if (func = sprite.sequences[sprite.currentSequence].onComplete) {
+            _this.agent[func]();
+          }
           if (sprite.nextSequence) {
             sprite.gotoAndPlay(sprite.nextSequence);
-            return sprite.nextSequence = null;
+            sprite.nextSequence = null;
           } else {
             if (!sprite.sequences[sequence].loop) {
-              return sprite.currentSequence = null;
+              sprite.currentSequence = null;
             }
           }
+          if (sprite.nextImage != null) {
+            setupAnimatedSprite(image, sprite);
+            return sprite.nextImage = null;
+          }
         };
+        _this._setSpriteProperties(sprite, image);
+        return sprite;
+      };
+      if (sprite && sprite.playing) {
+        sprite.nextImage = image;
+      } else {
+        sprite = setupAnimatedSprite(image, sprite);
       }
     }
     return sprite;
