@@ -1549,7 +1549,8 @@ defaultOptions = {
   barriers: [],
   wrapEastWest: false,
   wrapNorthSouth: false,
-  seasonLengths: []
+  seasonLengths: [],
+  depthPerception: false
 };
 
 cellDefaults = {
@@ -1771,8 +1772,8 @@ module.exports = Environment = (function(_super) {
     return null;
   };
 
-  Environment.prototype.getAgentCloseTo = function(x, y, maxDistance, speciesName) {
-    var agent, agents, area, _agents, _i, _j, _len, _len1;
+  Environment.prototype.getAgentsCloseTo = function(x, y, maxDistance, speciesName) {
+    var agent, agents, area, _agents, _i, _len;
     if (maxDistance == null) {
       maxDistance = 10;
     }
@@ -1784,7 +1785,7 @@ module.exports = Environment = (function(_super) {
     };
     agents = this.agentsWithin(area);
     if (!agents.length) {
-      return null;
+      return [];
     }
     if (speciesName) {
       _agents = [];
@@ -1796,8 +1797,20 @@ module.exports = Environment = (function(_super) {
       }
       agents = _agents;
     }
-    for (_j = 0, _len1 = agents.length; _j < _len1; _j++) {
-      agent = agents[_j];
+    return agents;
+  };
+
+  Environment.prototype.getAgentCloseTo = function(x, y, maxDistance, speciesName) {
+    var agent, agents, _i, _len;
+    if (maxDistance == null) {
+      maxDistance = 10;
+    }
+    agents = this.getAgentsCloseTo(x, y, maxDistance, speciesName);
+    if (!agents.length) {
+      return null;
+    }
+    for (_i = 0, _len = agents.length; _i < _len; _i++) {
+      agent = agents[_i];
       agent.__distance = ExtMath.distanceSquared(agent.getLocation(), {
         x: x,
         y: y
@@ -3993,6 +4006,7 @@ module.exports = EnvironmentView = (function() {
     layer.addChild(this._backgroundSprite);
     this.renderBarriers(layer);
     this.renderAgents();
+    this._sortStage();
     animate = function() {
       var agent, _i, _len, _ref;
       requestAnimFrame(animate);
@@ -4005,6 +4019,7 @@ module.exports = EnvironmentView = (function() {
         _this.environment.carriedAgent.getView().rerender(_this._getOrCreateLayer(100), 'carry-tool');
       }
       _this.barrierGraphics.visible = _this.showingBarriers;
+      _this._sortStage();
       return _this.renderer.render(_this.stage);
     };
     requestAnimFrame(animate);
@@ -4163,6 +4178,22 @@ module.exports = EnvironmentView = (function() {
       }
     }
     return this._layers[idx];
+  };
+
+  EnvironmentView.prototype._sortStage = function() {
+    var container, _i, _len, _ref, _results;
+    if (!this.environment.depthPerception) {
+      return;
+    }
+    _ref = this.stage.children;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      container = _ref[_i];
+      _results.push(container.children.sort(function(a, b) {
+        return a.position.y - b.position.y;
+      }));
+    }
+    return _results;
   };
 
   return EnvironmentView;
