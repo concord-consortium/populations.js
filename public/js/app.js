@@ -3681,7 +3681,7 @@ module.exports = AgentView = (function() {
   };
 
   AgentView.prototype.rerender = function(stage, context) {
-    var animation, currentMovement, i, layer, name, names, newImages, sequence, sprite, _animation, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+    var animation, currentMovement, i, layer, name, names, newImages, sequence, sprite, _animation, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
     if (context == null) {
       context = 'environment';
     }
@@ -3736,14 +3736,14 @@ module.exports = AgentView = (function() {
       layer = newImages[i];
       if (((sprite = this._sprites[layer.name]) != null) && sprite instanceof PIXI.AnimatedSprite) {
         sequence = this.agent.environment._isRunning ? this.agent.getMovement() : AnimatedAgent.MOVEMENTS.STOPPED;
-        if (!sequence) {
+        if (!(sequence && (sprite.sequences[sequence] != null))) {
           return;
         }
         if (sequence !== sprite.currentSequence) {
           if (!sprite.playing) {
             sprite.gotoAndPlay(sequence);
           } else {
-            if (sprite.sequences[sprite.currentSequence].interruptible) {
+            if ((_ref2 = sprite.sequences[sprite.currentSequence]) != null ? _ref2.interruptible : void 0) {
               sprite.gotoAndPlay(sequence);
             } else {
               sprite.nextSequence = sequence;
