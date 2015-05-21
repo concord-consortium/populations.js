@@ -16,6 +16,7 @@ defaultOptions =
   wrapEastWest    : false
   wrapNorthSouth  : false
   seasonLengths   : []      # optionally the lengths of [spring, summer, fall, winter]
+  depthPerception : false   # sort agents so that agents on the bottom are drawn on top of agents on the top
 
 cellDefaults =
   'food'               : 100
