@@ -173,4 +173,6 @@ module.exports = class EnvironmentView
     # will be drawn on top of agents higher up in the environment
     for container in @stage.children
       container.children.sort (a,b)->
-        return a.position.y - b.position.y
+        aIdx = if a.agent?.zIndex? then a.agent.zIndex() else a.position.y
+        bIdx = if b.agent?.zIndex? then b.agent.zIndex() else b.position.y
+        return aIdx - bIdx

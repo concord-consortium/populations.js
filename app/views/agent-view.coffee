@@ -23,6 +23,7 @@ module.exports = class AgentView
 
     container.position.x = @agent._x
     container.position.y = @agent._y
+    container.agent = @agent
 
     stage.addChild(container)
 
