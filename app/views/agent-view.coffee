@@ -71,12 +71,12 @@ module.exports = class AgentView
     for layer,i in newImages
       if (sprite = @_sprites[layer.name])? and sprite instanceof PIXI.AnimatedSprite
         sequence = if (@agent.environment._isRunning) then @agent.getMovement() else AnimatedAgent.MOVEMENTS.STOPPED
-        return unless sequence
+        return unless sequence and sprite.sequences[sequence]?
         if sequence isnt sprite.currentSequence
           if not sprite.playing
             sprite.gotoAndPlay sequence
           else
-            if sprite.sequences[sprite.currentSequence].interruptible
+            if sprite.sequences[sprite.currentSequence]?.interruptible
               sprite.gotoAndPlay sequence
             else
               sprite.nextSequence = sequence
