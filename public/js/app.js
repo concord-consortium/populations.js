@@ -724,6 +724,18 @@ module.exports = Agent = (function() {
     return offspring;
   };
 
+  Agent.prototype.zIndex = function(val) {
+    if (val != null) {
+      this._zIndex = val;
+      return;
+    }
+    if (this._zIndex != null) {
+      return this._zIndex;
+    } else {
+      return this._y;
+    }
+  };
+
   Agent.prototype._clone = function() {
     var clone, prop;
     clone = this.species.createAgent();
@@ -3684,6 +3696,7 @@ module.exports = AgentView = (function() {
     }
     container.position.x = this.agent._x;
     container.position.y = this.agent._y;
+    container.agent = this.agent;
     stage.addChild(container);
     if (context === 'environment' || context === 'carry-tool') {
       this._rendered = true;
@@ -4190,7 +4203,10 @@ module.exports = EnvironmentView = (function() {
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       container = _ref[_i];
       _results.push(container.children.sort(function(a, b) {
-        return a.position.y - b.position.y;
+        var aIdx, bIdx, _ref1, _ref2;
+        aIdx = ((_ref1 = a.agent) != null ? _ref1.zIndex : void 0) != null ? a.agent.zIndex() : a.position.y;
+        bIdx = ((_ref2 = b.agent) != null ? _ref2.zIndex : void 0) != null ? b.agent.zIndex() : b.position.y;
+        return aIdx - bIdx;
       }));
     }
     return _results;
