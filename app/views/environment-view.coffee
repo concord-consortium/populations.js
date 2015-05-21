@@ -42,6 +42,8 @@ module.exports = class EnvironmentView
 
     @renderAgents()
 
+    @_sortStage()
+
     animate = =>
       requestAnimFrame( animate )
       for agent in @environment.agents
@@ -52,6 +54,7 @@ module.exports = class EnvironmentView
         @environment.carriedAgent.getView().rerender(@_getOrCreateLayer(100), 'carry-tool')
 
       @barrierGraphics.visible = @showingBarriers
+      @_sortStage()
       @renderer.render(@stage)
 
     requestAnimFrame( animate )
@@ -149,7 +152,6 @@ module.exports = class EnvironmentView
       @_backgroundSprite.height = @environment.height * @environment.backgroundScaleY
       @_backgroundSprite.width *= (@_backgroundSprite.height / origHeight)
 
-
   _getOrCreateLayer: (idx)->
     if not @_layers[idx]?
       layer = new PIXI.DisplayObjectContainer
@@ -161,5 +163,14 @@ module.exports = class EnvironmentView
             if idx > key then layerNo++ else break
           @stage.addChildAt layer, layerNo
         catch
+          # FIXME We should find out if the layers at the end of the array are supposed to be above or below our new layer
           @stage.addChild layer
     return @_layers[idx]
+
+  _sortStage: ->
+    return unless @environment.depthPerception
+    # sort each of the stage's childrens' children by y value, descending, so that agents on the bottom of the environment
+    # will be drawn on top of agents higher up in the environment
+    for container in @stage.children
+      container.children.sort (a,b)->
+        return a.position.y - b.position.y
