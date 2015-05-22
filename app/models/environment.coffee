@@ -173,6 +173,13 @@ module.exports = class Environment extends StateMachine
     row = Math.floor y / @_rowHeight
     return @set(col, row, prop, val)
 
+  getAgentsAt: (x,y)->
+    agents = []
+    for agent in @agents
+      if agent.getView().contains(x,y)
+        agents.push agent
+    return agents
+
   getAgentAt: (x,y)->
     for agent in @agents
       if agent.getView().contains(x,y)
