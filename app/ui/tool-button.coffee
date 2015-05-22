@@ -38,7 +38,7 @@ module.exports = class ToolButton
       click: (evt) ->
         # get clicked agent
         agent = @getAgentAt(evt.envX, evt.envY)
-        return unless agent?
+        return unless agent? and agent.canShowInfo()
         # Display info pop-up for that agent
         if @infoPopup?
           @infoPopup.setAgent(agent)

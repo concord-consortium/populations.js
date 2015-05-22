@@ -121,6 +121,9 @@ module.exports = class Agent
 
     return offspring
 
+  canShowInfo: ->
+    true
+
   zIndex: (val)->
     if val?
       @_zIndex = val
