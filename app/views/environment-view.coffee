@@ -169,10 +169,10 @@ module.exports = class EnvironmentView
 
   _sortStage: ->
     return unless @environment.depthPerception
-    # sort each of the stage's childrens' children by y value, descending, so that agents on the bottom of the environment
+    # sort each of the stage's childrens' children by y value, ascending, so that agents on the bottom of the environment
     # will be drawn on top of agents higher up in the environment
     for container in @stage.children
       container.children.sort (a,b)->
-        aIdx = if a.agent?.zIndex? then a.agent.zIndex() else a.position.y
-        bIdx = if b.agent?.zIndex? then b.agent.zIndex() else b.position.y
+        aIdx = if a.agent?.zIndex? then a.agent.zIndex() else (a.position.y * @environment.width + a.position.x)
+        bIdx = if b.agent?.zIndex? then b.agent.zIndex() else (b.position.y * @environment.width + b.position.x)
         return aIdx - bIdx
