@@ -724,6 +724,10 @@ module.exports = Agent = (function() {
     return offspring;
   };
 
+  Agent.prototype.canShowInfo = function() {
+    return true;
+  };
+
   Agent.prototype.zIndex = function(val) {
     if (val != null) {
       this._zIndex = val;
@@ -1770,6 +1774,19 @@ module.exports = Environment = (function(_super) {
     col = Math.floor(x / this._columnWidth);
     row = Math.floor(y / this._rowHeight);
     return this.set(col, row, prop, val);
+  };
+
+  Environment.prototype.getAgentsAt = function(x, y) {
+    var agent, agents, _i, _len, _ref;
+    agents = [];
+    _ref = this.agents;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      agent = _ref[_i];
+      if (agent.getView().contains(x, y)) {
+        agents.push(agent);
+      }
+    }
+    return agents;
   };
 
   Environment.prototype.getAgentAt = function(x, y) {
@@ -3422,11 +3439,14 @@ module.exports = ToolButton = (function() {
         return this._view.setCursor("info-tool");
       },
       click: function(evt) {
-        var agent, style, _i, _len, _ref;
-        agent = this.getAgentAt(evt.envX, evt.envY);
-        if (agent == null) {
+        var agent, agents, style, _i, _len, _ref;
+        agents = this.getAgentsAt(evt.envX, evt.envY).filter(function(a) {
+          return a.canShowInfo();
+        });
+        if (!(agents.length > 0)) {
           return;
         }
+        agent = agents[0];
         if (this.infoPopup != null) {
           this.infoPopup.setAgent(agent);
         } else {
@@ -4204,8 +4224,8 @@ module.exports = EnvironmentView = (function() {
       container = _ref[_i];
       _results.push(container.children.sort(function(a, b) {
         var aIdx, bIdx, _ref1, _ref2;
-        aIdx = ((_ref1 = a.agent) != null ? _ref1.zIndex : void 0) != null ? a.agent.zIndex() : a.position.y;
-        bIdx = ((_ref2 = b.agent) != null ? _ref2.zIndex : void 0) != null ? b.agent.zIndex() : b.position.y;
+        aIdx = ((_ref1 = a.agent) != null ? _ref1.zIndex : void 0) != null ? a.agent.zIndex() : a.position.y * this.environment.width + a.position.x;
+        bIdx = ((_ref2 = b.agent) != null ? _ref2.zIndex : void 0) != null ? b.agent.zIndex() : b.position.y * this.environment.width + b.position.x;
         return aIdx - bIdx;
       }));
     }
