@@ -37,8 +37,9 @@ module.exports = class ToolButton
         @_view.setCursor "info-tool"
       click: (evt) ->
         # get clicked agent
-        agent = @getAgentAt(evt.envX, evt.envY)
-        return unless agent?
+        agents = @getAgentsAt(evt.envX, evt.envY).filter (a)-> a.canShowInfo()
+        return unless agents.length > 0
+        agent = agents[0]
         # Display info pop-up for that agent
         if @infoPopup?
           @infoPopup.setAgent(agent)
