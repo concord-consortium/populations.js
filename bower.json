@@ -1,6 +1,6 @@
 {
   "name": "populations.js",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "main": [
     "public/js/app.js",
     "public/css/app.css"
