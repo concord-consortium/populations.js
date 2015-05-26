@@ -2865,7 +2865,9 @@ module.exports = InfoView = (function() {
     agentView = document.createElement('div');
     agentView.classList.add('agent');
     this._stage = new PIXI.Stage(0xFFFFFF, true);
-    this._renderer = new PIXI.CanvasRenderer(125, 160);
+    this._renderer = new PIXI.CanvasRenderer(125, 160, {
+      transparent: true
+    });
     this._container = new PIXI.DisplayObjectContainer();
     this._stage.addChild(this._container);
     this.setAgent(this.agent);
