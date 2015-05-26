@@ -1,7 +1,7 @@
 {
   "name": "populations.js",
   "author": "Sam Fentress",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "repository": "",
   "scripts": {
     "start": "node_modules/.bin/brunch watch --server",
