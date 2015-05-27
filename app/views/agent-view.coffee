@@ -127,7 +127,13 @@ module.exports = class AgentView
   _createOrUpdateSprite: (image, sprite)->
     # create a new Sprite using the texture
     if not image.animations
-      texture = PIXI.Texture.fromImage image.path
+      if image.path
+        texture = PIXI.Texture.fromImage image.path
+      else if image.render
+        graphics = new PIXI.Graphics()
+        image.render(graphics)
+        texture = graphics.generateTexture()
+
       if not sprite
         sprite = new PIXI.Sprite(texture)
       else
