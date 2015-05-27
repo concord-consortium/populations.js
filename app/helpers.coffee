@@ -87,6 +87,11 @@ ExtMath.TWO_PI  = Math.PI * 2
 ExtMath.normalizeRads = (t) ->
   t - ExtMath.TWO_PI * Math.floor((t + Math.PI) / ExtMath.TWO_PI)
 
+ExtMath.distanceSquared = (p1, p2) ->
+  dx = p1.x - p2.x
+  dy = p1.y - p2.y
+  return (dx*dx + dy*dy)
+
 module.exports =
 
   ###

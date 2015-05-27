@@ -66,7 +66,7 @@ module.exports = class InfoView
     agentView = document.createElement 'div'
     agentView.classList.add 'agent'
     @_stage = new PIXI.Stage(0xFFFFFF, true)
-    @_renderer = new PIXI.CanvasRenderer(125, 160)
+    @_renderer = new PIXI.CanvasRenderer(125, 160, {transparent: true})
     @_container = new PIXI.DisplayObjectContainer()
     @_stage.addChild @_container
     @setAgent @agent

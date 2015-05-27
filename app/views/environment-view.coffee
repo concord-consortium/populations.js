@@ -34,11 +34,15 @@ module.exports = class EnvironmentView
     @_backgroundSprite.position.x = 0
     @_backgroundSprite.position.y = 0
 
+    @scaleBackground()
+
     layer.addChild(@_backgroundSprite)
 
     @renderBarriers(layer)
 
     @renderAgents()
+
+    @_sortStage()
 
     animate = =>
       requestAnimFrame( animate )
@@ -50,6 +54,7 @@ module.exports = class EnvironmentView
         @environment.carriedAgent.getView().rerender(@_getOrCreateLayer(100), 'carry-tool')
 
       @barrierGraphics.visible = @showingBarriers
+      @_sortStage()
       @renderer.render(@stage)
 
     requestAnimFrame( animate )
@@ -132,6 +137,20 @@ module.exports = class EnvironmentView
   updateBackground: ->
     texture = PIXI.Texture.fromImage @environment.imgPath
     @_backgroundSprite.setTexture texture
+    @scaleBackground()
+
+  # scales background relative to actual env size
+  scaleBackground: ->
+    [origWidth, origHeight] = [@_backgroundSprite.width, @_backgroundSprite.height]
+    if @environment.backgroundScaleX?
+      @_backgroundSprite.width = @environment.width * @environment.backgroundScaleX
+      if @environment.backgroundScaleY
+        @_backgroundSprite.height = @environment.height * @environment.backgroundScaleY
+      else
+        @_backgroundSprite.height *= (@_backgroundSprite.width / origWidth)
+    else if @environment.backgroundScaleY?
+      @_backgroundSprite.height = @environment.height * @environment.backgroundScaleY
+      @_backgroundSprite.width *= (@_backgroundSprite.height / origHeight)
 
   _getOrCreateLayer: (idx)->
     if not @_layers[idx]?
@@ -144,5 +163,16 @@ module.exports = class EnvironmentView
             if idx > key then layerNo++ else break
           @stage.addChildAt layer, layerNo
         catch
+          # FIXME We should find out if the layers at the end of the array are supposed to be above or below our new layer
           @stage.addChild layer
     return @_layers[idx]
+
+  _sortStage: ->
+    return unless @environment.depthPerception
+    # sort each of the stage's childrens' children by y value, ascending, so that agents on the bottom of the environment
+    # will be drawn on top of agents higher up in the environment
+    for container in @stage.children
+      container.children.sort (a,b)->
+        aIdx = if a.agent?.zIndex? then a.agent.zIndex() else (a.position.y * @environment.width + a.position.x)
+        bIdx = if b.agent?.zIndex? then b.agent.zIndex() else (b.position.y * @environment.width + b.position.x)
+        return aIdx - bIdx

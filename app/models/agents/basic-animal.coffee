@@ -136,7 +136,7 @@ module.exports = class BasicAnimal extends Agent
     @move(speed)
 
   runFrom: (agentDistance)->
-    directionToRunTo =  @_direction(@getLocation(), agentDistance.agent.getLocation()) + Math.PI + (ExtMath.randomGaussian/3)
+    directionToRunTo =  @_direction(@getLocation(), agentDistance.agent.getLocation()) + Math.PI + (ExtMath.randomGaussian()/3)
     directionToMove = (@get('direction')*19 + directionToRunTo) / 20
     @set('direction', directionToMove)
     @move(@get 'speed')

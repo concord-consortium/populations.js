@@ -1,5 +1,6 @@
-helpers = require 'helpers'
 require 'animated-sprite'
+helpers       = require 'helpers'
+AnimatedAgent = require 'models/agents/animated-agent'
 
 module.exports = class AgentView
 
@@ -16,13 +17,13 @@ module.exports = class AgentView
     # create a texture from set of image paths
     images = @agent.getImages({context: context})
     for layer in images
-      sprite = @_createSprite layer.selectedImage, layer.name
-      @_setSpriteProperties(sprite, layer.selectedImage)
+      sprite = @_createOrUpdateSprite layer.selectedImage
       sprites[layer.name] = sprite
       container.addChild(sprite)
 
     container.position.x = @agent._x
     container.position.y = @agent._y
+    container.agent = @agent
 
     stage.addChild(container)
 
@@ -42,14 +43,22 @@ module.exports = class AgentView
     for layer,i in newImages
       names.push layer.name
       if not @_sprites[layer.name]?
-        sprite = @_createSprite layer.selectedImage
+        sprite = @_createOrUpdateSprite layer.selectedImage
         @_sprites[layer.name] = sprite
         @_container.addChildAt(sprite,i)
       else if layer.selectedImage.path? and layer.selectedImage.path != @_sprites[layer.name].texture.baseTexture.source.src
-        texture = PIXI.Texture.fromImage layer.selectedImage.path
-        sprite = @_sprites[layer.name]
-        sprite.setTexture texture
-      @_setSpriteProperties(@_sprites[layer.name], layer.selectedImage)
+        @_createOrUpdateSprite layer.selectedImage, @_sprites[layer.name]
+      else if @_sprites[layer.name] instanceof PIXI.AnimatedSprite
+        currentMovement = @agent.getMovement()
+        # i = _i for animation, _i in layer.selectedImage.animations when animation.movement is currentMovement
+        animation = _animation for _animation in layer.selectedImage.animations when _animation.movement is currentMovement
+        if animation and animation.path != @_sprites[layer.name].sequences[animation.movement].path
+          # this._sprites[layer.name].sequences[layer.selectedImage.animations[0].movement]
+          sprite = @_sprites[layer.name]
+          @_createOrUpdateSprite layer.selectedImage, sprite
+        else @_setSpriteProperties(@_sprites[layer.name], layer.selectedImage)
+      else
+        @_setSpriteProperties(@_sprites[layer.name], layer.selectedImage)
 
     # remove the no-longer-needed sprites
     for own name,sprite of @_sprites
@@ -62,14 +71,16 @@ module.exports = class AgentView
 
     for layer,i in newImages
       if (sprite = @_sprites[layer.name])? and sprite instanceof PIXI.AnimatedSprite
-        window.sprite = sprite
-        sequence = @agent.getMovement()
-        return unless sequence
+        sequence = if (@agent.environment._isRunning) then @agent.getMovement() else AnimatedAgent.MOVEMENTS.STOPPED
+        return unless sequence and sprite.sequences[sequence]?
         if sequence isnt sprite.currentSequence
           if not sprite.playing
             sprite.gotoAndPlay sequence
           else
-            sprite.nextSequence = sequence
+            if sprite.sequences[sprite.currentSequence]?.interruptible
+              sprite.gotoAndPlay sequence
+            else
+              sprite.nextSequence = sequence
         sprite.advanceTime()
 
   remove: (stage)->
@@ -113,35 +124,68 @@ module.exports = class AgentView
     container.appendChild(val)
     return container
 
-  _createSprite: (image, layerName)->
+  _createOrUpdateSprite: (image, sprite)->
     # create a new Sprite using the texture
     if not image.animations
-      texture = PIXI.Texture.fromImage image.path
-      sprite = new PIXI.Sprite(texture)
-    else
-      sprite = null
-      for animation in image.animations
-        spriteTextures = []
-        for i in [0...animation.length]
-          spriteTextures.push PIXI.Texture.fromFrame(animation.animationName+"-"+i)
+      if image.path
+        texture = PIXI.Texture.fromImage image.path
+      else if image.render
+        graphics = new PIXI.Graphics()
+        image.render(graphics)
+        texture = graphics.generateTexture()
 
-        if not sprite
-          sequences = {}
-          sequences[animation.movement]           = {frames: spriteTextures}
-          sequences[animation.movement].frameRate = animation.frameRate if animation.frameRate
-          sequences[animation.movement].loop      = animation.loop if animation.loop
-          sprite = new PIXI.AnimatedSprite sequences
-        else
-          sprite.sequences[animation.movement]           = {frames: spriteTextures}
-          sprite.sequences[animation.movement].frameRate = animation.frameRate if animation.frameRate
-          sprite.sequences[animation.movement].loop      = animation.loop if animation.loop
+      if not sprite
+        sprite = new PIXI.Sprite(texture)
+      else
+        sprite.setTexture texture
+      @_setSpriteProperties(sprite, image)
+    else
+
+      setupAnimatedSprite = (image, sprite)=>
+        for animation in image.animations
+          spriteTextures = []
+          for i in [0...animation.length]
+            spriteTextures.push PIXI.Texture.fromFrame(animation.animationName+"-"+i)
+
+          if not sprite
+            sequences = {}
+            sequences[animation.movement]               = {frames: spriteTextures}
+            sequences[animation.movement].frameRate     = animation.frameRate if animation.frameRate
+            sequences[animation.movement].loop          = animation.loop if animation.loop
+            sequences[animation.movement].onComplete    = animation.onComplete if animation.onComplete
+            sequences[animation.movement].interruptible = animation.interruptible
+            sequences[animation.movement].path          = animation.path
+            sprite = new PIXI.AnimatedSprite sequences
+          else
+            sprite.sequences[animation.movement]                = {frames: spriteTextures}
+            sprite.sequences[animation.movement].frameRate      = animation.frameRate if animation.frameRate
+            sprite.sequences[animation.movement].loop           = animation.loop if animation.loop
+            sprite.sequences[animation.movement].onComplete     = animation.onComplete if animation.onComplete
+            sprite.sequences[animation.movement].interruptible  = animation.interruptible
+            sprite.sequences[animation.movement].path           = animation.path
 
         sprite.nextSequence = null
-        sprite.onComplete = (sequence) ->
-          if not sprite.sequences[sequence].loop
-            if sprite.nextSequence
-              sprite.gotoAndPlay sprite.nextSequence
-              sprite.nextSequence = null
+        sprite.onComplete = (sequence) =>
+          if func = sprite.sequences[sprite.currentSequence].onComplete
+            @agent[func]()
+          if sprite.nextSequence
+            sprite.gotoAndPlay sprite.nextSequence
+            sprite.nextSequence = null
+          else
+            if not sprite.sequences[sequence].loop
+              sprite.currentSequence = null
+          if sprite.nextImage?
+            setupAnimatedSprite(image, sprite)
+            sprite.nextImage = null
+
+        @_setSpriteProperties(sprite, image)
+        return sprite
+
+
+      if sprite and sprite.playing
+        sprite.nextImage = image
+      else
+        sprite = setupAnimatedSprite(image, sprite)
 
     return sprite
 

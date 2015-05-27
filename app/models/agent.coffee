@@ -136,6 +136,16 @@ module.exports = class Agent
           else
             @set trait.name, characteristic
 
+  canShowInfo: ->
+    true
+
+  zIndex: (val)->
+    if val?
+      @_zIndex = val
+      return
+
+    return if @_zIndex? then @_zIndex else @_y
+
   _clone: ->
     clone = @species.createAgent()
     for prop of @_props
