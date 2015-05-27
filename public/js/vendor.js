@@ -1,42 +1,59 @@
-(function(/*! Brunch !*/) {
+(function() {
   'use strict';
 
-  var globals = typeof window !== 'undefined' ? window : global;
+  var globals = typeof window === 'undefined' ? global : window;
   if (typeof globals.require === 'function') return;
 
   var modules = {};
   var cache = {};
+  var has = ({}).hasOwnProperty;
 
-  var has = function(object, name) {
-    return ({}).hasOwnProperty.call(object, name);
+  var aliases = {};
+
+  var endsWith = function(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
   };
 
-  var expand = function(root, name) {
-    var results = [], parts, part;
-    if (/^\.\.?(\/|$)/.test(name)) {
-      parts = [root, name].join('/').split('/');
-    } else {
-      parts = name.split('/');
-    }
-    for (var i = 0, length = parts.length; i < length; i++) {
-      part = parts[i];
-      if (part === '..') {
-        results.pop();
-      } else if (part !== '.' && part !== '') {
-        results.push(part);
+  var unalias = function(alias, loaderPath) {
+    var start = 0;
+    if (loaderPath) {
+      if (loaderPath.indexOf('components/' === 0)) {
+        start = 'components/'.length;
+      }
+      if (loaderPath.indexOf('/', start) > 0) {
+        loaderPath = loaderPath.substring(start, loaderPath.indexOf('/', start));
       }
     }
-    return results.join('/');
+    var result = aliases[alias + '/index.js'] || aliases[loaderPath + '/deps/' + alias + '/index.js'];
+    if (result) {
+      return 'components/' + result.substring(0, result.length - '.js'.length);
+    }
+    return alias;
   };
 
+  var expand = (function() {
+    var reg = /^\.\.?(\/|$)/;
+    return function(root, name) {
+      var results = [], parts, part;
+      parts = (reg.test(name) ? root + '/' + name : name).split('/');
+      for (var i = 0, length = parts.length; i < length; i++) {
+        part = parts[i];
+        if (part === '..') {
+          results.pop();
+        } else if (part !== '.' && part !== '') {
+          results.push(part);
+        }
+      }
+      return results.join('/');
+    };
+  })();
   var dirname = function(path) {
     return path.split('/').slice(0, -1).join('/');
   };
 
   var localRequire = function(path) {
     return function(name) {
-      var dir = dirname(path);
-      var absolute = expand(dir, name);
+      var absolute = expand(dirname(path), name);
       return globals.require(absolute, path);
     };
   };
@@ -51,21 +68,26 @@
   var require = function(name, loaderPath) {
     var path = expand(name, '.');
     if (loaderPath == null) loaderPath = '/';
+    path = unalias(name, loaderPath);
 
-    if (has(cache, path)) return cache[path].exports;
-    if (has(modules, path)) return initModule(path, modules[path]);
+    if (has.call(cache, path)) return cache[path].exports;
+    if (has.call(modules, path)) return initModule(path, modules[path]);
 
     var dirIndex = expand(path, './index');
-    if (has(cache, dirIndex)) return cache[dirIndex].exports;
-    if (has(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
+    if (has.call(cache, dirIndex)) return cache[dirIndex].exports;
+    if (has.call(modules, dirIndex)) return initModule(dirIndex, modules[dirIndex]);
 
     throw new Error('Cannot find module "' + name + '" from '+ '"' + loaderPath + '"');
   };
 
-  var define = function(bundle, fn) {
+  require.alias = function(from, to) {
+    aliases[to] = from;
+  };
+
+  require.register = require.define = function(bundle, fn) {
     if (typeof bundle === 'object') {
       for (var key in bundle) {
-        if (has(bundle, key)) {
+        if (has.call(bundle, key)) {
           modules[key] = bundle[key];
         }
       }
@@ -74,21 +96,18 @@
     }
   };
 
-  var list = function() {
+  require.list = function() {
     var result = [];
     for (var item in modules) {
-      if (has(modules, item)) {
+      if (has.call(modules, item)) {
         result.push(item);
       }
     }
     return result;
   };
 
+  require.brunch = true;
   globals.require = require;
-  globals.require.define = define;
-  globals.require.register = define;
-  globals.require.list = list;
-  globals.require.brunch = true;
 })();
 !function() {
   var d3 = {
@@ -9594,7 +9613,7 @@
   if (typeof define === "function" && define.amd) define(d3); else if (typeof module === "object" && module.exports) module.exports = d3;
   this.d3 = d3;
 }();
-;/*!
+/*!
  * jQuery JavaScript Library v1.11.0
  * http://jquery.com/
  *
@@ -19932,7 +19951,709 @@ return jQuery;
 
 }));
 
-;!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.LabGrapher=e():"undefined"!=typeof global?global.LabGrapher=e():"undefined"!=typeof self&&(self.LabGrapher=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/*
+ * classList.js: Cross-browser full element.classList implementation.
+ * 2014-12-13
+ *
+ * By Eli Grey, http://eligrey.com
+ * Public Domain.
+ * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+ */
+
+/*global self, document, DOMException */
+
+/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
+
+if ("document" in self) {
+
+// Full polyfill for browsers with no classList support
+if (!("classList" in document.createElement("_"))) {
+
+(function (view) {
+
+"use strict";
+
+if (!('Element' in view)) return;
+
+var
+	  classListProp = "classList"
+	, protoProp = "prototype"
+	, elemCtrProto = view.Element[protoProp]
+	, objCtr = Object
+	, strTrim = String[protoProp].trim || function () {
+		return this.replace(/^\s+|\s+$/g, "");
+	}
+	, arrIndexOf = Array[protoProp].indexOf || function (item) {
+		var
+			  i = 0
+			, len = this.length
+		;
+		for (; i < len; i++) {
+			if (i in this && this[i] === item) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	// Vendors: please allow content code to instantiate DOMExceptions
+	, DOMEx = function (type, message) {
+		this.name = type;
+		this.code = DOMException[type];
+		this.message = message;
+	}
+	, checkTokenAndGetIndex = function (classList, token) {
+		if (token === "") {
+			throw new DOMEx(
+				  "SYNTAX_ERR"
+				, "An invalid or illegal string was specified"
+			);
+		}
+		if (/\s/.test(token)) {
+			throw new DOMEx(
+				  "INVALID_CHARACTER_ERR"
+				, "String contains an invalid character"
+			);
+		}
+		return arrIndexOf.call(classList, token);
+	}
+	, ClassList = function (elem) {
+		var
+			  trimmedClasses = strTrim.call(elem.getAttribute("class") || "")
+			, classes = trimmedClasses ? trimmedClasses.split(/\s+/) : []
+			, i = 0
+			, len = classes.length
+		;
+		for (; i < len; i++) {
+			this.push(classes[i]);
+		}
+		this._updateClassName = function () {
+			elem.setAttribute("class", this.toString());
+		};
+	}
+	, classListProto = ClassList[protoProp] = []
+	, classListGetter = function () {
+		return new ClassList(this);
+	}
+;
+// Most DOMException implementations don't allow calling DOMException's toString()
+// on non-DOMExceptions. Error's toString() is sufficient here.
+DOMEx[protoProp] = Error[protoProp];
+classListProto.item = function (i) {
+	return this[i] || null;
+};
+classListProto.contains = function (token) {
+	token += "";
+	return checkTokenAndGetIndex(this, token) !== -1;
+};
+classListProto.add = function () {
+	var
+		  tokens = arguments
+		, i = 0
+		, l = tokens.length
+		, token
+		, updated = false
+	;
+	do {
+		token = tokens[i] + "";
+		if (checkTokenAndGetIndex(this, token) === -1) {
+			this.push(token);
+			updated = true;
+		}
+	}
+	while (++i < l);
+
+	if (updated) {
+		this._updateClassName();
+	}
+};
+classListProto.remove = function () {
+	var
+		  tokens = arguments
+		, i = 0
+		, l = tokens.length
+		, token
+		, updated = false
+		, index
+	;
+	do {
+		token = tokens[i] + "";
+		index = checkTokenAndGetIndex(this, token);
+		while (index !== -1) {
+			this.splice(index, 1);
+			updated = true;
+			index = checkTokenAndGetIndex(this, token);
+		}
+	}
+	while (++i < l);
+
+	if (updated) {
+		this._updateClassName();
+	}
+};
+classListProto.toggle = function (token, force) {
+	token += "";
+
+	var
+		  result = this.contains(token)
+		, method = result ?
+			force !== true && "remove"
+		:
+			force !== false && "add"
+	;
+
+	if (method) {
+		this[method](token);
+	}
+
+	if (force === true || force === false) {
+		return force;
+	} else {
+		return !result;
+	}
+};
+classListProto.toString = function () {
+	return this.join(" ");
+};
+
+if (objCtr.defineProperty) {
+	var classListPropDesc = {
+		  get: classListGetter
+		, enumerable: true
+		, configurable: true
+	};
+	try {
+		objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
+	} catch (ex) { // IE 8 doesn't support enumerable:true
+		if (ex.number === -0x7FF5EC54) {
+			classListPropDesc.enumerable = false;
+			objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
+		}
+	}
+} else if (objCtr[protoProp].__defineGetter__) {
+	elemCtrProto.__defineGetter__(classListProp, classListGetter);
+}
+
+}(self));
+
+} else {
+// There is full or partial native classList support, so just check if we need
+// to normalize the add/remove and toggle APIs.
+
+(function () {
+	"use strict";
+
+	var testElement = document.createElement("_");
+
+	testElement.classList.add("c1", "c2");
+
+	// Polyfill for IE 10/11 and Firefox <26, where classList.add and
+	// classList.remove exist but support only one argument at a time.
+	if (!testElement.classList.contains("c2")) {
+		var createMethod = function(method) {
+			var original = DOMTokenList.prototype[method];
+
+			DOMTokenList.prototype[method] = function(token) {
+				var i, len = arguments.length;
+
+				for (i = 0; i < len; i++) {
+					token = arguments[i];
+					original.call(this, token);
+				}
+			};
+		};
+		createMethod('add');
+		createMethod('remove');
+	}
+
+	testElement.classList.toggle("c3", false);
+
+	// Polyfill for IE 10 and Firefox <24, where classList.toggle does not
+	// support the second argument.
+	if (testElement.classList.contains("c3")) {
+		var _toggle = DOMTokenList.prototype.toggle;
+
+		DOMTokenList.prototype.toggle = function(token, force) {
+			if (1 in arguments && !this.contains(token) === !force) {
+				return force;
+			} else {
+				return _toggle.call(this, token);
+			}
+		};
+
+	}
+
+	testElement = null;
+}());
+
+}
+
+}
+
+
+;!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.iframePhone=e():"undefined"!=typeof global?global.iframePhone=e():"undefined"!=typeof self&&(self.iframePhone=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var structuredClone = require('./structured-clone');
+var HELLO_INTERVAL_LENGTH = 200;
+var HELLO_TIMEOUT_LENGTH = 1000;
+
+function IFrameEndpoint() {
+  var parentOrigin;
+  var listeners = {};
+  var isInitialized = false;
+  var connected = false;
+  var postMessageQueue = [];
+  var helloInterval;
+
+  function postToTarget(message, target) {
+    // See http://dev.opera.com/articles/view/window-postmessage-messagechannel/#crossdoc
+    //     https://github.com/Modernizr/Modernizr/issues/388
+    //     http://jsfiddle.net/ryanseddon/uZTgD/2/
+    if (structuredClone.supported()) {
+      window.parent.postMessage(message, target);
+    } else {
+      window.parent.postMessage(JSON.stringify(message), target);
+    }
+  }
+
+  function post(type, content) {
+    var message;
+    // Message object can be constructed from 'type' and 'content' arguments or it can be passed
+    // as the first argument.
+    if (arguments.length === 1 && typeof type === 'object' && typeof type.type === 'string') {
+      message = type;
+    } else {
+      message = {
+        type: type,
+        content: content
+      };
+    }
+    if (connected) {
+      postToTarget(message, parentOrigin);
+    } else {
+      postMessageQueue.push(message);
+    }
+  }
+
+  // Only the initial 'hello' message goes permissively to a '*' target (because due to cross origin
+  // restrictions we can't find out our parent's origin until they voluntarily send us a message
+  // with it.)
+  function postHello() {
+    postToTarget({
+      type: 'hello',
+      origin: document.location.href.match(/(.*?\/\/.*?)\//)[1]
+    }, '*');
+  }
+
+  function addListener(type, fn) {
+    listeners[type] = fn;
+  }
+
+  function removeAllListeners() {
+    listeners = {};
+  }
+
+  function getListenerNames() {
+    return Object.keys(listeners);
+  }
+
+  function messageListener(message) {
+      // Anyone can send us a message. Only pay attention to messages from parent.
+      if (message.source !== window.parent) return;
+
+      var messageData = message.data;
+
+      if (typeof messageData === 'string') messageData = JSON.parse(messageData);
+
+      // We don't know origin property of parent window until it tells us.
+      if (!connected && messageData.type === 'hello') {
+        // This is the return handshake from the embedding window.
+        parentOrigin = messageData.origin;
+        connected = true;
+        stopPostingHello();
+        while(postMessageQueue.length > 0) {
+          post(postMessageQueue.shift());
+        }
+      }
+
+      // Perhaps-redundantly insist on checking origin as well as source window of message.
+      if (message.origin === parentOrigin) {
+        if (listeners[messageData.type]) listeners[messageData.type](messageData.content);
+      }
+   }
+
+   function disconnect() {
+     connected = false;
+     stopPostingHello();
+     window.removeEventListener('message', messsageListener);
+   }
+
+  /**
+    Initialize communication with the parent frame. This should not be called until the app's custom
+    listeners are registered (via our 'addListener' public method) because, once we open the
+    communication, the parent window may send any messages it may have queued. Messages for which
+    we don't have handlers will be silently ignored.
+  */
+  function initialize() {
+    if (isInitialized) {
+      return;
+    }
+    isInitialized = true;
+    if (window.parent === window) return;
+
+    // We kick off communication with the parent window by sending a "hello" message. Then we wait
+    // for a handshake (another "hello" message) from the parent window.
+    postHello();
+    startPostingHello();
+    window.addEventListener('message', messageListener, false);
+  }
+
+  function startPostingHello() {
+    if (helloInterval) {
+      stopPostingHello();
+    }
+    helloInterval = window.setInterval(postHello, HELLO_INTERVAL_LENGTH);
+    window.setTimeout(stopPostingHello, HELLO_TIMEOUT_LENGTH);
+  }
+
+  function stopPostingHello() {
+    window.clearInterval(helloInterval);
+    helloInterval = null;
+  }
+
+  // Public API.
+  return {
+    initialize        : initialize,
+    getListenerNames  : getListenerNames,
+    addListener       : addListener,
+    removeAllListeners: removeAllListeners,
+    disconnect        : disconnect,
+    post              : post
+  };
+}
+
+var instance = null;
+
+// IFrameEndpoint is a singleton, as iframe can't have multiple parents anyway.
+module.exports = function getIFrameEndpoint() {
+  if (!instance) {
+    instance = new IFrameEndpoint();
+  }
+  return instance;
+};
+},{"./structured-clone":4}],2:[function(require,module,exports){
+"use strict";
+
+var ParentEndpoint = require('./parent-endpoint');
+var getIFrameEndpoint = require('./iframe-endpoint');
+
+// Not a real UUID as there's an RFC for that (needed for proper distributed computing).
+// But in this fairly parochial situation, we just need to be fairly sure to avoid repeats.
+function getPseudoUUID() {
+    var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    var len = chars.length;
+    var ret = [];
+
+    for (var i = 0; i < 10; i++) {
+        ret.push(chars[Math.floor(Math.random() * len)]);
+    }
+    return ret.join('');
+}
+
+module.exports = function IframePhoneRpcEndpoint(handler, namespace, targetWindow, targetOrigin) {
+    var phone;
+    var pendingCallbacks = Object.create({});
+
+    if (targetWindow === window.parent) {
+        phone = getIFrameEndpoint();
+        phone.initialize();
+    } else {
+        phone = new ParentEndpoint(targetWindow, targetOrigin);
+    }
+
+    phone.addListener(namespace, function(message) {
+        var callbackObj;
+
+        if (message.messageType === 'call') {
+            handler(message.value, function(returnValue) {
+                phone.post(namespace, {
+                    messageType: 'returnValue',
+                    uuid: message.uuid,
+                    value: returnValue
+                });
+            });
+        } else if (message.messageType === 'returnValue') {
+            callbackObj = pendingCallbacks[message.uuid];
+
+            if (callbackObj) {
+                window.clearTimeout(callbackObj.timeout);
+                if (callbackObj.callback) {
+                    callbackObj.callback.call(undefined, message.value);
+                }
+                pendingCallbacks[message.uuid] = null;
+            }
+        }
+    });
+
+    function call(message, callback) {
+        var uuid = getPseudoUUID();
+
+        pendingCallbacks[uuid] = {
+            callback: callback,
+            timeout: window.setTimeout(function() {
+                if (callback) {
+                    callback(undefined, new Error("IframePhone timed out waiting for reply"));
+                }
+            }, 2000)
+        };
+
+        phone.post(namespace, {
+            messageType: 'call',
+            uuid: uuid,
+            value: message
+        });
+    }
+
+    function disconnect() {
+        phone.disconnect();
+    }
+
+    return {
+        call: call,
+        disconnect: disconnect
+    };
+};
+
+},{"./iframe-endpoint":1,"./parent-endpoint":3}],3:[function(require,module,exports){
+var structuredClone = require('./structured-clone');
+
+/**
+  Call as:
+    new ParentEndpoint(targetWindow, targetOrigin, afterConnectedCallback)
+      targetWindow is a WindowProxy object. (Messages will be sent to it)
+
+      targetOrigin is the origin of the targetWindow. (Messages will be restricted to this origin)
+
+      afterConnectedCallback is an optional callback function to be called when the connection is
+        established.
+
+  OR (less secure):
+    new ParentEndpoint(targetIframe, afterConnectedCallback)
+
+      targetIframe is a DOM object (HTMLIframeElement); messages will be sent to its contentWindow.
+
+      afterConnectedCallback is an optional callback function
+
+    In this latter case, targetOrigin will be inferred from the value of the src attribute of the
+    provided DOM object at the time of the constructor invocation. This is less secure because the
+    iframe might have been navigated to an unexpected domain before constructor invocation.
+
+  Note that it is important to specify the expected origin of the iframe's content to safeguard
+  against sending messages to an unexpected domain. This might happen if our iframe is navigated to
+  a third-party URL unexpectedly. Furthermore, having a reference to Window object (as in the first
+  form of the constructor) does not protect against sending a message to the wrong domain. The
+  window object is actualy a WindowProxy which transparently proxies the Window object of the
+  underlying iframe, so that when the iframe is navigated, the "same" WindowProxy now references a
+  completely differeent Window object, possibly controlled by a hostile domain.
+
+  See http://www.esdiscuss.org/topic/a-dom-use-case-that-can-t-be-emulated-with-direct-proxies for
+  more about this weird behavior of WindowProxies (the type returned by <iframe>.contentWindow).
+*/
+
+module.exports = function ParentEndpoint(targetWindowOrIframeEl, targetOrigin, afterConnectedCallback) {
+  var selfOrigin = window.location.href.match(/(.*?\/\/.*?)\//)[1];
+  var postMessageQueue = [];
+  var connected = false;
+  var handlers = {};
+  var targetWindowIsIframeElement;
+
+  function getOrigin(iframe) {
+    return iframe.src.match(/(.*?\/\/.*?)\//)[1];
+  }
+
+  function post(type, content) {
+    var message;
+    // Message object can be constructed from 'type' and 'content' arguments or it can be passed
+    // as the first argument.
+    if (arguments.length === 1 && typeof type === 'object' && typeof type.type === 'string') {
+      message = type;
+    } else {
+      message = {
+        type: type,
+        content: content
+      };
+    }
+    if (connected) {
+      var tWindow = getTargetWindow();
+      // if we are laready connected ... send the message
+      message.origin = selfOrigin;
+      // See http://dev.opera.com/articles/view/window-postmessage-messagechannel/#crossdoc
+      //     https://github.com/Modernizr/Modernizr/issues/388
+      //     http://jsfiddle.net/ryanseddon/uZTgD/2/
+      if (structuredClone.supported()) {
+        tWindow.postMessage(message, targetOrigin);
+      } else {
+        tWindow.postMessage(JSON.stringify(message), targetOrigin);
+      }
+    } else {
+      // else queue up the messages to send after connection complete.
+      postMessageQueue.push(message);
+    }
+  }
+
+  function addListener(messageName, func) {
+    handlers[messageName] = func;
+  }
+
+  function removeListener(messageName) {
+    handlers[messageName] = null;
+  }
+
+  // Note that this function can't be used when IFrame element hasn't been added to DOM yet
+  // (.contentWindow would be null). At the moment risk is purely theoretical, as the parent endpoint
+  // only listens for an incoming 'hello' message and the first time we call this function
+  // is in #receiveMessage handler (so iframe had to be initialized before, as it could send 'hello').
+  // It would become important when we decide to refactor the way how communication is initialized.
+  function getTargetWindow() {
+    if (targetWindowIsIframeElement) {
+      var tWindow = targetWindowOrIframeEl.contentWindow;
+      if (!tWindow) {
+        throw "IFrame element needs to be added to DOM before communication " +
+              "can be started (.contentWindow is not available)";
+      }
+      return tWindow;
+    }
+    return targetWindowOrIframeEl;
+  }
+
+  function receiveMessage(message) {
+    var messageData;
+    if (message.source === getTargetWindow() && message.origin === targetOrigin) {
+      messageData = message.data;
+      if (typeof messageData === 'string') {
+        messageData = JSON.parse(messageData);
+      }
+      if (handlers[messageData.type]) {
+        handlers[messageData.type](messageData.content);
+      } else {
+        console.log("cant handle type: " + messageData.type);
+      }
+    }
+  }
+
+  function disconnect() {
+    connected = false;
+    window.removeEventListener('message', receiveMessage);
+  }
+
+  // handle the case that targetWindowOrIframeEl is actually an <iframe> rather than a Window(Proxy) object
+  // Note that if it *is* a WindowProxy, this probe will throw a SecurityException, but in that case
+  // we also don't need to do anything
+  try {
+    targetWindowIsIframeElement = targetWindowOrIframeEl.constructor === HTMLIFrameElement;
+  } catch (e) {
+    targetWindowIsIframeElement = false;
+  }
+
+  if (targetWindowIsIframeElement) {
+    // Infer the origin ONLY if the user did not supply an explicit origin, i.e., if the second
+    // argument is empty or is actually a callback (meaning it is supposed to be the
+    // afterConnectionCallback)
+    if (!targetOrigin || targetOrigin.constructor === Function) {
+      afterConnectedCallback = targetOrigin;
+      targetOrigin = getOrigin(targetWindowOrIframeEl);
+    }
+  }
+
+  // when we receive 'hello':
+  addListener('hello', function() {
+    connected = true;
+
+    // send hello response
+    post('hello');
+
+    // give the user a chance to do things now that we are connected
+    // note that is will happen before any queued messages
+    if (afterConnectedCallback && typeof afterConnectedCallback === "function") {
+      afterConnectedCallback();
+    }
+
+    // Now send any messages that have been queued up ...
+    while(postMessageQueue.length > 0) {
+      post(postMessageQueue.shift());
+    }
+  });
+
+  window.addEventListener('message', receiveMessage, false);
+
+  // Public API.
+  return {
+    post: post,
+    addListener: addListener,
+    removeListener: removeListener,
+    disconnect: disconnect
+  };
+};
+
+},{"./structured-clone":4}],4:[function(require,module,exports){
+var featureSupported = false;
+
+(function () {
+  var result = 0;
+
+  if (!!window.postMessage) {
+    try {
+      // Safari 5.1 will sometimes throw an exception and sometimes won't, lolwut?
+      // When it doesn't we capture the message event and check the
+      // internal [[Class]] property of the message being passed through.
+      // Safari will pass through DOM nodes as Null iOS safari on the other hand
+      // passes it through as DOMWindow, gotcha.
+      window.onmessage = function(e){
+        var type = Object.prototype.toString.call(e.data);
+        result = (type.indexOf("Null") != -1 || type.indexOf("DOMWindow") != -1) ? 1 : 0;
+        featureSupported = {
+          'structuredClones': result
+        };
+      };
+      // Spec states you can't transmit DOM nodes and it will throw an error
+      // postMessage implimentations that support cloned data will throw.
+      window.postMessage(document.createElement("a"),"*");
+    } catch(e) {
+      // BBOS6 throws but doesn't pass through the correct exception
+      // so check error message
+      result = (e.DATA_CLONE_ERR || e.message == "Cannot post cyclic structures.") ? 1 : 0;
+      featureSupported = {
+        'structuredClones': result
+      };
+    }
+  }
+}());
+
+exports.supported = function supported() {
+  return featureSupported && featureSupported.structuredClones > 0;
+};
+
+},{}],5:[function(require,module,exports){
+module.exports = {
+  /**
+   * Allows to communicate with an iframe.
+   */
+  ParentEndpoint:  require('./lib/parent-endpoint'),
+  /**
+   * Allows to communicate with a parent page.
+   * IFrameEndpoint is a singleton, as iframe can't have multiple parents anyway.
+   */
+  getIFrameEndpoint: require('./lib/iframe-endpoint'),
+  structuredClone: require('./lib/structured-clone'),
+
+  // TODO: May be misnamed
+  IframePhoneRpcEndpoint: require('./lib/iframe-phone-rpc-endpoint')
+
+};
+
+},{"./lib/iframe-endpoint":1,"./lib/iframe-phone-rpc-endpoint":2,"./lib/parent-endpoint":3,"./lib/structured-clone":4}]},{},[5])
+(5)
+});
+;
+!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.LabGrapher=e():"undefined"!=typeof global?global.LabGrapher=e():"undefined"!=typeof self&&(self.LabGrapher=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 module.exports.numberWidthUsingFormatter = function(elem, cx, cy, fontSizeInPixels, numberStr) {
   var testSVG,
       testText,
@@ -21340,24 +22061,8 @@ module.exports = function Graph(idOrElement, options, message) {
           y1: d.data.hasOwnProperty('y1') ? yScale(d.data.y1) : 0,
           y2: d.data.hasOwnProperty('y2') ? yScale(d.data.y2) : size.height
         };
-      case "bar":
-        return {
-          stroke: d.data.hasOwnProperty("stroke") ? d.data.stroke : "#f00",
-          fill:   d.data.hasOwnProperty("stroke") ? d.data.stroke : "#f00",
-          x:      d.data.hasOwnProperty('x1') ? xScale(d.data.x1) : 0,
-          y:      d.data.hasOwnProperty('y2') ? yScale(d.data.y2) : 0,
-          width:  d.data.hasOwnProperty('x2') ? xScale(d.data.x2)-xScale(d.data.x1) : size.width,
-          height: d.data.hasOwnProperty('y1') ? yScale(d.data.y1)-yScale(d.data.y2) : size.height,
-          "fill-opacity": 0.5
-        };
       }
-
       return {};
-    }
-
-    var annotationTypes = {
-      line: "line",
-      bar:  "rect"
     }
 
     var annotationsSelection = vis.selectAll("g.annotation")
@@ -21368,13 +22073,12 @@ module.exports = function Graph(idOrElement, options, message) {
       .append("g")
       .attr("class", "annotation")
       .each(function(d,i){
-        d3.select(this).append(annotationTypes[d.type]);
+        d3.select(this).append(d.type);
       });
 
     // update annotation attributes to reflect current graph state
     annotationsSelection.each(function(d,i){
-      d3.select(this.childNodes[0]).attr(annotationAttributes(d))
-        .call(d3.behavior.zoom().x(xScale).y(yScale).on("zoom", redraw));
+      d3.select(this.childNodes[0]).attr(annotationAttributes(d));
     });
 
     annotationsSelection.exit().remove();
@@ -23059,726 +23763,13 @@ module.exports.i18n = require('./lib/i18n');
 (5)
 });
 ;
-;/*
- * classList.js: Cross-browser full element.classList implementation.
- * 1.1.20150312
- *
- * By Eli Grey, http://eligrey.com
- * License: Dedicated to the public domain.
- *   See https://github.com/eligrey/classList.js/blob/master/LICENSE.md
- */
-
-/*global self, document, DOMException */
-
-/*! @source http://purl.eligrey.com/github/classList.js/blob/master/classList.js */
-
-if ("document" in self) {
-
-// Full polyfill for browsers with no classList support
-if (!("classList" in document.createElement("_"))) {
-
-(function (view) {
-
-"use strict";
-
-if (!('Element' in view)) return;
-
-var
-	  classListProp = "classList"
-	, protoProp = "prototype"
-	, elemCtrProto = view.Element[protoProp]
-	, objCtr = Object
-	, strTrim = String[protoProp].trim || function () {
-		return this.replace(/^\s+|\s+$/g, "");
-	}
-	, arrIndexOf = Array[protoProp].indexOf || function (item) {
-		var
-			  i = 0
-			, len = this.length
-		;
-		for (; i < len; i++) {
-			if (i in this && this[i] === item) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	// Vendors: please allow content code to instantiate DOMExceptions
-	, DOMEx = function (type, message) {
-		this.name = type;
-		this.code = DOMException[type];
-		this.message = message;
-	}
-	, checkTokenAndGetIndex = function (classList, token) {
-		if (token === "") {
-			throw new DOMEx(
-				  "SYNTAX_ERR"
-				, "An invalid or illegal string was specified"
-			);
-		}
-		if (/\s/.test(token)) {
-			throw new DOMEx(
-				  "INVALID_CHARACTER_ERR"
-				, "String contains an invalid character"
-			);
-		}
-		return arrIndexOf.call(classList, token);
-	}
-	, ClassList = function (elem) {
-		var
-			  trimmedClasses = strTrim.call(elem.getAttribute("class") || "")
-			, classes = trimmedClasses ? trimmedClasses.split(/\s+/) : []
-			, i = 0
-			, len = classes.length
-		;
-		for (; i < len; i++) {
-			this.push(classes[i]);
-		}
-		this._updateClassName = function () {
-			elem.setAttribute("class", this.toString());
-		};
-	}
-	, classListProto = ClassList[protoProp] = []
-	, classListGetter = function () {
-		return new ClassList(this);
-	}
-;
-// Most DOMException implementations don't allow calling DOMException's toString()
-// on non-DOMExceptions. Error's toString() is sufficient here.
-DOMEx[protoProp] = Error[protoProp];
-classListProto.item = function (i) {
-	return this[i] || null;
-};
-classListProto.contains = function (token) {
-	token += "";
-	return checkTokenAndGetIndex(this, token) !== -1;
-};
-classListProto.add = function () {
-	var
-		  tokens = arguments
-		, i = 0
-		, l = tokens.length
-		, token
-		, updated = false
-	;
-	do {
-		token = tokens[i] + "";
-		if (checkTokenAndGetIndex(this, token) === -1) {
-			this.push(token);
-			updated = true;
-		}
-	}
-	while (++i < l);
-
-	if (updated) {
-		this._updateClassName();
-	}
-};
-classListProto.remove = function () {
-	var
-		  tokens = arguments
-		, i = 0
-		, l = tokens.length
-		, token
-		, updated = false
-		, index
-	;
-	do {
-		token = tokens[i] + "";
-		index = checkTokenAndGetIndex(this, token);
-		while (index !== -1) {
-			this.splice(index, 1);
-			updated = true;
-			index = checkTokenAndGetIndex(this, token);
-		}
-	}
-	while (++i < l);
-
-	if (updated) {
-		this._updateClassName();
-	}
-};
-classListProto.toggle = function (token, force) {
-	token += "";
-
-	var
-		  result = this.contains(token)
-		, method = result ?
-			force !== true && "remove"
-		:
-			force !== false && "add"
-	;
-
-	if (method) {
-		this[method](token);
-	}
-
-	if (force === true || force === false) {
-		return force;
-	} else {
-		return !result;
-	}
-};
-classListProto.toString = function () {
-	return this.join(" ");
-};
-
-if (objCtr.defineProperty) {
-	var classListPropDesc = {
-		  get: classListGetter
-		, enumerable: true
-		, configurable: true
-	};
-	try {
-		objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
-	} catch (ex) { // IE 8 doesn't support enumerable:true
-		if (ex.number === -0x7FF5EC54) {
-			classListPropDesc.enumerable = false;
-			objCtr.defineProperty(elemCtrProto, classListProp, classListPropDesc);
-		}
-	}
-} else if (objCtr[protoProp].__defineGetter__) {
-	elemCtrProto.__defineGetter__(classListProp, classListGetter);
-}
-
-}(self));
-
-} else {
-// There is full or partial native classList support, so just check if we need
-// to normalize the add/remove and toggle APIs.
-
-(function () {
-	"use strict";
-
-	var testElement = document.createElement("_");
-
-	testElement.classList.add("c1", "c2");
-
-	// Polyfill for IE 10/11 and Firefox <26, where classList.add and
-	// classList.remove exist but support only one argument at a time.
-	if (!testElement.classList.contains("c2")) {
-		var createMethod = function(method) {
-			var original = DOMTokenList.prototype[method];
-
-			DOMTokenList.prototype[method] = function(token) {
-				var i, len = arguments.length;
-
-				for (i = 0; i < len; i++) {
-					token = arguments[i];
-					original.call(this, token);
-				}
-			};
-		};
-		createMethod('add');
-		createMethod('remove');
-	}
-
-	testElement.classList.toggle("c3", false);
-
-	// Polyfill for IE 10 and Firefox <24, where classList.toggle does not
-	// support the second argument.
-	if (testElement.classList.contains("c3")) {
-		var _toggle = DOMTokenList.prototype.toggle;
-
-		DOMTokenList.prototype.toggle = function(token, force) {
-			if (1 in arguments && !this.contains(token) === !force) {
-				return force;
-			} else {
-				return _toggle.call(this, token);
-			}
-		};
-
-	}
-
-	testElement = null;
-}());
-
-}
-
-}
-
-
-;!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.iframePhone=e():"undefined"!=typeof global?global.iframePhone=e():"undefined"!=typeof self&&(self.iframePhone=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var structuredClone = require('./structured-clone');
-var HELLO_INTERVAL_LENGTH = 200;
-var HELLO_TIMEOUT_LENGTH = 60000;
-
-function IFrameEndpoint() {
-  var parentOrigin;
-  var listeners = {};
-  var isInitialized = false;
-  var connected = false;
-  var postMessageQueue = [];
-  var helloInterval;
-
-  function postToTarget(message, target) {
-    // See http://dev.opera.com/articles/view/window-postmessage-messagechannel/#crossdoc
-    //     https://github.com/Modernizr/Modernizr/issues/388
-    //     http://jsfiddle.net/ryanseddon/uZTgD/2/
-    if (structuredClone.supported()) {
-      window.parent.postMessage(message, target);
-    } else {
-      window.parent.postMessage(JSON.stringify(message), target);
-    }
-  }
-
-  function post(type, content) {
-    var message;
-    // Message object can be constructed from 'type' and 'content' arguments or it can be passed
-    // as the first argument.
-    if (arguments.length === 1 && typeof type === 'object' && typeof type.type === 'string') {
-      message = type;
-    } else {
-      message = {
-        type: type,
-        content: content
-      };
-    }
-    if (connected) {
-      postToTarget(message, parentOrigin);
-    } else {
-      postMessageQueue.push(message);
-    }
-  }
-
-  // Only the initial 'hello' message goes permissively to a '*' target (because due to cross origin
-  // restrictions we can't find out our parent's origin until they voluntarily send us a message
-  // with it.)
-  function postHello() {
-    postToTarget({
-      type: 'hello',
-      origin: document.location.href.match(/(.*?\/\/.*?)\//)[1]
-    }, '*');
-  }
-
-  function addListener(type, fn) {
-    listeners[type] = fn;
-  }
-
-  function removeAllListeners() {
-    listeners = {};
-  }
-
-  function getListenerNames() {
-    return Object.keys(listeners);
-  }
-
-  function messageListener(message) {
-      // Anyone can send us a message. Only pay attention to messages from parent.
-      if (message.source !== window.parent) return;
-
-      var messageData = message.data;
-
-      if (typeof messageData === 'string') messageData = JSON.parse(messageData);
-
-      // We don't know origin property of parent window until it tells us.
-      if (!connected && messageData.type === 'hello') {
-        // This is the return handshake from the embedding window.
-        parentOrigin = messageData.origin;
-        connected = true;
-        stopPostingHello();
-        while(postMessageQueue.length > 0) {
-          post(postMessageQueue.shift());
-        }
-      }
-
-      // Perhaps-redundantly insist on checking origin as well as source window of message.
-      if (message.origin === parentOrigin) {
-        if (listeners[messageData.type]) listeners[messageData.type](messageData.content);
-      }
-   }
-
-   function disconnect() {
-     connected = false;
-     stopPostingHello();
-     window.removeEventListener('message', messsageListener);
-   }
-
-  /**
-    Initialize communication with the parent frame. This should not be called until the app's custom
-    listeners are registered (via our 'addListener' public method) because, once we open the
-    communication, the parent window may send any messages it may have queued. Messages for which
-    we don't have handlers will be silently ignored.
-  */
-  function initialize() {
-    if (isInitialized) {
-      return;
-    }
-    isInitialized = true;
-    if (window.parent === window) return;
-
-    // We kick off communication with the parent window by sending a "hello" message. Then we wait
-    // for a handshake (another "hello" message) from the parent window.
-    postHello();
-    startPostingHello();
-    window.addEventListener('message', messageListener, false);
-  }
-
-  function startPostingHello() {
-    if (helloInterval) {
-      stopPostingHello();
-    }
-    helloInterval = window.setInterval(postHello, HELLO_INTERVAL_LENGTH);
-    window.setTimeout(stopPostingHello, HELLO_TIMEOUT_LENGTH);
-  }
-
-  function stopPostingHello() {
-    window.clearInterval(helloInterval);
-    helloInterval = null;
-  }
-
-  // Public API.
-  return {
-    initialize        : initialize,
-    getListenerNames  : getListenerNames,
-    addListener       : addListener,
-    removeAllListeners: removeAllListeners,
-    disconnect        : disconnect,
-    post              : post
-  };
-}
-
-var instance = null;
-
-// IFrameEndpoint is a singleton, as iframe can't have multiple parents anyway.
-module.exports = function getIFrameEndpoint() {
-  if (!instance) {
-    instance = new IFrameEndpoint();
-  }
-  return instance;
-};
-},{"./structured-clone":4}],2:[function(require,module,exports){
-"use strict";
-
-var ParentEndpoint = require('./parent-endpoint');
-var getIFrameEndpoint = require('./iframe-endpoint');
-
-// Not a real UUID as there's an RFC for that (needed for proper distributed computing).
-// But in this fairly parochial situation, we just need to be fairly sure to avoid repeats.
-function getPseudoUUID() {
-    var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    var len = chars.length;
-    var ret = [];
-
-    for (var i = 0; i < 10; i++) {
-        ret.push(chars[Math.floor(Math.random() * len)]);
-    }
-    return ret.join('');
-}
-
-module.exports = function IframePhoneRpcEndpoint(handler, namespace, targetWindow, targetOrigin, phone) {
-    var pendingCallbacks = Object.create({});
-
-    // if it's a non-null object, rather than a function, 'handler' is really an options object
-    if (handler && typeof handler === 'object') {
-        namespace = handler.namespace;
-        targetWindow = handler.targetWindow;
-        targetOrigin = handler.targetOrigin;
-        phone = handler.phone;
-        handler = handler.handler;
-    }
-
-    if ( ! phone ) {
-        if (targetWindow === window.parent) {
-            phone = getIFrameEndpoint();
-            phone.initialize();
-        } else {
-            phone = new ParentEndpoint(targetWindow, targetOrigin);
-        }
-    }
-
-    phone.addListener(namespace, function(message) {
-        var callbackObj;
-
-        if (message.messageType === 'call' && typeof this.handler === 'function') {
-            this.handler.call(undefined, message.value, function(returnValue) {
-                phone.post(namespace, {
-                    messageType: 'returnValue',
-                    uuid: message.uuid,
-                    value: returnValue
-                });
-            });
-        } else if (message.messageType === 'returnValue') {
-            callbackObj = pendingCallbacks[message.uuid];
-
-            if (callbackObj) {
-                window.clearTimeout(callbackObj.timeout);
-                if (callbackObj.callback) {
-                    callbackObj.callback.call(undefined, message.value);
-                }
-                pendingCallbacks[message.uuid] = null;
-            }
-        }
-    }.bind(this));
-
-    function call(message, callback) {
-        var uuid = getPseudoUUID();
-
-        pendingCallbacks[uuid] = {
-            callback: callback,
-            timeout: window.setTimeout(function() {
-                if (callback) {
-                    callback(undefined, new Error("IframePhone timed out waiting for reply"));
-                }
-            }, 2000)
-        };
-
-        phone.post(namespace, {
-            messageType: 'call',
-            uuid: uuid,
-            value: message
-        });
-    }
-
-    function disconnect() {
-        phone.disconnect();
-    }
-
-    this.handler = handler;
-    this.call = call.bind(this);
-    this.disconnect = disconnect.bind(this);
-};
-
-},{"./iframe-endpoint":1,"./parent-endpoint":3}],3:[function(require,module,exports){
-var structuredClone = require('./structured-clone');
-
 /**
-  Call as:
-    new ParentEndpoint(targetWindow, targetOrigin, afterConnectedCallback)
-      targetWindow is a WindowProxy object. (Messages will be sent to it)
-
-      targetOrigin is the origin of the targetWindow. (Messages will be restricted to this origin)
-
-      afterConnectedCallback is an optional callback function to be called when the connection is
-        established.
-
-  OR (less secure):
-    new ParentEndpoint(targetIframe, afterConnectedCallback)
-
-      targetIframe is a DOM object (HTMLIframeElement); messages will be sent to its contentWindow.
-
-      afterConnectedCallback is an optional callback function
-
-    In this latter case, targetOrigin will be inferred from the value of the src attribute of the
-    provided DOM object at the time of the constructor invocation. This is less secure because the
-    iframe might have been navigated to an unexpected domain before constructor invocation.
-
-  Note that it is important to specify the expected origin of the iframe's content to safeguard
-  against sending messages to an unexpected domain. This might happen if our iframe is navigated to
-  a third-party URL unexpectedly. Furthermore, having a reference to Window object (as in the first
-  form of the constructor) does not protect against sending a message to the wrong domain. The
-  window object is actualy a WindowProxy which transparently proxies the Window object of the
-  underlying iframe, so that when the iframe is navigated, the "same" WindowProxy now references a
-  completely differeent Window object, possibly controlled by a hostile domain.
-
-  See http://www.esdiscuss.org/topic/a-dom-use-case-that-can-t-be-emulated-with-direct-proxies for
-  more about this weird behavior of WindowProxies (the type returned by <iframe>.contentWindow).
-*/
-
-module.exports = function ParentEndpoint(targetWindowOrIframeEl, targetOrigin, afterConnectedCallback) {
-  var selfOrigin = window.location.href.match(/(.*?\/\/.*?)\//)[1];
-  var postMessageQueue = [];
-  var connected = false;
-  var handlers = {};
-  var targetWindowIsIframeElement;
-
-  function getOrigin(iframe) {
-    return iframe.src.match(/(.*?\/\/.*?)\//)[1];
-  }
-
-  function post(type, content) {
-    var message;
-    // Message object can be constructed from 'type' and 'content' arguments or it can be passed
-    // as the first argument.
-    if (arguments.length === 1 && typeof type === 'object' && typeof type.type === 'string') {
-      message = type;
-    } else {
-      message = {
-        type: type,
-        content: content
-      };
-    }
-    if (connected) {
-      var tWindow = getTargetWindow();
-      // if we are laready connected ... send the message
-      message.origin = selfOrigin;
-      // See http://dev.opera.com/articles/view/window-postmessage-messagechannel/#crossdoc
-      //     https://github.com/Modernizr/Modernizr/issues/388
-      //     http://jsfiddle.net/ryanseddon/uZTgD/2/
-      if (structuredClone.supported()) {
-        tWindow.postMessage(message, targetOrigin);
-      } else {
-        tWindow.postMessage(JSON.stringify(message), targetOrigin);
-      }
-    } else {
-      // else queue up the messages to send after connection complete.
-      postMessageQueue.push(message);
-    }
-  }
-
-  function addListener(messageName, func) {
-    handlers[messageName] = func;
-  }
-
-  function removeListener(messageName) {
-    handlers[messageName] = null;
-  }
-
-  // Note that this function can't be used when IFrame element hasn't been added to DOM yet
-  // (.contentWindow would be null). At the moment risk is purely theoretical, as the parent endpoint
-  // only listens for an incoming 'hello' message and the first time we call this function
-  // is in #receiveMessage handler (so iframe had to be initialized before, as it could send 'hello').
-  // It would become important when we decide to refactor the way how communication is initialized.
-  function getTargetWindow() {
-    if (targetWindowIsIframeElement) {
-      var tWindow = targetWindowOrIframeEl.contentWindow;
-      if (!tWindow) {
-        throw "IFrame element needs to be added to DOM before communication " +
-              "can be started (.contentWindow is not available)";
-      }
-      return tWindow;
-    }
-    return targetWindowOrIframeEl;
-  }
-
-  function receiveMessage(message) {
-    var messageData;
-    if (message.source === getTargetWindow() && message.origin === targetOrigin) {
-      messageData = message.data;
-      if (typeof messageData === 'string') {
-        messageData = JSON.parse(messageData);
-      }
-      if (handlers[messageData.type]) {
-        handlers[messageData.type](messageData.content);
-      } else {
-        console.log("cant handle type: " + messageData.type);
-      }
-    }
-  }
-
-  function disconnect() {
-    connected = false;
-    window.removeEventListener('message', receiveMessage);
-  }
-
-  // handle the case that targetWindowOrIframeEl is actually an <iframe> rather than a Window(Proxy) object
-  // Note that if it *is* a WindowProxy, this probe will throw a SecurityException, but in that case
-  // we also don't need to do anything
-  try {
-    targetWindowIsIframeElement = targetWindowOrIframeEl.constructor === HTMLIFrameElement;
-  } catch (e) {
-    targetWindowIsIframeElement = false;
-  }
-
-  if (targetWindowIsIframeElement) {
-    // Infer the origin ONLY if the user did not supply an explicit origin, i.e., if the second
-    // argument is empty or is actually a callback (meaning it is supposed to be the
-    // afterConnectionCallback)
-    if (!targetOrigin || targetOrigin.constructor === Function) {
-      afterConnectedCallback = targetOrigin;
-      targetOrigin = getOrigin(targetWindowOrIframeEl);
-    }
-  }
-
-  // when we receive 'hello':
-  addListener('hello', function() {
-    connected = true;
-
-    // send hello response
-    post('hello');
-
-    // give the user a chance to do things now that we are connected
-    // note that is will happen before any queued messages
-    if (afterConnectedCallback && typeof afterConnectedCallback === "function") {
-      afterConnectedCallback();
-    }
-
-    // Now send any messages that have been queued up ...
-    while(postMessageQueue.length > 0) {
-      post(postMessageQueue.shift());
-    }
-  });
-
-  window.addEventListener('message', receiveMessage, false);
-
-  // Public API.
-  return {
-    post: post,
-    addListener: addListener,
-    removeListener: removeListener,
-    disconnect: disconnect,
-    getTargetWindow: getTargetWindow,
-    targetOrigin: targetOrigin
-  };
-};
-
-},{"./structured-clone":4}],4:[function(require,module,exports){
-var featureSupported = false;
-
-(function () {
-  var result = 0;
-
-  if (!!window.postMessage) {
-    try {
-      // Safari 5.1 will sometimes throw an exception and sometimes won't, lolwut?
-      // When it doesn't we capture the message event and check the
-      // internal [[Class]] property of the message being passed through.
-      // Safari will pass through DOM nodes as Null iOS safari on the other hand
-      // passes it through as DOMWindow, gotcha.
-      window.onmessage = function(e){
-        var type = Object.prototype.toString.call(e.data);
-        result = (type.indexOf("Null") != -1 || type.indexOf("DOMWindow") != -1) ? 1 : 0;
-        featureSupported = {
-          'structuredClones': result
-        };
-      };
-      // Spec states you can't transmit DOM nodes and it will throw an error
-      // postMessage implimentations that support cloned data will throw.
-      window.postMessage(document.createElement("a"),"*");
-    } catch(e) {
-      // BBOS6 throws but doesn't pass through the correct exception
-      // so check error message
-      result = (e.DATA_CLONE_ERR || e.message == "Cannot post cyclic structures.") ? 1 : 0;
-      featureSupported = {
-        'structuredClones': result
-      };
-    }
-  }
-}());
-
-exports.supported = function supported() {
-  return featureSupported && featureSupported.structuredClones > 0;
-};
-
-},{}],5:[function(require,module,exports){
-module.exports = {
-  /**
-   * Allows to communicate with an iframe.
-   */
-  ParentEndpoint:  require('./lib/parent-endpoint'),
-  /**
-   * Allows to communicate with a parent page.
-   * IFrameEndpoint is a singleton, as iframe can't have multiple parents anyway.
-   */
-  getIFrameEndpoint: require('./lib/iframe-endpoint'),
-  structuredClone: require('./lib/structured-clone'),
-
-  // TODO: May be misnamed
-  IframePhoneRpcEndpoint: require('./lib/iframe-phone-rpc-endpoint')
-
-};
-
-},{"./lib/iframe-endpoint":1,"./lib/iframe-phone-rpc-endpoint":2,"./lib/parent-endpoint":3,"./lib/structured-clone":4}]},{},[5])
-(5)
-});
-;
-;/**
  * @license
- * pixi.js - v2.2.9
+ * pixi.js - v2.2.7
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2015-04-08
+ * Compiled: 2015-02-25
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -23829,7 +23820,7 @@ PIXI.CANVAS_RENDERER = 1;
  * @property {String} VERSION
  * @static
  */
-PIXI.VERSION = "v2.2.9";
+PIXI.VERSION = "v2.2.7";
 
 /**
  * Various blend modes supported by pixi. IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
@@ -27008,7 +26999,6 @@ PIXI.FilterBlock.prototype.constructor = PIXI.FilterBlock;
  * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
- * @param [style.lineJoin='miter'] {String} The lineJoin property sets the type of corner created, it can resolve spiked text issue. Default is 'miter' (creates a sharp corner).
  */
 PIXI.Text = function(text, style)
 {
@@ -27109,8 +27099,6 @@ Object.defineProperty(PIXI.Text.prototype, 'height', {
  * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
- * @param [style.lineJoin='miter'] {String} The lineJoin property sets the type of corner created, it can resolve spiked text issue. Default is 'miter' (creates a sharp corner).
- * @param [style.lineHeight] {number} Line height of the text
  */
 PIXI.Text.prototype.setStyle = function(style)
 {
@@ -27127,8 +27115,6 @@ PIXI.Text.prototype.setStyle = function(style)
     style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
     style.dropShadowDistance = style.dropShadowDistance || 4;
     style.dropShadowColor = style.dropShadowColor || 'black';
-    style.lineJoin = style.lineJoin || 'miter';
-    style.lineHeight = style.lineHeight || false;
 
     this.style = style;
     this.dirty = true;
@@ -27184,7 +27170,7 @@ PIXI.Text.prototype.updateText = function()
     this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
     
     //calculate text height
-    var lineHeight = this.style.lineHeight || fontProperties.fontSize + this.style.strokeThickness;
+    var lineHeight = fontProperties.fontSize + this.style.strokeThickness;
  
     var height = lineHeight * lines.length;
     if(this.style.dropShadow)height += this.style.dropShadowDistance;
@@ -27203,7 +27189,7 @@ PIXI.Text.prototype.updateText = function()
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
     this.context.textBaseline = 'alphabetic';
-    this.context.lineJoin = this.style.lineJoin;
+    //this.context.lineJoin = 'round';
 
     var linePositionX;
     var linePositionY;
@@ -27781,13 +27767,12 @@ PIXI.InteractionData = function()
  * @method getLocalPosition
  * @param displayObject {DisplayObject} The DisplayObject that you would like the local coords off
  * @param [point] {Point} A Point object in which to store the value, optional (otherwise will create a new point)
- * param [globalPos] {Point} A Point object containing your custom global coords, optional (otherwise will use the current global coords)
  * @return {Point} A point containing the coordinates of the InteractionData position relative to the DisplayObject
  */
-PIXI.InteractionData.prototype.getLocalPosition = function(displayObject, point, globalPos)
+PIXI.InteractionData.prototype.getLocalPosition = function(displayObject, point)
 {
     var worldTransform = displayObject.worldTransform;
-    var global = globalPos ? globalPos : this.global;
+    var global = this.global;
 
     // do a cheeky transform to get the mouse coords;
     var a00 = worldTransform.a, a01 = worldTransform.c, a02 = worldTransform.tx,
@@ -28507,41 +28492,18 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
     var touchData;
+    var i = 0;
 
-    var cLength = changedTouches.length;
-    var wCalc = (this.target.width / rect.width);
-    var hCalc = (this.target.height / rect.height);
-    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
-    var touchEvent;
-
-    for (var c = 0; c < cLength; c++)
+    for (i = 0; i < changedTouches.length; i++)
     {
-        touchEvent = changedTouches[c];
-        if(!isSupportCocoonJS)
-        {
-            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
-        }
-        else
-        {
-            touchEvent.globalX = touchEvent.clientX;
-            touchEvent.globalY = touchEvent.clientY;
-        }
-    }
-
-    for (var i = 0; i < cLength; i++)
-    {
-        touchEvent = changedTouches[i];
+        var touchEvent = changedTouches[i];
         touchData = this.touches[touchEvent.identifier];
         touchData.originalEvent = event;
 
         // update the touch position
-        if (!isSupportCocoonJS)
-        {
-            touchEvent.globalX = touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-            touchEvent.globalY = touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
-        }
-        else
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
+        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -28581,31 +28543,9 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
     }
 
     var changedTouches = event.changedTouches;
-
-    var cLength = changedTouches.length;
-    var wCalc = (this.target.width / rect.width);
-    var hCalc = (this.target.height / rect.height);
-    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
-    var touchEvent;
-
-    for (var c = 0; c < cLength; c++)
+    for (var i=0; i < changedTouches.length; i++)
     {
-        touchEvent = changedTouches[c];
-        if(!isSupportCocoonJS)
-        {
-            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
-        }
-        else
-        {
-            touchEvent.globalX = touchEvent.clientX;
-            touchEvent.globalY = touchEvent.clientY;
-        }
-    }
-
-    for (var i=0; i < cLength; i++)
-    {
-        touchEvent = changedTouches[i];
+        var touchEvent = changedTouches[i];
 
         var touchData = this.pool.pop();
         if (!touchData)
@@ -28616,12 +28556,9 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         touchData.originalEvent = event;
 
         this.touches[touchEvent.identifier] = touchData;
-        if (!isSupportCocoonJS)
-        {
-            touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-            touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
-        }
-        else
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
+        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -28670,38 +28607,14 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
 
-    var cLength = changedTouches.length;
-    var wCalc = (this.target.width / rect.width);
-    var hCalc = (this.target.height / rect.height);
-    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
-    var touchEvent;
-
-    for (var c = 0; c < cLength; c++)
+    for (var i=0; i < changedTouches.length; i++)
     {
-        touchEvent = changedTouches[c];
-        if(!isSupportCocoonJS)
-        {
-            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
-        }
-        else
-        {
-            touchEvent.globalX = touchEvent.clientX;
-            touchEvent.globalY = touchEvent.clientY;
-        }
-    }
-
-    for (var i=0; i < cLength; i++)
-    {
-        touchEvent = changedTouches[i];
+        var touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
-        if (!isSupportCocoonJS)
-        {
-            touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-            touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
-        }
-        else
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
+        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -28776,38 +28689,14 @@ PIXI.InteractionManager.prototype.onTouchCancel = function(event)
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
 
-    var cLength = changedTouches.length;
-    var wCalc = (this.target.width / rect.width);
-    var hCalc = (this.target.height / rect.height);
-    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
-    var touchEvent;
-
-    for (var c = 0; c < cLength; c++)
+    for (var i=0; i < changedTouches.length; i++)
     {
-        touchEvent = changedTouches[c];
-        if(!isSupportCocoonJS)
-        {
-            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
-        }
-        else
-        {
-            touchEvent.globalX = touchEvent.clientX;
-            touchEvent.globalY = touchEvent.clientY;
-        }
-    }
-
-    for (var i=0; i < cLength; i++)
-    {
-        touchEvent = changedTouches[i];
+        var touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
-        if (!isSupportCocoonJS)
-        {
-            touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-            touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
-        }
-        else
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
+        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -35499,7 +35388,7 @@ PIXI.CanvasGraphics.updateGraphicsTint = function(graphics)
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and rectangles to the display, and color and fill them.
- *
+ * 
  * @class Graphics
  * @extends DisplayObjectContainer
  * @constructor
@@ -35561,7 +35450,7 @@ PIXI.Graphics = function()
      * @default PIXI.blendModes.NORMAL;
      */
     this.blendMode = PIXI.blendModes.NORMAL;
-
+    
     /**
      * Current path
      *
@@ -35570,7 +35459,7 @@ PIXI.Graphics = function()
      * @private
      */
     this.currentPath = null;
-
+    
     /**
      * Array containing some WebGL-related properties used by the WebGL renderer.
      *
@@ -35600,7 +35489,7 @@ PIXI.Graphics = function()
 
     /**
      * Used to detect if the graphics object has changed. If this is set to true then the graphics object will be recalculated.
-     *
+     * 
      * @property dirty
      * @type Boolean
      * @private
@@ -35609,7 +35498,7 @@ PIXI.Graphics = function()
 
     /**
      * Used to detect if the webgl graphics object has changed. If this is set to true then the graphics object will be recalculated.
-     *
+     * 
      * @property webGLDirty
      * @type Boolean
      * @private
@@ -35618,7 +35507,7 @@ PIXI.Graphics = function()
 
     /**
      * Used to detect if the cached sprite object needs to be updated.
-     *
+     * 
      * @property cachedSpriteDirty
      * @type Boolean
      * @private
@@ -35676,7 +35565,7 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
 {
     this.lineWidth = lineWidth || 0;
     this.lineColor = color || 0;
-    this.lineAlpha = (alpha === undefined) ? 1 : alpha;
+    this.lineAlpha = (arguments.length < 3) ? 1 : alpha;
 
     if(this.currentPath)
     {
@@ -35691,7 +35580,7 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
         this.currentPath.lineWidth = this.lineWidth;
         this.currentPath.lineColor = this.lineColor;
         this.currentPath.lineAlpha = this.lineAlpha;
-
+        
     }
 
     return this;
@@ -35756,7 +35645,7 @@ PIXI.Graphics.prototype.quadraticCurveTo = function(cpX, cpY, toX, toY)
     n = 20,
     points = this.currentPath.shape.points;
     if(points.length === 0)this.moveTo(0, 0);
-
+    
 
     var fromX = points[points.length-2];
     var fromY = points[points.length-1];
@@ -35812,7 +35701,7 @@ PIXI.Graphics.prototype.bezierCurveTo = function(cpX, cpY, cpX2, cpY2, toX, toY)
 
     var fromX = points[points.length-2];
     var fromY = points[points.length-1];
-
+    
     var j = 0;
 
     for (var i=1; i<=n; i++)
@@ -35825,11 +35714,11 @@ PIXI.Graphics.prototype.bezierCurveTo = function(cpX, cpY, cpX2, cpY2, toX, toY)
 
         t2 = j * j;
         t3 = t2 * j;
-
+        
         points.push( dt3 * fromX + 3 * dt2 * j * cpX + 3 * dt * t2 * cpX2 + t3 * toX,
                      dt3 * fromY + 3 * dt2 * j * cpY + 3 * dt * t2 * cpY2 + t3 * toY);
     }
-
+    
     this.dirty = true;
 
     return this;
@@ -35837,7 +35726,7 @@ PIXI.Graphics.prototype.bezierCurveTo = function(cpX, cpY, cpX2, cpY2, toX, toY)
 
 /*
  * The arcTo() method creates an arc/curve between two tangents on the canvas.
- *
+ * 
  * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
  *
  * @method arcTo
@@ -35920,12 +35809,30 @@ PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
  */
 PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticlockwise)
 {
-    anticlockwise = anticlockwise || false;
+    var startX = cx + Math.cos(startAngle) * radius;
+    var startY = cy + Math.sin(startAngle) * radius;
+    var points;
 
-    if (startAngle === endAngle)
+    if( this.currentPath )
     {
-        return this;
+        points = this.currentPath.shape.points;
+
+        if(points.length === 0)
+        {
+            points.push(startX, startY);
+        }
+        else if( points[points.length-2] !== startX || points[points.length-1] !== startY)
+        {
+            points.push(startX, startY);
+        }
     }
+    else
+    {
+        this.moveTo(startX, startY);
+        points = this.currentPath.shape.points;
+    }
+    
+    if (startAngle === endAngle)return this;
 
     if( !anticlockwise && endAngle <= startAngle )
     {
@@ -35936,35 +35843,17 @@ PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, ant
         startAngle += Math.PI * 2;
     }
 
-    var sweep = anticlockwise ? (startAngle - endAngle) * -1 : (endAngle - startAngle);
-    var segs =  ( Math.abs(sweep) / (Math.PI * 2) ) * 40;
+    var sweep = anticlockwise ? (startAngle - endAngle) *-1 : (endAngle - startAngle);
+    var segs =  ( Math.abs(sweep)/ (Math.PI * 2) ) * 40;
 
-    if(sweep === 0)
-    {
-        return this;
-    }
-
-    var startX = cx + Math.cos(startAngle) * radius;
-    var startY = cy + Math.sin(startAngle) * radius;
-
-    if (anticlockwise && this.filling)
-    {
-        this.moveTo(cx, cy);
-    }
-    else
-    {
-        this.moveTo(startX, startY);
-    }
-
-    //  currentPath will always exist after calling a moveTo
-    var points = this.currentPath.shape.points;
+    if( sweep === 0 ) return this;
 
     var theta = sweep/(segs*2);
     var theta2 = theta*2;
 
     var cTheta = Math.cos(theta);
     var sTheta = Math.sin(theta);
-
+    
     var segMinus = segs - 1;
 
     var remainder = ( segMinus % 1 ) / segMinus;
@@ -35973,7 +35862,7 @@ PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, ant
     {
         var real =  i + remainder * i;
 
-
+    
         var angle = ((theta) + startAngle + (theta2 * real));
 
         var c = Math.cos(angle);
@@ -36032,7 +35921,7 @@ PIXI.Graphics.prototype.endFill = function()
 
 /**
  * Draws a rectangle.
- *
+ * 
  * @method drawRect
  *
  * @param x {Number} The X coord of the top-left of the rectangle
@@ -36050,7 +35939,7 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 
 /**
  * Draws a rounded rectangle.
- *
+ * 
  * @method drawRoundedRect
  *
  * @param x {Number} The X coord of the top-left of the rectangle
@@ -36146,16 +36035,16 @@ PIXI.Graphics.prototype.generateTexture = function(resolution, scaleMode)
     resolution = resolution || 1;
 
     var bounds = this.getBounds();
-
+   
     var canvasBuffer = new PIXI.CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
-
+    
     var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas, scaleMode);
     texture.baseTexture.resolution = resolution;
 
     canvasBuffer.context.scale(resolution, resolution);
 
     canvasBuffer.context.translate(-bounds.x,-bounds.y);
-
+    
     PIXI.CanvasGraphics.renderGraphics(this, canvasBuffer.context);
 
     return texture;
@@ -36165,7 +36054,7 @@ PIXI.Graphics.prototype.generateTexture = function(resolution, scaleMode)
 * Renders the object using the WebGL renderer
 *
 * @method _renderWebGL
-* @param renderSession {RenderSession}
+* @param renderSession {RenderSession} 
 * @private
 */
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
@@ -36180,7 +36069,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
         {
 
             this._generateCachedSprite();
-
+   
             // we will also need to update the texture on the gpu too!
             this.updateCachedSpriteTexture();
 
@@ -36200,7 +36089,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 
         if(this._mask)renderSession.maskManager.pushMask(this._mask, renderSession);
         if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
-
+      
         // check blend mode
         if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
         {
@@ -36208,16 +36097,16 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
             var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
             renderSession.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
         }
-
+        
         // check if the webgl graphic needs to be updated
         if(this.webGLDirty)
         {
             this.dirty = true;
             this.webGLDirty = false;
         }
-
+        
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);
-
+        
         // only render if it has children!
         if(this.children.length)
         {
@@ -36234,7 +36123,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 
         if(this._filters)renderSession.filterManager.popFilter();
         if(this._mask)renderSession.maskManager.popMask(this.mask, renderSession);
-
+          
         renderSession.drawCount++;
 
         renderSession.spriteBatch.start();
@@ -36245,20 +36134,20 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 * Renders the object using the Canvas renderer
 *
 * @method _renderCanvas
-* @param renderSession {RenderSession}
+* @param renderSession {RenderSession} 
 * @private
 */
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
-
+    
     if(this._cacheAsBitmap)
     {
         if(this.dirty || this.cachedSpriteDirty)
         {
             this._generateCachedSprite();
-
+   
             // we will also need to update the texture
             this.updateCachedSpriteTexture();
 
@@ -36275,7 +36164,7 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
     {
         var context = renderSession.context;
         var transform = this.worldTransform;
-
+        
         if(this.blendMode !== renderSession.currentBlendMode)
         {
             renderSession.currentBlendMode = this.blendMode;
@@ -36411,7 +36300,7 @@ PIXI.Graphics.prototype.updateLocalBounds = function()
             var type = data.type;
             var lineWidth = data.lineWidth;
             shape = data.shape;
-
+           
 
             if(type === PIXI.Graphics.RECT || type === PIXI.Graphics.RREC)
             {
@@ -36456,7 +36345,7 @@ PIXI.Graphics.prototype.updateLocalBounds = function()
             {
                 // POLY
                 points = shape.points;
-
+                
                 for (var j = 0; j < points.length; j+=2)
                 {
 
@@ -36480,7 +36369,7 @@ PIXI.Graphics.prototype.updateLocalBounds = function()
     }
 
     var padding = this.boundsPadding;
-
+    
     this._localBounds.x = minX - padding;
     this._localBounds.width = (maxX - minX) + padding * 2;
 
@@ -36502,7 +36391,7 @@ PIXI.Graphics.prototype._generateCachedSprite = function()
     {
         var canvasBuffer = new PIXI.CanvasBuffer(bounds.width, bounds.height);
         var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
-
+        
         this._cachedSprite = new PIXI.Sprite(texture);
         this._cachedSprite.buffer = canvasBuffer;
 
@@ -36519,8 +36408,8 @@ PIXI.Graphics.prototype._generateCachedSprite = function()
 
    // this._cachedSprite.buffer.context.save();
     this._cachedSprite.buffer.context.translate(-bounds.x,-bounds.y);
-
-    // make sure we set the alpha of the graphics to 1 for the render..
+    
+    // make sure we set the alpha of the graphics to 1 for the render.. 
     this.worldAlpha = 1;
 
     // now render the graphic..
@@ -36584,9 +36473,9 @@ PIXI.Graphics.prototype.drawShape = function(shape)
     this.currentPath = null;
 
     var data = new PIXI.GraphicsData(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, this.filling, shape);
-
+    
     this.graphicsData.push(data);
-
+    
     if(data.type === PIXI.Graphics.POLY)
     {
         data.shape.closed = this.filling;
@@ -36600,7 +36489,7 @@ PIXI.Graphics.prototype.drawShape = function(shape)
 
 /**
  * A GraphicsData object.
- *
+ * 
  * @class GraphicsData
  * @constructor
  */
@@ -37761,10 +37650,8 @@ PIXI.TilingSprite.prototype.destroy = function () {
     this.tileScaleOffset = null;
     this.tilePosition = null;
 
-    if (this.tilingTexture) {
-        this.tilingTexture.destroy(true);
-        this.tilingTexture = null;
-    }
+    this.tilingTexture.destroy(true);
+    this.tilingTexture = null;
 };
 
 /******************************************************************************
@@ -38512,9 +38399,12 @@ spine.DrawOrderTimeline.prototype = {
 		var drawOrder = skeleton.drawOrder;
 		var slots = skeleton.slots;
 		var drawOrderToSetupIndex = this.drawOrders[frameIndex];
-		if (drawOrderToSetupIndex) {
+		if (!drawOrderToSetupIndex) {
+			for (var i = 0, n = slots.length; i < n; i++)
+				drawOrder[i] = slots[i];
+		} else {
 			for (var i = 0, n = drawOrderToSetupIndex.length; i < n; i++)
-				drawOrder[i] = drawOrderToSetupIndex[i];
+				drawOrder[i] = skeleton.slots[drawOrderToSetupIndex[i]];
 		}
 
 	}
@@ -38651,7 +38541,7 @@ spine.FlipXTimeline.prototype = {
 			lastTime = -1;
 		var frameIndex = (time >= frames[frames.length - 2] ? frames.length : spine.Animation.binarySearch(frames, time, 2)) - 2;
 		if (frames[frameIndex] < lastTime) return;
-		skeleton.bones[this.boneIndex].flipX = frames[frameIndex + 1] != 0;
+		skeleton.bones[boneIndex].flipX = frames[frameIndex + 1] != 0;
 	}
 };
 
@@ -38679,7 +38569,7 @@ spine.FlipYTimeline.prototype = {
 			lastTime = -1;
 		var frameIndex = (time >= frames[frames.length - 2] ? frames.length : spine.Animation.binarySearch(frames, time, 2)) - 2;
 		if (frames[frameIndex] < lastTime) return;
-		skeleton.bones[this.boneIndex].flipY = frames[frameIndex + 1] != 0;
+		skeleton.bones[boneIndex].flipY = frames[frameIndex + 1] != 0;
 	}
 };
 
@@ -38772,7 +38662,7 @@ spine.Skeleton = function (skeletonData) {
 		var bone = this.bones[skeletonData.bones.indexOf(slotData.boneData)];
 		var slot = new spine.Slot(slotData, bone);
 		this.slots.push(slot);
-		this.drawOrder.push(i);
+		this.drawOrder.push(slot);
 	}
 
 	this.ikConstraints = [];
@@ -38864,10 +38754,11 @@ spine.Skeleton.prototype = {
 	},
 	setSlotsToSetupPose: function () {
 		var slots = this.slots;
+		var drawOrder = this.drawOrder;
 		for (var i = 0, n = slots.length; i < n; i++) {
+			drawOrder[i] = slots[i];
 			slots[i].setToSetupPose(i);
 		}
-		this.resetDrawOrder();
 	},
 	/** @return May return null. */
 	getRootBone: function () {
@@ -38967,10 +38858,6 @@ spine.Skeleton.prototype = {
 	},
 	update: function (delta) {
 		this.time += delta;
-	},
-	resetDrawOrder: function() {
-		for (var i = 0, n = this.drawOrder.length; i < n; i++)
-			this.drawOrder[i] = i;
 	}
 };
 
@@ -39308,7 +39195,6 @@ spine.AnimationState.prototype = {
 		}
 	},
 	apply: function (skeleton) {
-		skeleton.resetDrawOrder();
 		for (var i = 0; i < this.tracks.length; i++) {
 			var current = this.tracks[i];
 			if (!current) continue;
@@ -39811,7 +39697,7 @@ spine.SkeletonJson.prototype = {
 				frameIndex++;
 			}
 			timelines.push(timeline);
-			duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 3 - 3]);
+			duration = Math.max(duration, timeline.frames[timeline.frameCount * 3 - 3]);
 		}
 
 		var ffd = map["ffd"];
@@ -39872,7 +39758,7 @@ spine.SkeletonJson.prototype = {
 						frameIndex++;
 					}
 					timelines[timelines.length] = timeline;
-					duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
+					duration = Math.max(duration, timeline.frames[timeline.frameCount - 1]);
 				}
 			}
 		}
@@ -40483,8 +40369,8 @@ PIXI.Spine = function (url) {
 
     this.slotContainers = [];
 
-    for (var i = 0, n = this.skeleton.slots.length; i < n; i++) {
-        var slot = this.skeleton.slots[i];
+    for (var i = 0, n = this.skeleton.drawOrder.length; i < n; i++) {
+        var slot = this.skeleton.drawOrder[i];
         var attachment = slot.attachment;
         var slotContainer = new PIXI.DisplayObjectContainer();
         this.slotContainers.push(slotContainer);
@@ -40554,11 +40440,8 @@ PIXI.Spine.prototype.update = function(dt)
     this.skeleton.updateWorldTransform();
 
     var drawOrder = this.skeleton.drawOrder;
-    var slots = this.skeleton.slots;
-    for (var i = 0, n = drawOrder.length; i < n; i++)
-        this.children[i] = this.slotContainers[drawOrder[i]];
-    for (i = 0, n = slots.length; i < n; i++) {
-        var slot = slots[i];
+    for (var i = 0, n = drawOrder.length; i < n; i++) {
+        var slot = drawOrder[i];
         var attachment = slot.attachment;
         var slotContainer = this.slotContainers[i];
 
@@ -40681,10 +40564,9 @@ PIXI.Spine.prototype.createSprite = function (slot, attachment) {
     var sprite = new PIXI.Sprite(spriteTexture);
 
     var baseRotation = descriptor.rotate ? Math.PI * 0.5 : 0.0;
-    sprite.scale.set(descriptor.width / descriptor.originalWidth * attachment.scaleX, descriptor.height / descriptor.originalHeight * attachment.scaleY);
+    sprite.scale.set(descriptor.width / descriptor.originalWidth, descriptor.height / descriptor.originalHeight);
     sprite.rotation = baseRotation - (attachment.rotation * spine.degRad);
     sprite.anchor.x = sprite.anchor.y = 0.5;
-    sprite.alpha = attachment.a;
 
     slot.sprites = slot.sprites || {};
     slot.sprites[descriptor.name] = sprite;
@@ -40703,7 +40585,6 @@ PIXI.Spine.prototype.createMesh = function (slot, attachment) {
     strip.vertices = new PIXI.Float32Array(attachment.uvs.length);
     strip.uvs = attachment.uvs;
     strip.indices = attachment.triangles;
-    strip.alpha = attachment.a;
 
     slot.meshes = slot.meshes || {};
     slot.meshes[attachment.name] = strip;
@@ -42154,10 +42035,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
     if(this.json.frames && this.json.meta && this.json.meta.image)
     {
         // sprite sheet
-        var textureUrl = this.json.meta.image;
-        if (textureUrl.indexOf('data:') === -1) {
-            textureUrl = this.baseUrl + textureUrl;
-        }
+        var textureUrl = this.baseUrl + this.json.meta.image;
         var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
         var frameData = this.json.frames;
 
@@ -44150,7 +44028,7 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'blue', {
         root.PIXI = PIXI;
     }
 }).call(this);
-;/*global $ */
+/*global $ */
 (function(){
   var $ = window.$;
 
@@ -44332,5 +44210,5 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'blue', {
     return shutterbugInstance;
   };
 })();
-;
+
 //# sourceMappingURL=vendor.js.map
