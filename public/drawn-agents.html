@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>populations.js</title>
+        <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
+        <script src="js/vendor.js"></script>
+        <script src="js/app.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.2/d3.min.js"></script>
+    <!-- model files here-->
+        <script src="species/drawn-rabbits.js"></script>
+        <script src="species/fast-plants-roots.js"></script>
+        <script src="species/hawks.js"></script>
+        <script src="environments/snow.js"></script>
+        <script>
+          helpers = require('helpers');
+          Interactive = require('ui/interactive');
+          ToolButton = require('ui/tool-button');
+          plantSpecies = require('species/fast-plants-roots');
+          rabbitSpecies = require('species/white-brown-rabbits');
+          env = require('environments/snow');
+
+          window.model = {
+            run: function() {
+              this.interactive = new Interactive({
+                environment: env,
+                addOrganismButtons: [
+                  {
+                    species: plantSpecies,
+                    imagePath: "images/agents/grass/tallgrass.png",
+                    scatter: 45
+                  }, {
+                    species: rabbitSpecies,
+                    imagePath: "images/agents/rabbits/rabbit2.png",
+                    scatter: 30
+                  }
+                ],
+                toolButtons: [
+                  {
+                    type: ToolButton.INFO_TOOL
+                  }
+                ]
+              });
+              return document.getElementById('environment').appendChild(this.interactive.getEnvironmentPane());
+            }
+          };
+
+          window.onload = function() {
+            return helpers.preload([model, env, plantSpecies, rabbitSpecies], function() {
+              return model.run();
+            });
+          };
+        </script>
+    <style type="text/css">
+      #side {
+        padding: 2px;
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 10px;
+      }
+
+      #graph {
+        width: 400px;
+        height: 300px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div id="environment"></div>
+    <div id="side">
+      <div id="graph"></div>
+    </div>
+  </body>
+</html>
