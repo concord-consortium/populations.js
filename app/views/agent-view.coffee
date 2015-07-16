@@ -91,6 +91,7 @@ module.exports = class AgentView
     @_rendered = false
 
   contains: (x,y)->
+    return false unless @_container
     intManager = new PIXI.InteractionManager()
     return intManager.hitTest @_container,
       global:
