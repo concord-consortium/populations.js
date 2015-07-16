@@ -366,6 +366,7 @@ body {
   cursor: copy;
 }
 #environment .info-tool {
+  cursor: crosshair;
   cursor: -webkit-zoom-in;
   cursor: -moz-zoom-in;
   cursor: zoom-in;

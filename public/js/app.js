@@ -3839,6 +3839,9 @@ module.exports = AgentView = (function() {
 
   AgentView.prototype.contains = function(x, y) {
     var intManager;
+    if (!this._container) {
+      return false;
+    }
     intManager = new PIXI.InteractionManager();
     return intManager.hitTest(this._container, {
       global: {
