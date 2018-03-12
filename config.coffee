@@ -39,6 +39,6 @@ exports.config =
       plugins:
         afterBrunch: [
           'echo -n "Cleaning coffee files..." && find public/ -type f -name "*.coffee" -delete'
-          'echo -n "Building examples and digesting..." && coffee --compile --output public examples/ && ./bin/digest'
+          'echo -n "Building examples and digesting..." && node_modules/.bin/coffee --compile --output public examples/ && ./bin/digest'
           'echo -n "Cleaning ui assets..." && rm -rf public/ui'
         ]

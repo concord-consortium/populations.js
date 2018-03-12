@@ -8,23 +8,23 @@
     "test": "node_modules/karma/bin/karma start test/karma.conf.js"
   },
   "dependencies": {
-    "clean-css-brunch": "~1.6.0",
+    "clean-css-brunch": "2.10.0",
     "coffee-script-brunch": "~1.7.2",
     "css-brunch": "~1.6.0",
-    "digest-brunch": "*",
+    "digest-brunch": "1.4.1",
     "javascript-brunch": "~1.6.0",
     "stylus": "^0.54.5",
     "uglify-js-brunch": "~1.7.2"
   },
   "devDependencies": {
-    "after-brunch": "*",
-    "brunch": "*",
+    "after-brunch": "0.0.5",
+    "brunch": "2.10.12",
     "karma": "~0.12.31",
     "karma-coffee-preprocessor": "~0.2.1",
     "karma-firefox-launcher": "~0.1.4",
     "karma-jasmine": "~0.3.0",
     "karma-ng-scenario": "~0.1.0",
-    "stylus-brunch": "*"
+    "stylus-brunch": "2.10.0"
   },
   "coffeelintConfig": {
     "max_line_length": {
