@@ -1,4 +1,4 @@
-stylus = require './node_modules/stylus-brunch/node_modules/stylus'
+stylus = require './node_modules/stylus'
 
 exports.config =
   # See http://brunch.io/#documentation for docs.
