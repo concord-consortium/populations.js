@@ -144,7 +144,7 @@ module.exports = class Environment extends StateMachine
 
   randomLocationWithin: (left, top, width, height, avoidBarriers=false)->
     point = {x: ExtMath.randomInt(width)+left, y: ExtMath.randomInt(height)+top}
-    while avoidBarriers and @isInBarrier(point)
+    while avoidBarriers and @isInBarrier(point.x, point.y)
       point = {x: ExtMath.randomInt(width)+left, y: ExtMath.randomInt(height)+top}
     return point
 
