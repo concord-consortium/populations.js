@@ -23,41 +23,41 @@ describe 'An agent in an environment', ->
     agent.setLocation {x: 0, y: 25}
     expect(agent.getEnvironmentProperty('sunlight')).toEqual 2
 
-    describe 'with rules', ->
+  describe 'with rules', ->
 
-      it 'should run the rules correctly', ->
+    it 'should run the rules correctly', ->
 
-        env = new Environment
-          columns: 5
-          rows: 5
+      env = new Environment
+        columns: 5
+        rows: 5
 
-        for col in [0..5]
-          for row in [0..5]
-            env.set col, row, "sunlight", row
+      for col in [0..5]
+        for row in [0..5]
+          env.set col, row, "sunlight", row
 
-        env.addRule new Rule
-          test: (agent) ->
-            return agent.getEnvironmentProperty('sunlight') >= 2
-          action: (agent) ->
-            agent.set 'health', 1
+      env.addRule new Rule
+        test: (agent) ->
+          return agent.getEnvironmentProperty('sunlight') >= 2
+        action: (agent) ->
+          agent.set 'health', 1
 
-        env.addRule new Rule
-          test: (agent) ->
-            return agent.getEnvironmentProperty('sunlight') < 2
-          action: (agent) ->
-            agent.set 'health', 0
+      env.addRule new Rule
+        test: (agent) ->
+          return agent.getEnvironmentProperty('sunlight') < 2
+        action: (agent) ->
+          agent.set 'health', 0
 
-        agent = new Agent {}
-        agent.set('is immortal', true)
-        agent.setLocation {x: 0, y: 35}     # sunlight = 3
-        env.addAgent(agent)
+      agent = new Agent {}
+      agent.set('is immortal', true)
+      agent.setLocation {x: 0, y: 35}     # sunlight = 3
+      env.addAgent(agent)
 
-        env.step()
+      env.step()
 
-        expect(agent.get 'health').toEqual 1
+      expect(agent.get 'health').toEqual 1
 
-        agent.setLocation {x: 0, y: 15}     # sunlight = 0
-        env.step()
+      agent.setLocation {x: 0, y: 15}     # sunlight = 0
+      env.step()
 
-        expect(agent.get 'health').toEqual 0
+      expect(agent.get 'health').toEqual 0
 

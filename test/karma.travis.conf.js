@@ -15,8 +15,8 @@ module.exports = function(config) {
     files: [
 
       // Program files
-      'public-test/js/vendor.js',
-      'public-test/js/app.js',
+      'public/js/vendor.js',
+      'public/js/app.js',
 
       // Specs
 
@@ -65,6 +65,14 @@ module.exports = function(config) {
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: false,
 
+    plugins: [
+      // 'karma-jasmine-html-reporter',
+      // 'karma-spec-reporter',
+      // 'karma-chrome-launcher',
+      'karma-jasmine',
+      'karma-phantomjs-launcher',
+      'karma-coffee-preprocessor'
+    ],
 
     // Start these browsers, currently available:
     // - Chrome
@@ -74,7 +82,7 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Firefox'],
+    browsers: ['PhantomJS'],
 
 
     // If browser does not capture in given timeout [ms], kill it
