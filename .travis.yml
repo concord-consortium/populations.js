@@ -11,15 +11,11 @@ install:
 - npm install -g bower
 - npm install -g coffee-script
 - npm install
-- npm install jasmine-core --save-dev
 - bower install
 before_script:
-- node_modules/.bin/brunch build
-- cp -r public public-test
 - node_modules/.bin/brunch build -p
 - "export DISPLAY=:99.0"
 - "sh -e /etc/init.d/xvfb start"
-script: node_modules/karma/bin/karma start test/karma.travis.conf.js
 deploy:
   provider: s3
   access_key_id:
