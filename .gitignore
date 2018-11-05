@@ -2,4 +2,5 @@
 /bower_components
 
 # Built files
+/dist
 /public

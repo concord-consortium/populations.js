@@ -8,8 +8,7 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-let Species;
-const helpers   = require('helpers');
+import * as helpers from '../helpers';
 
 const defaultDefs = {
   MAX_AGE: 1000,
@@ -17,7 +16,7 @@ const defaultDefs = {
   CHANCE_OF_MUTATION: 0.2
 };
 
-module.exports = (Species = class Species {
+export default class Species {
 
   // coffeelint: disable=indentation
   constructor({
@@ -151,4 +150,4 @@ module.exports = (Species = class Species {
       return result;
     })();
   }
-});
+};

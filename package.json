@@ -1,24 +1,20 @@
 {
   "name": "populations.js",
   "author": "Sam Fentress",
-  "version": "0.0.19",
+  "version": "0.1.0",
   "repository": "",
   "scripts": {
-    "start": "node_modules/.bin/brunch watch --server",
+    "start": "webpack --mode=development",
+    "build": "webpack --mode=development",
     "test": "node_modules/karma/bin/karma start test/karma.conf.js"
   },
-  "dependencies": {
-    "clean-css-brunch": "2.10.0",
-    "coffee-script-brunch": "~1.7.2",
-    "css-brunch": "~1.6.0",
-    "digest-brunch": "1.4.1",
-    "javascript-brunch": "~1.6.0",
-    "stylus": "^0.54.5",
-    "uglify-js-brunch": "~1.7.2"
-  },
   "devDependencies": {
-    "after-brunch": "0.0.5",
-    "brunch": "2.10.12",
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "babel-loader": "^8.0.4",
+    "css-loader": "^1.0.1",
+    "file-loader": "^2.0.0",
     "jasmine-core": "^3.1.0",
     "karma": "~0.12.31",
     "karma-coffee-preprocessor": "^0.2.1",
@@ -26,20 +22,12 @@
     "karma-jasmine": "^0.3.8",
     "karma-ng-scenario": "~0.1.0",
     "karma-phantomjs-launcher": "^1.0.4",
-    "stylus-brunch": "2.10.0"
+    "style-loader": "^0.23.1",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
+    "url-loader": "^1.1.2",
+    "webpack": "^4.24.0",
+    "webpack-cli": "^3.1.2"
   },
-  "coffeelintConfig": {
-    "max_line_length": {
-      "level": "ignore"
-    },
-    "no_empty_functions": {
-      "level": "warn"
-    },
-    "no_empty_param_list": {
-      "level": "warn"
-    },
-    "no_throwing_strings": {
-      "level": "error"
-    }
-  }
+  "dependencies": {}
 }

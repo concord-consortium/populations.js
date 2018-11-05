@@ -7,13 +7,12 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-let Interactive;
-const helpers = require("helpers");
-const Toolbar = require("ui/toolbar");
-const InfoView = require("ui/info-view");
-const SpeedSlider = require("ui/speed-slider");
-const Events = require('events');
-const Environment = require('models/environment');
+import * as helpers from '../helpers';
+import Toolbar from './toolbar';
+import InfoView from './info-view';
+import SpeedSlider from './speed-slider';
+import Events from '../events';
+import Environment from '../models/environment';
 
 const defaultOptions = {
   environment : null,
@@ -24,7 +23,7 @@ const defaultOptions = {
   toolButtons: []
 };
 
-module.exports = (Interactive = class Interactive {
+export default class Interactive {
 
   constructor(options) {
     this._opts = helpers.setDefaults(options, defaultOptions);
@@ -114,7 +113,7 @@ module.exports = (Interactive = class Interactive {
   reset() {
     return this.toolbar.toggleButtons['reset'].click();
   }
-});
+};
 
 window.onerror = function(msg, url, line){
   let message = `<div>There was an error in the model!<br/><pre>${msg}</pre></div>`;

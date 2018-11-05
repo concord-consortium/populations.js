@@ -25,22 +25,20 @@
   picking random values and mutating a value.
 */
 
-let Trait;
-require('helpers');
+import * as helpers from '../helpers';
 
-module.exports = (Trait = class Trait {
+export default class Trait {
 
-  constructor({name, possibleValues, min, max, default1, float, mutatable, isGenetic, isNumeric}) {
+  constructor({name, possibleValues, min, max, default: defaultValue, float, mutatable, isGenetic, isNumeric}) {
     this.name = name;
     this.possibleValues = possibleValues;
     this.min = min;
     this.max = max;
-    this.default = default1;
+    this.default = defaultValue;
     this.float = float;
     this.mutatable = mutatable;
     this.isGenetic = isGenetic;
     this.isNumeric = isNumeric;
-    undefined;
   }
 
   getDefaultValue() {
@@ -53,9 +51,9 @@ module.exports = (Trait = class Trait {
       return this.possibleValues.randomElement();
     } else {
       if (this.float) {
-        return ExtMath.randomValue(this.min, this.max);
+        return helpers.ExtMath.randomValue(this.min, this.max);
       } else {
-        return Math.floor(ExtMath.randomValue(this.min, this.max+1));
+        return Math.floor(helpers.ExtMath.randomValue(this.min, this.max+1));
       }
     }
   }
@@ -85,17 +83,17 @@ module.exports = (Trait = class Trait {
     if (!this.isGenetic) {
       if (this.possibleValues != null) {
         // randomly pick either the mother's or the father's
-        inheritedVal = (ExtMath.flip() === 0 ? motherVal : fatherVal);
+        inheritedVal = (helpers.ExtMath.flip() === 0 ? motherVal : fatherVal);
       } else {
         if (this.float) {
-          inheritedVal = ExtMath.randomValue(motherVal, fatherVal);
+          inheritedVal = helpers.ExtMath.randomValue(motherVal, fatherVal);
         } else {
           if (motherVal > fatherVal) {
             motherVal += 1;
           } else {
             fatherVal += 1;
           }
-          inheritedVal = Math.floor(ExtMath.randomValue(motherVal, fatherVal));
+          inheritedVal = Math.floor(helpers.ExtMath.randomValue(motherVal, fatherVal));
         }
       }
     }
@@ -103,7 +101,7 @@ module.exports = (Trait = class Trait {
   }
 
   _mutateValueFromRange(val) {
-    const sign = ExtMath.flip() ? 1 : -1;
+    const sign = helpers.ExtMath.flip() ? 1 : -1;
     const diff  = this.float ? 0.1 : 1;
     val += (diff * sign);
 
@@ -112,5 +110,5 @@ module.exports = (Trait = class Trait {
 
     return val;
   }
-});
+};
 

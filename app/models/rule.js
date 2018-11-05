@@ -6,8 +6,8 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-let Rule;
-module.exports = (Rule = class Rule {
+
+export default class Rule {
 
   // test: a function that returns true if the rule applies, and false otherwise, Will be passed an Agent
   //       if test is not defined, rule is always executed
@@ -25,4 +25,4 @@ module.exports = (Rule = class Rule {
       return console.log(`Error executing rule!${e}`);
     }
   }
-});
+};

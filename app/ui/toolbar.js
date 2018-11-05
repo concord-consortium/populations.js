@@ -7,14 +7,13 @@
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-let Toolbar;
-const AddOrganismButton = require("ui/add-organism-button");
-const RemoveOrganismButton = require("ui/remove-organism-button");
-const ToolButton  = require('ui/tool-button');
-const Events = require('events');
-const Environment = require('models/environment');
+import AddOrganismButton from './add-organism-button';
+import RemoveOrganismButton from './remove-organism-button';
+import ToolButton from './tool-button';
+import Events from '../events';
+import Environment from '../models/environment';
 
-module.exports = (Toolbar = class Toolbar {
+ export default class Toolbar {
 
   constructor(interactive) {
     let button;
@@ -131,4 +130,4 @@ module.exports = (Toolbar = class Toolbar {
   getView() {
     return this.view;
   }
-});
+};

@@ -13,8 +13,7 @@
   event dispatching on browsers that don't have CustomEvent support.
 */
 
-let Events;
-module.exports = (Events = class Events {
+export default class Events {
   static dispatchEvent(type, data){
     if (document.dispatchEvent != null) {
       const evt = new CustomEvent(type, {detail: data});
@@ -31,7 +30,7 @@ module.exports = (Events = class Events {
       return console.warn("document doesn't support addEventListener!");
     }
   }
-});
+};
 
 (function() {
   if (!window.CustomEvent || (typeof window.CustomEvent !== 'function')) {

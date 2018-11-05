@@ -1,3 +1,5 @@
+import PIXI from '../bower_components/pixi.js/bin/pixi';
+
 // TODO: This file was created by bulk-decaffeinate.
 // Sanity-check the conversion and remove this comment.
 /*
@@ -46,7 +48,7 @@ Array.prototype.randomElement = function() {
   return this[Math.floor(Math.random() * this.length)];
 };
 
-window.ExtMath = {};
+const ExtMath = {};
 
 ExtMath.randomInt = max => Math.floor(Math.random() * max);
 
@@ -122,164 +124,172 @@ ExtMath.distanceSquared = function(p1, p2) {
   return ((dx*dx) + (dy*dy));
 };
 
-module.exports = {
-
-  /*
-    Given an object of default values:
-    defaultOptions = {
-      a: "a",
-      b: "b",
-      c: {
-        d: "d",
-        e: "e"
-      }
+/*
+  Given an object of default values:
+  defaultOptions = {
+    a: "a",
+    b: "b",
+    c: {
+      d: "d",
+      e: "e"
     }
+  }
 
-    and an object of options
-    options = {
-      a: "A",
-      c: {
-        d: "D"
-        f: "F"
-      }
+  and an object of options
+  options = {
+    a: "A",
+    c: {
+      d: "D"
+      f: "F"
     }
+  }
 
-    this will set defaults for any undefined values, included those
-    in nested objects:
+  this will set defaults for any undefined values, included those
+  in nested objects:
 
-    setDefaults(options, defaultOptions) = {
-      a: "A",
-      b: "b",
-      c: {
-        d: "D",
-        e: "e",
-        f: "F"
-      }
+  setDefaults(options, defaultOptions) = {
+    a: "A",
+    b: "b",
+    c: {
+      d: "D",
+      e: "e",
+      f: "F"
     }
-  */
-  setDefaults(opts, defaults) {
-    for (let p in defaults) {
-      if (opts[p] === undefined) {
-        opts[p] = defaults[p];
-      } else if (typeof opts[p] === "object") {
-        opts[p] = this.setDefaults(opts[p], defaults[p]);
-      }
+  }
+*/
+function setDefaults(opts, defaults) {
+  for (let p in defaults) {
+    if (opts[p] === undefined) {
+      opts[p] = defaults[p];
+    } else if (typeof opts[p] === "object") {
+      opts[p] = this.setDefaults(opts[p], defaults[p]);
     }
-    return opts;
-  },
+  }
+  return opts;
+}
 
-  /*
-    Deep-copy an object
-  */
-  clone(obj) {
-    if ((obj == null) || (typeof obj !== 'object')) {
-      return obj;
-    }
+/*
+  Deep-copy an object
+*/
+function clone(obj) {
+  if ((obj == null) || (typeof obj !== 'object')) {
+    return obj;
+  }
 
-    const cloneObj = new obj.constructor();
+  const cloneObj = new obj.constructor();
 
-    for (let key in obj) {
-      cloneObj[key] = this.clone(obj[key]);
-    }
+  for (let key in obj) {
+    cloneObj[key] = this.clone(obj[key]);
+  }
 
-    return cloneObj;
-  },
+  return cloneObj;
+}
 
-  showMessage(message, element, callback) {
-    for (let oldBox of Array.from(document.getElementsByClassName("message-box"))) { oldBox.remove(); }
+function showMessage(message, element, callback) {
+  for (let oldBox of Array.from(document.getElementsByClassName("message-box"))) { oldBox.remove(); }
 
-    const top   = element.offsetTop + 50;
-    const width = 280;
-    const left  = (element.offsetLeft + (element.offsetWidth/2)) - (width/2);
+  const top   = element.offsetTop + 50;
+  const width = 280;
+  const left  = (element.offsetLeft + (element.offsetWidth/2)) - (width/2);
 
-    const box = document.createElement('div');
-    box.classList.add('message-box');
-    box.setAttribute("style",
-      `\
+  const box = document.createElement('div');
+  box.classList.add('message-box');
+  box.setAttribute("style",
+    `\
 top: ${top}px;
 left: ${left}px;
 width: ${width}px;\
 `
-    );
+  );
 
-    box.innerHTML = message;
+  box.innerHTML = message;
 
-    const button = document.createElement('div');
-    button.classList.add('button');
-    button.innerHTML = "Ok";
-    button.addEventListener('click', function() {
-      element.removeChild(box);
-      if (callback) { return callback(); }
-    });
-    box.appendChild(button);
+  const button = document.createElement('div');
+  button.classList.add('button');
+  button.innerHTML = "Ok";
+  button.addEventListener('click', function() {
+    element.removeChild(box);
+    if (callback) { return callback(); }
+  });
+  box.appendChild(button);
 
-    return element.appendChild(box);
-  },
+  return element.appendChild(box);
+}
 
-  stringify(obj){
-    if ((obj == null) || (typeof obj !== 'object')) {
-      return String(obj);
-    }
-
-    let str = "{ ";
-    for (let key in obj) {
-      str += String(key) + ": " + this.stringify(obj[key] + ", ");
-    }
-
-    return str.slice(0,str.length-2) + " }";
-  },
-
-  // sources is an array of objects, each which have a 'preload' property.
-  // the 'preload' property is an array of strings which will be treated as urls.
-  // The strings can be image paths or paths to json files specifying assets
-  // ex: preload([{preload: ["foo.jpg", "bar.png"]},{preload: ["baz.json"]}], function() {/**all done**/})
-  preload(sources, callback){
-    const statusContainer = document.createElement('div');
-    statusContainer.classList.add('preload-message');
-    const statusDom = document.createElement('div');
-    statusDom.classList.add('text');
-    statusDom.innerHTML = "Loading... 0% complete.";
-    statusContainer.appendChild(statusDom);
-    document.body.appendChild(statusContainer);
-
-    const assets = [];
-    for (let source of Array.from(sources)) {
-      if (source.preload == null) { continue; }
-      for (let asset of Array.from(source.preload)) {
-        assets.push(asset);
-      }
-    }
-
-    let numImages = null;
-
-    const loader = new PIXI.AssetLoader(assets);
-
-    loader.onProgress = function() {
-      if (!numImages) {
-        numImages = loader.loadCount + 1;
-      }
-      return statusDom.innerHTML = `Loading... ${Math.floor(((numImages-loader.loadCount)/numImages)*100)}%`;
-    };
-    loader.onComplete = function() {
-      statusDom.innerHTML = "Loading complete!";
-      return setTimeout(function() {
-        callback();
-        return document.body.removeChild(statusContainer);
-      }
-      , 10);
-    };
-    return loader.load();
-  },
-
-  mixOf(base, ...mixins) {
-    class Mixed extends base {}
-    for (let i = mixins.length - 1; i >= 0; i--) { //earlier mixins override later ones
-      const mixin = mixins[i];
-      for (let name in mixin.prototype) {
-        const method = mixin.prototype[name];
-        Mixed.prototype[name] = method;
-      }
-    }
-    return Mixed;
+function stringify(obj){
+  if ((obj == null) || (typeof obj !== 'object')) {
+    return String(obj);
   }
+
+  let str = "{ ";
+  for (let key in obj) {
+    str += String(key) + ": " + this.stringify(obj[key] + ", ");
+  }
+
+  return str.slice(0,str.length-2) + " }";
+}
+
+// sources is an array of objects, each which have a 'preload' property.
+// the 'preload' property is an array of strings which will be treated as urls.
+// The strings can be image paths or paths to json files specifying assets
+// ex: preload([{preload: ["foo.jpg", "bar.png"]},{preload: ["baz.json"]}], function() {/**all done**/})
+function preload(sources, callback){
+  const statusContainer = document.createElement('div');
+  statusContainer.classList.add('preload-message');
+  const statusDom = document.createElement('div');
+  statusDom.classList.add('text');
+  statusDom.innerHTML = "Loading... 0% complete.";
+  statusContainer.appendChild(statusDom);
+  document.body.appendChild(statusContainer);
+
+  const assets = [];
+  for (let source of Array.from(sources)) {
+    if (source.preload == null) { continue; }
+    for (let asset of Array.from(source.preload)) {
+      assets.push(asset);
+    }
+  }
+
+  let numImages = null;
+
+  const loader = new PIXI.AssetLoader(assets);
+
+  loader.onProgress = function() {
+    if (!numImages) {
+      numImages = loader.loadCount + 1;
+    }
+    return statusDom.innerHTML = `Loading... ${Math.floor(((numImages-loader.loadCount)/numImages)*100)}%`;
+  };
+  loader.onComplete = function() {
+    statusDom.innerHTML = "Loading complete!";
+    return setTimeout(function() {
+      callback();
+      return document.body.removeChild(statusContainer);
+    }
+    , 10);
+  };
+  return loader.load();
+};
+
+function mixOf(base, ...mixins) {
+  class Mixed extends base {}
+  for (let i = mixins.length - 1; i >= 0; i--) { //earlier mixins override later ones
+    const mixin = mixins[i];
+    const mixinMethods = Object.getOwnPropertyNames( mixin.prototype );
+    for (let name of mixinMethods) {
+      const method = mixin.prototype[name];
+      Mixed.prototype[name] = method;
+    }
+  }
+  return Mixed;
+}
+
+export {
+  ExtMath,
+  setDefaults,
+  clone,
+  showMessage,
+  stringify,
+  preload,
+  mixOf
 };
