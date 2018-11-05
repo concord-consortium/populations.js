@@ -2,6 +2,8 @@
   "name": "populations.js",
   "author": "Sam Fentress",
   "version": "0.1.0",
+  "private": false,
+  "main": "dist/populations.js",
   "repository": "",
   "scripts": {
     "start": "webpack --mode=development",
