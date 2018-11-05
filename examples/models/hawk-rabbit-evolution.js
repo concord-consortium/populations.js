@@ -99,15 +99,15 @@ window.model = {
       ]
     };
 
-    // this.outputGraph = LabGrapher('#graph', outputOptions);
+    this.outputGraph = LabGrapher('#graph', outputOptions);
 
-    // Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
-    //   return this.outputGraph.reset();
-    // });
+    Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
+      return this.outputGraph.reset();
+    });
 
-    // return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
-    //   return this.outputGraph.addSamples(this.countRabbits());
-    // });
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
+      return this.outputGraph.addSamples(this.countRabbits());
+    });
   },
 
   agentsOfSpecies(species){

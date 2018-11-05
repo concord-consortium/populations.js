@@ -3,19 +3,22 @@
   <head>
     <meta charset="utf-8">
     <title>populations.js</title>
-        <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
-        <script src="lib/populations.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.2/d3.min.js"></script>
+    <!-- build library -->
+    <script src="lib/populations.js"></script>
+    <!-- graph dependencies-->
+    <script src="vendor/jquery.min.js"></script>
+    <script src="vendor/d3.min.js"></script>
+    <script src="vendor/lab-grapher.js"></script>
     <!-- model files here-->
-        <script src="species/fast-plants-roots.js"></script>
-        <script src="species/white-brown-rabbits.js"></script>
-        <script src="species/hawks.js"></script>
-        <script src="species/plus-one.js"></script>
-        <script src="environments/snow.js"></script>
-        <script src="models/hawk-controllable.js"></script>
+    <script src="species/fast-plants-roots.js"></script>
+    <script src="species/white-brown-rabbits.js"></script>
+    <script src="species/hawks.js"></script>
+    <script src="species/plus-one.js"></script>
+    <script src="environments/snow.js"></script>
+    <script src="models/hawk-controllable.js"></script>
+
+    <link rel="stylesheet" href="css/lab-grapher.css"/>
     <style type="text/css">
       #side {
         padding: 2px;

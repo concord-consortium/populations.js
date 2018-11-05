@@ -99,25 +99,25 @@ window.model = {
       ]
     };
 
-    // this.outputGraph = LabGrapher('#graph', outputOptions);
+    this.outputGraph = LabGrapher('#graph', outputOptions);
 
     // start the graph at 0,22
-    // this.outputGraph.addSamples([this.startingRabbits,this.startingRabbits]);
+    this.outputGraph.addSamples([this.startingRabbits,this.startingRabbits]);
 
-  //   Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
-  //     this.outputGraph.reset();
-  //     return this.outputGraph.addSamples([this.startingRabbits,this.startingRabbits]);
-  // });
+    Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
+      this.outputGraph.reset();
+      return this.outputGraph.addSamples([this.startingRabbits,this.startingRabbits]);
+    });
 
-  //   return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
-  //     let whiteRabbits = 0;
-  //     let brownRabbits = 0;
-  //     for (let a of Array.from(this.env.agents)) {
-  //       if ((a.species === this.rabbitSpecies) && (a.get('color') === 'white')) { whiteRabbits++; }
-  //       if ((a.species === this.rabbitSpecies) && (a.get('color') === 'brown')) { brownRabbits++; }
-  //     }
-  //     return this.outputGraph.addSamples([whiteRabbits, brownRabbits]);
-  // });
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
+      let whiteRabbits = 0;
+      let brownRabbits = 0;
+      for (let a of Array.from(this.env.agents)) {
+        if ((a.species === this.rabbitSpecies) && (a.get('color') === 'white')) { whiteRabbits++; }
+        if ((a.species === this.rabbitSpecies) && (a.get('color') === 'brown')) { brownRabbits++; }
+      }
+      return this.outputGraph.addSamples([whiteRabbits, brownRabbits]);
+    });
   },
 
   numEaten: 0,

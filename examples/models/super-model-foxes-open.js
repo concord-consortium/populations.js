@@ -117,15 +117,15 @@ window.model = {
       ]
     };
 
-    // this.outputGraph = LabGrapher('#graph', outputOptions);
+    this.outputGraph = LabGrapher('#graph', outputOptions);
 
-    // Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
-    //   return this.outputGraph.reset();
-    // });
+    Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
+      return this.outputGraph.reset();
+    });
 
-    // return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
-    //   return this.outputGraph.addSamples(this._countOrganisms());
-    // });
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
+      return this.outputGraph.addSamples(this._countOrganisms());
+    });
   },
 
   _countOrganisms() {
