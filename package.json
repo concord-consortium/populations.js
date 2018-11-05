@@ -7,8 +7,7 @@
   "repository": "",
   "scripts": {
     "start": "webpack --mode=development",
-    "build": "webpack --mode=development",
-    "test": "node_modules/karma/bin/karma start test/karma.conf.js"
+    "build": "webpack --mode=development"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
@@ -18,13 +17,6 @@
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^1.0.1",
     "file-loader": "^2.0.0",
-    "jasmine-core": "^3.1.0",
-    "karma": "~0.12.31",
-    "karma-coffee-preprocessor": "^0.2.1",
-    "karma-firefox-launcher": "~0.1.4",
-    "karma-jasmine": "^0.3.8",
-    "karma-ng-scenario": "~0.1.0",
-    "karma-phantomjs-launcher": "^1.0.4",
     "style-loader": "^0.23.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
