@@ -6,11 +6,7 @@
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-let sunlight;
-const Environment = require('models/environment');
-const Rule        = require('models/rule');
-
-const env = new Environment({
+window.env = new Populations.Environment({
   columns:  58,
   rows:     52,
   imgPath: "images/environments/sun5levels.jpg",
@@ -42,7 +38,7 @@ for (let col = 0; col <= 58; col++) {
   }
 }
 
-env.addRule(new Rule({
+env.addRule(new Populations.Rule({
   test(agent) {
     return agent.get('age') > (agent.species.defs.SPROUT_AGE + 4);
   },
@@ -56,7 +52,7 @@ env.addRule(new Rule({
 })
 );
 
-env.addRule(new Rule({
+env.addRule(new Populations.Rule({
   action(agent){
     const immortal = (agent.get('age') < (agent.species.defs.SPROUT_AGE + 10)) || (agent.get('health') >= 0.87);
     return agent.set('is immortal', immortal);
@@ -64,12 +60,10 @@ env.addRule(new Rule({
 })
 );
 
-env.addRule(new Rule({
+env.addRule(new Populations.Rule({
   action(agent){
     const flowers = (agent.get('age') > agent.species.defs.MATURITY_AGE) && (agent.get('health') >= 0.95);
     return agent.set('has flowers', flowers);
   }
 })
 );
-
-require.register("environments/sunlight-flowerboxes", (exports, require, module) => module.exports = env);

@@ -1,5 +1,6 @@
 
 var path = require('path');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: './app/app.js',
@@ -34,5 +35,19 @@ module.exports = {
         include: path.join(__dirname, 'app', 'styles')
       }
     ]
-  }
+  },
+  plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: 'examples/',
+        to: '../public',
+        toType: 'dir'
+      },
+      {
+        from: 'dist/populations.js',
+        to: '../public/lib/populations.js',
+        toType: 'file'
+      }
+    ], {})
+  ]
 };

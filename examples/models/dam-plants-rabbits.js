@@ -9,29 +9,17 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const helpers     = require('helpers');
 
-const Environment = require('models/environment');
-const Species     = require('models/species');
-const Agent       = require('models/agent');
-const Rule        = require('models/rule');
-const Trait       = require('models/trait');
-const Interactive = require('ui/interactive');
-const Events      = require('events');
-const ToolButton  = require('ui/tool-button');
-const BasicAnimal = require('models/agents/basic-animal');
-
-const plantSpecies  = require('species/fast-plants-roots');
-const rabbitSpecies = require('species/varied-rabbits');
-const env           = require('environments/dam');
+const plantSpecies  = FastPlantsRootsSpecies;
+const rabbitSpecies = VariedRabbitsSpecies;
 
 window.model = {
   showMessage(message, callback) {
-    return helpers.showMessage(message, this.env.getView().view.parentElement, callback);
+    return Populations.helpers.showMessage(message, this.env.getView().view.parentElement, callback);
   },
 
   run() {
-    this.interactive = new Interactive({
+    this.interactive = new Populations.Interactive({
       environment: env,
       speedSlider: false,
       addOrganismButtons: [
@@ -39,8 +27,8 @@ window.model = {
           species: plantSpecies,
           imagePath: "images/agents/grass/medgrass.png",
           traits: [
-            new Trait({name: "population size modifier", default: 0.0, float: true}),
-            new Trait({name: "roots", possibleValues: [1,2,3] })
+            new Populations.Trait({name: "population size modifier", default: 0.0, float: true}),
+            new Populations.Trait({name: "roots", possibleValues: [1,2,3] })
           ],
           limit: 140,
           scatter: 140
@@ -49,7 +37,7 @@ window.model = {
           species: rabbitSpecies,
           imagePath: "images/agents/rabbits/smallbunny.png",
           traits: [
-            new Trait({name: "age", default: 3})
+            new Populations.Trait({name: "age", default: 3})
           ],
           limit: 40,
           scatter: 40
@@ -57,7 +45,7 @@ window.model = {
       ],
       toolButtons: [
         {
-          type: ToolButton.INFO_TOOL
+          type: Populations.ToolButton.INFO_TOOL
         }
       ]});
 
@@ -68,7 +56,7 @@ window.model = {
     this.rabbitSpecies = rabbitSpecies;
 
     this._reset();
-    return Events.addEventListener(Environment.EVENTS.RESET, () => {
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
       return this._reset();
     });
   },
@@ -99,7 +87,7 @@ window.model = {
     this.chart1.draw(this.chartData1, options1);
     this.chart2.draw(this.chartData2, options2);
 
-    return Events.addEventListener(Environment.EVENTS.STEP, () => {
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
       const counts = {
         top: [0,0,0,0],
         bottom: [0,0,0,0]
@@ -178,7 +166,7 @@ window.model = {
       if (!this.damCreated) {
         this.damCreated = true;
         // fast-forward to the beginning of the first year
-        return this.env.date = Math.floor(10000/Environment.DEFAULT_RUN_LOOP_DELAY)-1;
+        return this.env.date = Math.floor(10000/Populations.Environment.DEFAULT_RUN_LOOP_DELAY)-1;
       }
     };
 
@@ -200,7 +188,7 @@ window.model = {
       return this._highlight(3);
     };
 
-    return Events.addEventListener(Environment.EVENTS.RESET, () => noneHighlightRadio.click());
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => noneHighlightRadio.click());
   },
 
   _highlight(size){
@@ -223,13 +211,13 @@ window.model = {
     let waterLevel = 10;
     const yearSpan = document.getElementById('year');
     const waterLevelIndicator = document.getElementById('water-level-indicator');
-    Events.addEventListener(Environment.EVENTS.STEP, () => {
+    Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
       if (!this.damCreated) {
         // time doesn't pass until the dam is built
         this.env.date = 0;
         return;
       }
-      const t = Math.floor((this.env.date * Environment.DEFAULT_RUN_LOOP_DELAY) / 1000); // this will calculate seconds at default speed
+      const t = Math.floor((this.env.date * Populations.Environment.DEFAULT_RUN_LOOP_DELAY) / 1000); // this will calculate seconds at default speed
 
       const year = t/changeInterval;
       waterLevel = 11-Math.min(11, year);
@@ -246,7 +234,7 @@ window.model = {
       }
     });
 
-    return Events.addEventListener(Environment.EVENTS.RESET, function() {
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, function() {
       backgroundChangeable = false;
       yearSpan.innerHTML = "1";
       return waterLevelIndicator.style.height = "100%";
@@ -290,7 +278,7 @@ window.model = {
   },
 
   setupPopulationMonitoring() {
-    return Events.addEventListener(Environment.EVENTS.STEP, () => {
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
       // Check population levels and adjust accordingly
       this._setPlantGrowthRate();
       this._setRabbitGrowthRate();
@@ -458,7 +446,7 @@ window.model = {
 };
 
 window.onload = () =>
-  helpers.preload([model, env, rabbitSpecies, plantSpecies], function() {
+  Populations.helpers.preload([model, env, rabbitSpecies, plantSpecies], function() {
     model.run();
     model.setupControls();
     model.setupCharts();

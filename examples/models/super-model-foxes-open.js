@@ -6,27 +6,15 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const helpers     = require('helpers');
 
-const Environment = require('models/environment');
-const Species     = require('models/species');
-const Agent       = require('models/agent');
-const Rule        = require('models/rule');
-const Trait       = require('models/trait');
-const Interactive = require('ui/interactive');
-const Events      = require('events');
-const ToolButton  = require('ui/tool-button');
-const BasicAnimal = require('models/agents/basic-animal');
-
-const plantSpecies  = require('species/fast-plants-roots');
-const rabbitSpecies = require('species/white-brown-rabbits');
-const hawkSpecies   = require('species/hawks');
-const foxSpecies    = require('species/foxes');
-const env           = require('environments/open');
+const plantSpecies  = window.FastPlantsRootsSpecies;
+const rabbitSpecies = window.WhiteBrownRabbitsSpecies;
+const hawkSpecies   = window.HawksSpecies;
+const foxSpecies    = window.FoxesSpecies;
 
 window.model = {
   run() {
-    this.interactive = new Interactive({
+    this.interactive = new Populations.Interactive({
       environment: env,
       speedSlider: false,
       addOrganismButtons: [
@@ -34,7 +22,7 @@ window.model = {
           species: plantSpecies,
           imagePath: "images/agents/grass/tallgrass.png",
           traits: [
-            new Trait({name: 'resource consumption rate', default: 2})
+            new Populations.Trait({name: 'resource consumption rate', default: 2})
           ],
           limit: 4000,
           scatter: 400,
@@ -44,17 +32,17 @@ window.model = {
           species: rabbitSpecies,
           imagePath: "images/agents/rabbits/rabbit2.png",
           traits: [
-            new Trait({name: "mating desire bonus", default: -20}),
-            new Trait({name: "hunger bonus", default: -10}),
-            new Trait({name: "age", default: 3}),
-            new Trait({name: "resource consumption rate", default: 10}),
-            new Trait({name: "min offspring", default: 3}),
-            new Trait({name: "max offspring", default: 10}),
-            new Trait({name: "metabolism", default: 1}),
-            new Trait({name: "chance of being seen", default: 0.17}),
-            new Trait({name: "mating distance", default: 250}),
-            new Trait({name: "vision distance", default: 500}),
-            new Trait({name: "color", default: "white"})
+            new Populations.Trait({name: "mating desire bonus", default: -20}),
+            new Populations.Trait({name: "hunger bonus", default: -10}),
+            new Populations.Trait({name: "age", default: 3}),
+            new Populations.Trait({name: "resource consumption rate", default: 10}),
+            new Populations.Trait({name: "min offspring", default: 3}),
+            new Populations.Trait({name: "max offspring", default: 10}),
+            new Populations.Trait({name: "metabolism", default: 1}),
+            new Populations.Trait({name: "chance of being seen", default: 0.17}),
+            new Populations.Trait({name: "mating distance", default: 250}),
+            new Populations.Trait({name: "vision distance", default: 500}),
+            new Populations.Trait({name: "color", default: "white"})
           ],
           limit: 700,
           scatter: 70,
@@ -64,12 +52,12 @@ window.model = {
           species: hawkSpecies,
           imagePath: "images/agents/hawks/hawk.png",
           traits: [
-            new Trait({name: "min offspring", default: 2}),
-            new Trait({name: "max offspring", default: 4}),
-            new Trait({name: "mating distance", default: 140}),
-            new Trait({name: "eating distance", default:  50}),
-            new Trait({name: "vision distance", default: 350}),
-            new Trait({name: "metabolism", default: 6})
+            new Populations.Trait({name: "min offspring", default: 2}),
+            new Populations.Trait({name: "max offspring", default: 4}),
+            new Populations.Trait({name: "mating distance", default: 140}),
+            new Populations.Trait({name: "eating distance", default:  50}),
+            new Populations.Trait({name: "vision distance", default: 350}),
+            new Populations.Trait({name: "metabolism", default: 6})
           ],
           limit: 150,
           scatter: 6,
@@ -79,10 +67,10 @@ window.model = {
           species: foxSpecies,
           imagePath: "images/agents/foxes/fox.png",
           traits: [
-            new Trait({name: "max offspring", default: 3}),
-            new Trait({name: "mating distance", default: 220}),
-            new Trait({name: "eating distance", default:  50}),
-            new Trait({name: "metabolism", default: 3})
+            new Populations.Trait({name: "max offspring", default: 3}),
+            new Populations.Trait({name: "mating distance", default: 220}),
+            new Populations.Trait({name: "eating distance", default:  50}),
+            new Populations.Trait({name: "metabolism", default: 3})
           ],
           limit: 140,
           scatter: 6,
@@ -91,7 +79,7 @@ window.model = {
       ],
       toolButtons: [
         {
-          type: ToolButton.INFO_TOOL
+          type: Populations.ToolButton.INFO_TOOL
         }
       ]});
 
@@ -119,7 +107,7 @@ window.model = {
       yFormatter: "2d",
       realTime: false,
       fontScaleRelativeToParent: true,
-      sampleInterval: (Environment.DEFAULT_RUN_LOOP_DELAY/1000),
+      sampleInterval: (Populations.Environment.DEFAULT_RUN_LOOP_DELAY/1000),
       dataType: 'samples',
       dataColors: [
         "#00AA00",
@@ -129,15 +117,15 @@ window.model = {
       ]
     };
 
-    this.outputGraph = LabGrapher('#graph', outputOptions);
+    // this.outputGraph = LabGrapher('#graph', outputOptions);
 
-    Events.addEventListener(Environment.EVENTS.RESET, () => {
-      return this.outputGraph.reset();
-    });
+    // Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
+    //   return this.outputGraph.reset();
+    // });
 
-    return Events.addEventListener(Environment.EVENTS.STEP, () => {
-      return this.outputGraph.addSamples(this._countOrganisms());
-    });
+    // return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
+    //   return this.outputGraph.addSamples(this._countOrganisms());
+    // });
   },
 
   _countOrganisms() {
@@ -165,7 +153,7 @@ window.model = {
   },
 
   _showMessage(message, callback) {
-    return helpers.showMessage(message, this.env.getView().view.parentElement, callback);
+    return Populations.helpers.showMessage(message, this.env.getView().view.parentElement, callback);
   },
 
   _agentsOfSpecies(species){
@@ -185,7 +173,7 @@ window.model = {
   _endMessageShown: false,
   _timeOfExtinction: 0,
   setupPopulationControls() {
-    Events.addEventListener(Environment.EVENTS.STEP, () => {
+    Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
       const allRabbits = this._agentsOfSpecies(this.rabbitSpecies);
       const allHawks = this._agentsOfSpecies(this.hawkSpecies);
       this._checkExtinction(allRabbits, allHawks);
@@ -197,12 +185,12 @@ window.model = {
         return this._showEndMessage();
       }
     });
-    Events.addEventListener(Environment.EVENTS.RESET, () => {
+    Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
       if (!this._endMessageShown) { this._showEndMessage(); }
       this._hawksRemoved = (this._rabbitsRemoved = (this._hawksAreDead = (this._rabbitsAreDead = (this._endMessageShown = (this._addedRabbits = (this._addedHawks = false))))));
       return this._timeOfExtinction = 0;
     });
-    return Events.addEventListener(Environment.EVENTS.USER_REMOVED_AGENTS, evt=> {
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.USER_REMOVED_AGENTS, evt=> {
       const { species } = evt.detail;
       if (species === this.hawkSpecies) {
         return this._hawksRemoved = true;
@@ -300,7 +288,7 @@ window.model = {
 };
 
 window.onload = () =>
-  helpers.preload([model, env, plantSpecies, rabbitSpecies, hawkSpecies, foxSpecies], function() {
+  Populations.helpers.preload([model, env, plantSpecies, rabbitSpecies, hawkSpecies, foxSpecies], function() {
     model.run();
     model.setupGraph();
     return model.setupPopulationControls();

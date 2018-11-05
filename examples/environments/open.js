@@ -5,10 +5,8 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const Environment = require('models/environment');
-const Rule        = require('models/rule');
 
-const env = new Environment({
+window.env = new Populations.Environment({
   columns:  50,
   rows:     50,
   imgPath: "images/environments/green2.png",
@@ -16,5 +14,3 @@ const env = new Environment({
   wrapEastWest: false,
   wrapNorthSouth: false
 });
-
-require.register("environments/open", (exports, require, module) => module.exports = env);

@@ -5,13 +5,8 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const Environment = require('models/environment');
-const Rule        = require('models/rule');
-const Trait       = require('models/trait');
-const BasicAnimal = require('models/agents/basic-animal');
-const FastPlant   = require('models/agents/fast-plant');
 
-const env = new Environment({
+const env = new Populations.Environment({
   columns:  50,
   rows:     50,
   imgPath: "images/environments/dam-year0.png",
@@ -23,20 +18,20 @@ const env = new Environment({
   wrapNorthSouth: false
 });
 
-env.addRule(new Rule({
+env.addRule(new Populations.Rule({
   test(agent){
-    return agent instanceof BasicAnimal && (agent.get('prey').length === 0);
+    return agent instanceof Populations.BasicAnimal && (agent.get('prey').length === 0);
   },
   action(agent) {
     // Set the right prey based on size
-    const trait = new Trait({name: 'roots', possibleValues: [agent.get('size')]});
+    const trait = new Populations.Trait({name: 'roots', possibleValues: [agent.get('size')]});
     return agent.set('prey', [{name: 'fast plants', traits: [trait]}]);
   }}));
 
 // plants with roots 1
-env.addRule(new Rule({
+env.addRule(new Populations.Rule({
   test(agent){
-    return agent instanceof FastPlant && (agent.get('roots') === 1);
+    return agent instanceof Populations.FastPlant && (agent.get('roots') === 1);
   },
   action(agent){
     const water = agent.get('water')/10.0;
@@ -54,9 +49,9 @@ env.addRule(new Rule({
 );
 
 // plants with roots 2
-env.addRule(new Rule({
+env.addRule(new Populations.Rule({
   test(agent){
-    return agent instanceof FastPlant && (agent.get('roots') === 2);
+    return agent instanceof Populations.FastPlant && (agent.get('roots') === 2);
   },
   action(agent){
     const water = agent.get('water')/10;
@@ -74,9 +69,9 @@ env.addRule(new Rule({
 );
 
 // plants with roots 3
-env.addRule(new Rule({
+env.addRule(new Populations.Rule({
   test(agent){
-    return agent instanceof FastPlant && (agent.get('roots') === 3);
+    return agent instanceof Populations.FastPlant && (agent.get('roots') === 3);
   },
   action(agent){
     const pop_size_mod = agent.get('population size modifier');
@@ -86,5 +81,3 @@ env.addRule(new Rule({
   }
 })
 );
-
-require.register("environments/dam", (exports, require, module) => module.exports = env);

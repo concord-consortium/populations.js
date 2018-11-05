@@ -5,17 +5,12 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const helpers     = require('helpers');
 
-const Interactive = require('ui/interactive');
-const ToolButton  = require('ui/tool-button');
-
-const foxSpecies  = require('species/animated-foxes');
-const env         = require('environments/open');
+const foxSpecies  = window.FoxSpecies;
 
 window.model = {
   run() {
-    this.interactive = new Interactive({
+    this.interactive = new Populations.Interactive({
       environment: env,
       speedSlider: false,
       addOrganismButtons: [
@@ -27,7 +22,7 @@ window.model = {
       ],
       toolButtons: [
         {
-          type: ToolButton.INFO_TOOL
+          type: Populations.ToolButton.INFO_TOOL
         }
       ]});
 
@@ -36,5 +31,5 @@ window.model = {
 };
 
 window.onload = () =>
-  helpers.preload([model, env, foxSpecies], () => model.run())
+  Populations.helpers.preload([model, env, foxSpecies], () => model.run())
 ;

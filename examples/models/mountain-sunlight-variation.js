@@ -8,18 +8,8 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const helpers     = require('helpers');
-const Environment = require('models/environment');
-const Species     = require('models/species');
-const Agent       = require('models/agent');
-const Rule        = require('models/rule');
-const Trait       = require('models/trait');
-const Interactive = require('ui/interactive');
-const Events      = require('events');
-const ToolButton  = require('ui/tool-button');
 
-const plantSpecies = require('species/varied-plants');
-const env          = require('environments/sunlight-mountain');
+const plantSpecies = window.VariedPlantsSpecies;
 
 window.model = {
   emptyBarriers: [
@@ -44,7 +34,7 @@ window.model = {
     plantSpecies.defs.CHANCE_OF_MUTATION = 0.21;
     plantSpecies.setMutatable('root size', false);
 
-    this.interactive = new Interactive({
+    this.interactive = new Populations.Interactive({
       environment: env,
       speedSlider: true,
       addOrganismButtons: [
@@ -54,14 +44,14 @@ window.model = {
           species: plantSpecies,
           imagePath: "images/agents/varied-plants/buttons/seedpack_6.png",
           traits: [
-            new Trait({name: "size", default: 5}),
-            new Trait({name: "root size", default: 5})
+            new Populations.Trait({name: "size", default: 5}),
+            new Populations.Trait({name: "root size", default: 5})
           ]
         }
       ],
       toolButtons: [
         {
-          type: ToolButton.INFO_TOOL
+          type: Populations.ToolButton.INFO_TOOL
         }
       ]});
 
@@ -94,7 +84,7 @@ window.model = {
       return this._updateMountains("images/environments/mountains5flipped.jpg", this.mountainBarriers, 10, 2);
     };
 
-    return Events.addEventListener(Environment.EVENTS.RESET, () => mountains1.click());
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => mountains1.click());
   },
 
   _updateMountains(imgPath, barriers, leftSunlight, rightSunlight){
@@ -122,7 +112,7 @@ window.model = {
   },
 
   showMessage(message, callback) {
-    return helpers.showMessage(message, this.env.getView().view.parentElement, callback);
+    return Populations.helpers.showMessage(message, this.env.getView().view.parentElement, callback);
   },
 
   setupMessages() {
@@ -133,16 +123,16 @@ window.model = {
     let shownMessage = false;
     let allAgents = [];
 
-    Events.addEventListener(Environment.EVENTS.RESET, function() {
+    Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, function() {
       userAddedAgents = false;
       yearsSuccessful = 0; // don't win until final plants liev at least one year
       shownMessage = false;
       return allAgents = [];
   });
 
-    Events.addEventListener(Environment.EVENTS.AGENT_ADDED, () => userAddedAgents = true);
+    Populations.Events.addEventListener(Populations.Environment.EVENTS.AGENT_ADDED, () => userAddedAgents = true);
 
-    return Events.addEventListener(Environment.EVENTS.SEASON_CHANGED, evt=> {
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.SEASON_CHANGED, evt=> {
       if (!shownMessage) {
         let mountainHeight;
         if ((evt.detail.season === "winter") || (evt.detail.season === "spring")) {
@@ -333,7 +323,7 @@ window.model = {
       this.chart = new google.visualization.ColumnChart(domChart);
       this.chart.draw(this.chartData, options);
 
-      return Events.addEventListener(Environment.EVENTS.STEP, () => {
+      return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
         let i;
         if (this.env.get(0, 0, "season") !== "summer") { return; }
         const counts = []; for (i = 0; i <= 9; i++) { counts.push(0); }
@@ -365,7 +355,7 @@ window.model = {
 };
 
 window.onload = () =>
-  helpers.preload([model, env, plantSpecies], function() {
+  Populations.helpers.preload([model, env, plantSpecies], function() {
     model.run();
     model.setupMountains();
     model.setupMessages();

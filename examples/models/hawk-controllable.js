@@ -8,23 +8,11 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const helpers     = require('helpers');
 
-const Environment = require('models/environment');
-const Species     = require('models/species');
-const Agent       = require('models/agent');
-const Rule        = require('models/rule');
-const Trait       = require('models/trait');
-const Interactive = require('ui/interactive');
-const Events      = require('events');
-const ToolButton  = require('ui/tool-button');
-const BasicAnimal = require('models/agents/basic-animal');
-
-const plantSpecies  = require('species/fast-plants-roots');
-const rabbitSpecies = require('species/white-brown-rabbits');
-const hawkSpecies   = require('species/hawks');
-const plusOne       = require('species/plus-one');
-const env           = require('environments/snow');
+const plantSpecies  = window.FastPlantsRootsSpecies;
+const rabbitSpecies = window.WhiteBrownRabbitsSpecies;
+const hawkSpecies   = window.HawksSpecies;
+const plusOne       = window.PlusOneSpecies;
 
 window.model = {
   hawk: null,
@@ -62,12 +50,12 @@ window.model = {
     this.hawk.set('default speed', 0);
     this.hawk.set('calculate drives', false);
     this.hawk.set('wings', 0);
-    this.hawk.set('current behavior', BasicAnimal.BEHAVIOR.WANDERING);
+    this.hawk.set('current behavior', Populations.BasicAnimal.BEHAVIOR.WANDERING);
     return this.env.addAgent(this.hawk);
   },
 
   run() {
-    this.interactive = new Interactive({
+    this.interactive = new Populations.Interactive({
       environment: env,
       speedSlider: false,
       addOrganismButtons: [],
@@ -83,7 +71,7 @@ window.model = {
 
     this.setupEnvironment();
 
-    return Events.addEventListener(Environment.EVENTS.RESET, () => {
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
       return this.setupEnvironment();
     });
   },
@@ -103,7 +91,7 @@ window.model = {
       yFormatter: "2d",
       realTime: false,
       fontScaleRelativeToParent: true,
-      sampleInterval: (Environment.DEFAULT_RUN_LOOP_DELAY/1000),
+      sampleInterval: (Populations.Environment.DEFAULT_RUN_LOOP_DELAY/1000),
       dataType: 'samples',
       dataColors: [
         "#999999",
@@ -111,25 +99,25 @@ window.model = {
       ]
     };
 
-    this.outputGraph = LabGrapher('#graph', outputOptions);
+    // this.outputGraph = LabGrapher('#graph', outputOptions);
 
     // start the graph at 0,22
-    this.outputGraph.addSamples([this.startingRabbits,this.startingRabbits]);
+    // this.outputGraph.addSamples([this.startingRabbits,this.startingRabbits]);
 
-    Events.addEventListener(Environment.EVENTS.RESET, () => {
-      this.outputGraph.reset();
-      return this.outputGraph.addSamples([this.startingRabbits,this.startingRabbits]);
-  });
+  //   Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
+  //     this.outputGraph.reset();
+  //     return this.outputGraph.addSamples([this.startingRabbits,this.startingRabbits]);
+  // });
 
-    return Events.addEventListener(Environment.EVENTS.STEP, () => {
-      let whiteRabbits = 0;
-      let brownRabbits = 0;
-      for (let a of Array.from(this.env.agents)) {
-        if ((a.species === this.rabbitSpecies) && (a.get('color') === 'white')) { whiteRabbits++; }
-        if ((a.species === this.rabbitSpecies) && (a.get('color') === 'brown')) { brownRabbits++; }
-      }
-      return this.outputGraph.addSamples([whiteRabbits, brownRabbits]);
-  });
+  //   return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
+  //     let whiteRabbits = 0;
+  //     let brownRabbits = 0;
+  //     for (let a of Array.from(this.env.agents)) {
+  //       if ((a.species === this.rabbitSpecies) && (a.get('color') === 'white')) { whiteRabbits++; }
+  //       if ((a.species === this.rabbitSpecies) && (a.get('color') === 'brown')) { brownRabbits++; }
+  //     }
+  //     return this.outputGraph.addSamples([whiteRabbits, brownRabbits]);
+  // });
   },
 
   numEaten: 0,
@@ -154,7 +142,7 @@ window.model = {
     this.env.setState('hawk-follow-mouse');
 
     const caughtElem = document.getElementById('caught-value');
-    Events.addEventListener(Environment.EVENTS.RESET, () => {
+    Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
       this.env.setState('hawk-follow-mouse');
       this.numEaten = 0;
       this.brownEaten = 0;
@@ -162,7 +150,7 @@ window.model = {
       return caughtElem.innerHTML = "0";
     });
 
-    return Events.addEventListener(Environment.EVENTS.AGENT_EATEN, evt=> {
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.AGENT_EATEN, evt=> {
       if (evt.detail.predator === this.hawk) {
         this._createPlusOne();
         this.numEaten++;
@@ -179,7 +167,7 @@ window.model = {
       const eatingDist = this.hawk.get('eating distance');
       if (nearest.distanceSq < Math.pow(eatingDist, 2)) {
         const color = nearest.agent.get('color');
-        if ((color === 'brown') || (ExtMath.flip() === 1)) {
+        if ((color === 'brown') || (Populations.helpers.ExtMath.flip() === 1)) {
           return this.hawk._eatPrey(nearest.agent);
         }
       }
@@ -203,8 +191,8 @@ window.model = {
   },
 
   setupTimer() {
-    return Events.addEventListener(Environment.EVENTS.STEP, () => {
-      const t = Math.floor((this.env.date * Environment.DEFAULT_RUN_LOOP_DELAY) / 1000); // this will calculate seconds at default speed
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
+      const t = Math.floor((this.env.date * Populations.Environment.DEFAULT_RUN_LOOP_DELAY) / 1000); // this will calculate seconds at default speed
       if ((t >= 30) || (this._numRabbits() === 0)) {
         this.env.stop();
         if (this.numEaten === 0) {
@@ -219,12 +207,12 @@ window.model = {
   },
 
   showMessage(message, callback) {
-    return helpers.showMessage(message, this.env.getView().view.parentElement, callback);
+    return Populations.helpers.showMessage(message, this.env.getView().view.parentElement, callback);
   }
 };
 
 window.onload = () =>
-  helpers.preload([env, plantSpecies, rabbitSpecies, hawkSpecies, plusOne], function() {
+  Populations.helpers.preload([env, plantSpecies, rabbitSpecies, hawkSpecies, plusOne], function() {
     model.run();
     model.setupGraph();
     model.setupControls();

@@ -7,27 +7,15 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const helpers     = require('helpers');
 
-const Environment = require('models/environment');
-const Species     = require('models/species');
-const Agent       = require('models/agent');
-const Rule        = require('models/rule');
-const Trait       = require('models/trait');
-const Interactive = require('ui/interactive');
-const Events      = require('events');
-const ToolButton  = require('ui/tool-button');
-const BasicAnimal = require('models/agents/basic-animal');
-
-const plantSpecies  = require('species/fast-plants-roots');
-const rabbitSpecies = require('species/white-brown-rabbits-genetics');
-const hawkSpecies   = require('species/hawks');
-const env           = require('environments/snow');
+const plantSpecies  = window.FastPlantsRootsSpecies;
+const rabbitSpecies = window.WhiteBrownRabbitsWithGeneticsSpecies;
+const hawkSpecies   = window.HawksSpecies;
 
 window.model = {
   brownness: 0,
   run() {
-    this.interactive = new Interactive({
+    this.interactive = new Populations.Interactive({
       environment: env,
       speedSlider: true,
       addOrganismButtons: [
@@ -49,7 +37,7 @@ window.model = {
           species: hawkSpecies,
           imagePath: "images/agents/hawks/hawk.png",
           traits: [
-            new Trait({name: "mating desire bonus", default: -10})
+            new Populations.Trait({name: "mating desire bonus", default: -10})
           ],
           limit: 2,
           scatter: 2
@@ -57,7 +45,7 @@ window.model = {
       ],
       toolButtons: [
         {
-          type: ToolButton.INFO_TOOL
+          type: Populations.ToolButton.INFO_TOOL
         }
       ]});
 
@@ -70,14 +58,14 @@ window.model = {
     this.hawkSpecies = hawkSpecies;
     this.rabbitSpecies = rabbitSpecies;
 
-    Events.addEventListener(Environment.EVENTS.AGENT_ADDED, evt => {
+    Populations.Events.addEventListener(Populations.Environment.EVENTS.AGENT_ADDED, evt => {
       const { agent } = evt.detail;
       if (!agent.bred && (agent.species === this.rabbitSpecies)) {
-        return agent.set('age', ExtMath.randomInt(9));
+        return agent.set('age', Populations.helpers.ExtMath.randomInt(9));
       }
     });
 
-    return env.addRule(new Rule({
+    return env.addRule(new Populations.Rule({
       action: agent => {
         if (agent.species === rabbitSpecies) {
           if (agent.get('color') === 'brown') {
@@ -106,7 +94,7 @@ window.model = {
       yFormatter: "2d",
       realTime: false,
       fontScaleRelativeToParent: true,
-      sampleInterval: (Environment.DEFAULT_RUN_LOOP_DELAY/1000),
+      sampleInterval: (Populations.Environment.DEFAULT_RUN_LOOP_DELAY/1000),
       dataType: 'samples',
       dataColors: [
         [153, 153, 153],
@@ -115,15 +103,15 @@ window.model = {
       ]
     };
 
-    this.outputGraph = LabGrapher('#graph', outputOptions);
+    // this.outputGraph = LabGrapher('#graph', outputOptions);
 
-    Events.addEventListener(Environment.EVENTS.RESET, () => {
-      return this.outputGraph.reset();
-    });
+    // Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
+    //   return this.outputGraph.reset();
+    // });
 
-    return Events.addEventListener(Environment.EVENTS.STEP, () => {
-      return this.outputGraph.addSamples(this.countRabbits());
-    });
+    // return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
+    //   return this.outputGraph.addSamples(this.countRabbits());
+    // });
   },
 
   agentsOfSpecies(species){
@@ -147,8 +135,8 @@ window.model = {
   setupTimer() {
     let backgroundChangeable = false;
     const changeInterval = 10;
-    Events.addEventListener(Environment.EVENTS.STEP, () => {
-      const t = Math.floor((this.env.date * Environment.DEFAULT_RUN_LOOP_DELAY) / 1000); // this will calculate seconds at default speed
+    Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
+      const t = Math.floor((this.env.date * Populations.Environment.DEFAULT_RUN_LOOP_DELAY) / 1000); // this will calculate seconds at default speed
       if (t > 119) {
         this.env.stop();
         this.showMessage("All the snow is gone. Look at the graph.<br/>How many white and brown rabbits are left in the field?");
@@ -164,7 +152,7 @@ window.model = {
       }
     });
 
-    return Events.addEventListener(Environment.EVENTS.RESET, () => {
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.RESET, () => {
       return this.env.setBackground("images/environments/snow.png");
     });
   },
@@ -175,11 +163,11 @@ window.model = {
   },
 
   showMessage(message, callback) {
-    return helpers.showMessage(message, this.env.getView().view.parentElement, callback);
+    return Populations.helpers.showMessage(message, this.env.getView().view.parentElement, callback);
   },
 
   setupPopulationControls() {
-    return Events.addEventListener(Environment.EVENTS.STEP, () => {
+    return Populations.Events.addEventListener(Populations.Environment.EVENTS.STEP, () => {
       this.checkPlants();
       this.checkRabbits();
       return this.checkHawks();
@@ -201,9 +189,9 @@ window.model = {
   addedRabbits: false,
   addedHawks: false,
   numRabbits: 0,
-  resourceConsumptionTrait: new Trait({ name: 'resource consumption rate', default: 10 }),
-  brownTrait: new Trait({ name: 'color', default: 'a:b,b:b', isGenetic: true }),
-  whiteTrait: new Trait({ name: 'color', default: 'a:B,b:b', isGenetic: true }),
+  resourceConsumptionTrait: new Populations.Trait({ name: 'resource consumption rate', default: 10 }),
+  brownTrait: new Populations.Trait({ name: 'color', default: 'a:b,b:b', isGenetic: true }),
+  whiteTrait: new Populations.Trait({ name: 'color', default: 'a:B,b:b', isGenetic: true }),
   checkRabbits() {
     const allRabbits = this.agentsOfSpecies(this.rabbitSpecies);
     const allPlants  = this.agentsOfSpecies(this.plantSpecies);
@@ -302,7 +290,7 @@ window.model = {
 };
 
 window.onload = () =>
-  helpers.preload([model, env, plantSpecies, rabbitSpecies, hawkSpecies], function() {
+  Populations.helpers.preload([model, env, plantSpecies, rabbitSpecies, hawkSpecies], function() {
     model.run();
     model.setupGraph();
     model.setupTimer();
