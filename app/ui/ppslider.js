@@ -1,3 +1,5 @@
+// TODO: This file was created by bulk-decaffeinate.
+// Sanity-check the conversion and remove this comment.
 // Based on the code here: http://jsfiddle.net/LucP/BPdKR/2/
 // TODO We could probably convert this to not rely on jQuery...
 // coffeelint: disable=no_backticks
