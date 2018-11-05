@@ -111,10 +111,10 @@ module.exports = class BasicAnimal extends Agent
     nearest = @_nearestMate()
     if nearest?
       @chase(nearest)
-      if nearest.distanceSq < Math.pow(@get('mating distance'), 2)
+      if nearest.distanceSq < Math.pow(@get('mating distance'), 2) and (not @species.defs.CHANCE_OF_MATING? or Math.random() < @species.defs.CHANCE_OF_MATING)
         max = @get('max offspring')
         @set 'max offspring', Math.max(max/2, 1)
-        @reproduce()
+        @reproduce(nearest.agent)
         @set 'max offspring', max
         @_timeLastMated = @environment.date
     else
@@ -264,14 +264,14 @@ module.exports = class BasicAnimal extends Agent
   _nearestMate: ->
     desiredSex = if @get('sex') is 'male' then 'female' else 'male'
     trait = new Trait({name: 'sex', possibleValues: [desiredSex]})
-    nearest = @_nearestAgentsMatching {types: [{name: @species.speciesName, traits: [trait]}], quantity: 1}
+    nearest = @_nearestAgentsMatching {types: [{name: @species.speciesName, traits: [trait]}], quantity: 1, mating: true}
     return nearest[0] || null
 
   _nearestMatingMate: ->
     desiredSex = if @get('sex') is 'male' then 'female' else 'male'
     trait  = new Trait({name: 'sex', possibleValues: [desiredSex]})
     trait2 = new Trait({name: 'current behavior', possibleValues: [BasicAnimal.BEHAVIOR.MATING]})
-    nearest = @_nearestAgentsMatching {types: [{name: @species.speciesName, traits: [trait, trait2]}], quantity: 1}
+    nearest = @_nearestAgentsMatching {types: [{name: @species.speciesName, traits: [trait, trait2]}], quantity: 1, mating: true}
     return nearest[0] || null
 
   _nearestAgents: ->
@@ -293,6 +293,7 @@ module.exports = class BasicAnimal extends Agent
   _nearestAgentsMatching: (options)->
     opts = helpers.setDefaults options,
       camo: true
+      mating: false
       quantity: 3
       crossBarriers: false
 
@@ -307,7 +308,7 @@ module.exports = class BasicAnimal extends Agent
         continue if type.name isnt agent.species.speciesName
 
         continue if agent is @
-        continue if opts.camo and agent instanceof BasicAnimal and ExtMath.randomFloat() > agent.get('chance of being seen')
+        continue if opts.camo and not opts.mating and agent instanceof BasicAnimal and ExtMath.randomFloat() > agent.get('chance of being seen')
         continue if agent.hasProp('current behavior') and agent.get('current behavior') is BasicAnimal.BEHAVIOR.HIDING
         continue if !opts.crossBarriers and @environment.crossesBarrier(@getLocation(), agent.getLocation())
         if type.traits? and type.traits.length > 0

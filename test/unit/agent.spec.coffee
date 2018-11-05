@@ -318,6 +318,7 @@ describe 'Agent', ->
   describe 'can reproduce', ->
 
     plant = null
+    plantSpecies = null
     beforeEach ->
       plantSpecies = new Species
         agentClass: Agent
@@ -356,3 +357,12 @@ describe 'Agent', ->
 
         expect(dist).toBeGreaterThan minDist-1.5
         expect(dist).toBeLessThan    maxDist+1.5
+
+    it 'and have mutated offspring', ->
+      plantSpecies.setMutatable 'leaves', true
+      plantSpecies.defs.CHANCE_OF_MUTATION = 1
+
+      offspring = plant.createOffspring()
+
+      expect(offspring.get('leaves')).not.toEqual 3
+      expect(offspring.get('height')).toEqual plant.get('height')

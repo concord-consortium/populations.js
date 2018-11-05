@@ -21,7 +21,7 @@ require 'helpers'
 
 module.exports = class Trait
 
-  constructor: ({@name, @possibleValues, @min, @max, @default, @float, @mutatable}) ->
+  constructor: ({@name, @possibleValues, @min, @max, @default, @float, @mutatable, @isGenetic, @isNumeric}) ->
     undefined
 
   getDefaultValue: ->
@@ -51,6 +51,23 @@ module.exports = class Trait
 
   isPossibleValue: (val)->
     return @possibleValues.indexOf(val) != -1
+
+  inherit: (motherVal, fatherVal) ->
+    inheritedVal = null
+    if !@isGenetic
+      if @possibleValues?
+        # randomly pick either the mother's or the father's
+        inheritedVal = (if ExtMath.flip() is 0 then motherVal else fatherVal)
+      else
+        if @float
+          inheritedVal = ExtMath.randomValue motherVal, fatherVal
+        else
+          if motherVal > fatherVal
+            motherVal += 1
+          else
+            fatherVal += 1
+          inheritedVal = Math.floor ExtMath.randomValue motherVal, fatherVal
+    return inheritedVal
 
   _mutateValueFromRange: (val) ->
     sign = if ExtMath.flip() then 1 else -1
