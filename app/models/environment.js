@@ -1,481 +1,638 @@
-EnvironmentView = require 'views/environment-view'
-StateMachine = require 'state-machine'
-helpers = require "helpers"
-Events = require 'events'
+/*
+ * decaffeinate suggestions:
+ * DS001: Remove Babel/TypeScript constructor workaround
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS202: Simplify dynamic range loops
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let Environment;
+const EnvironmentView = require('views/environment-view');
+const StateMachine = require('state-machine');
+const helpers = require("helpers");
+const Events = require('events');
 
-SEASONS = ["spring", "summer", "fall", "winter"]
+const SEASONS = ["spring", "summer", "fall", "winter"];
 
-defaultOptions =
- #columns         :   # not defined because it may conflict with width
- #rows            :
- #width           :   # not defined because it may conflict with columns
- #height          :
-  imgPath         : ""
-  winterImgPath   : null
-  barriers        : []
-  wrapEastWest    : false
-  wrapNorthSouth  : false
-  seasonLengths   : []      # optionally the lengths of [spring, summer, fall, winter]
-  depthPerception : false   # sort agents so that agents on the bottom are drawn on top of agents on the top
+const defaultOptions = {
+ //columns         :   # not defined because it may conflict with width
+ //rows            :
+ //width           :   # not defined because it may conflict with columns
+ //height          :
+  imgPath         : "",
+  winterImgPath   : null,
+  barriers        : [],
+  wrapEastWest    : false,
+  wrapNorthSouth  : false,
+  seasonLengths   : [],      // optionally the lengths of [spring, summer, fall, winter]
+  depthPerception : false   // sort agents so that agents on the bottom are drawn on top of agents on the top
+};
 
-cellDefaults =
-  'food'               : 100
-  'food animals'       : 100
-  'food full'          : 100
-  'food low'           :  30
+const cellDefaults = {
+  'food'               : 100,
+  'food animals'       : 100,
+  'food full'          : 100,
+  'food low'           :  30,
   'food regrowth rate' :   3
-
-#Other options also accessible by @get
-# season          :   # set by seasonsLength
-# yearLength      :   # set by seasonsLength
-
-module.exports = class Environment extends StateMachine
-  @DEFAULT_RUN_LOOP_DELAY: 54.5
-
-  constructor: (opts) ->
-    opts = helpers.setDefaults(opts, defaultOptions)
-    @[prop] = opts[prop] for prop of opts     # give us immediate access to @columns, @barriers, etc
-
-    @preload = []
-    @preload.push @imgPath if @imgPath?
-    @preload.push @winterImgPath if @winterImgPath
-
-    if @columns and @width
-      throw new Error("You can set columns and rows, or width and height, but not both")
-    if @columns
-      @width = @columns * @_columnWidth
-      @height = @rows * @_rowHeight
-    if @width
-      if not (@width % @_columnWidth == 0)
-        throw new Error("Width #{@width} is not evenly divisible by the column width #{@_columnWidth}")
-      if not (@height % @_rowHeight == 0)
-        throw new Error("Height #{@height} is not evenly divisible by the row height #{@_rowHeight}")
-      @columns = @width / @_columnWidth
-      @rows = @height / @_rowHeight
-
-    @cells = []
-    @cells[col] = [] for col in [0..@columns]
-    @_setCellDefaults()
-
-    @_runLoopDelay = Environment.DEFAULT_RUN_LOOP_DELAY
-
-    @setBarriers(@barriers)
-
-    @agents = []
-    @_rules = []
-
-    @carriedAgent = null
-
-    @_remapSeasonLengths()
-
-    @season = SEASONS[0]
-    @date   = 0
-
-    # Add User Interaction states
-    @addState @UI_STATE.NONE, EmptyState
-    @addState @UI_STATE.ADD_AGENTS, AddAgentsState
-
-    @_view = new EnvironmentView({environment: @})
-
-    @setState @UI_STATE.NONE
-
-  ### Public API ###
-
-  addAgent: (agent)->
-    agent.environment = this
-    loc = @ensureValidLocation agent.getLocation()
-    agent.setLocation loc
-    if @isInBarrier loc.x, loc.y
-      return false
-
-    col = Math.floor loc.x / @_columnWidth
-    row = Math.floor loc.y / @_rowHeight
-    agents = @get col, row, "num agents"
-    if !agents?
-      @set col, row, "num agents", 1
-    else
-      @set col, row, "num agents", agents+1
-
-    unless @agents.indexOf(agent) != -1
-      @agents.push(agent)
-      Events.dispatchEvent(Environment.EVENTS.AGENT_ADDED, {agent: agent})
-      return true
-    return false
-
-  removeAgent: (agent)->
-    loc = agent.getLocation()
-    col = Math.floor loc.x / @_columnWidth
-    row = Math.floor loc.y / @_rowHeight
-    agents = @get col, row, "num agents"
-    if !agents?
-      @set col, row, "num agents", 0
-    else
-      @set col, row, "num agents", agents-1
-
-    @getView().removeAgent(agent) if @agents.removeObj(agent)
-
-  removeDeadAgents: ->
-    i = 0
-    while i < @agents.length
-      a = @agents[i]
-      if a.isDead
-        @removeAgent(a)
-      else
-        i++
-
-  agentsWithin: ({x,y,width,height})->
-    throw new Error("Invalid rectangle definition!") unless x? and y? and width? and height?
-    area = new Barrier(x,y,width,height)
-    found = []
-    for agent in @agents
-      loc = agent.getLocation()
-      found.push agent if area.contains(loc.x, loc.y)
-
-    return found
-
-  ensureValidLocation: ({x,y}) ->
-    x = if @wrapEastWest   then @_wrapSingleDimension(x,  @width) else @_bounceSingleDimension(x,  @width)
-    y = if @wrapNorthSouth then @_wrapSingleDimension(y, @height) else @_bounceSingleDimension(y, @height)
-
-    return {x,y}
-
-  randomLocation: ->
-    return @randomLocationWithin(0,0,@width,@height)
-
-  randomLocationWithin: (left, top, width, height, avoidBarriers=false)->
-    point = {x: ExtMath.randomInt(width)+left, y: ExtMath.randomInt(height)+top}
-    while avoidBarriers and @isInBarrier(point.x, point.y)
-      point = {x: ExtMath.randomInt(width)+left, y: ExtMath.randomInt(height)+top}
-    return point
-
-  set: (col, row, prop, val) ->
-    if not @cells[col][row]
-      @cells[col][row] = {}
-
-    @cells[col][row][prop] = val
-
-  get: (col, row, prop) ->
-    # get global properties first
-    if @[prop]?
-      return @[prop]
-    if not @cells[col][row]
-      return null
-
-    return @cells[col][row][prop]
-
-  getAt: (x, y, prop) ->
-    col = Math.floor x / @_columnWidth
-    row = Math.floor y / @_rowHeight
-    return @get(col, row, prop)
-
-  setAt: (x, y, prop, val) ->
-    col = Math.floor x / @_columnWidth
-    row = Math.floor y / @_rowHeight
-    return @set(col, row, prop, val)
-
-  getAgentsAt: (x,y)->
-    agents = []
-    for agent in @agents
-      if agent.getView().contains(x,y)
-        agents.push agent
-    return agents
-
-  getAgentAt: (x,y)->
-    for agent in @agents
-      if agent.getView().contains(x,y)
-        return agent
-    return null
-
-  getAgentsCloseTo: (x, y, maxDistance=10, speciesName)->
-    area = {x: x - maxDistance, y: y - maxDistance, width: maxDistance*2, height: maxDistance*2}
-    agents = @agentsWithin(area)
-    return [] unless agents.length
-    if speciesName
-      _agents = []
-      for agent in agents
-        if agent.species.speciesName is speciesName then _agents.push agent
-      agents = _agents
-    return agents
-
-  getAgentCloseTo: (x, y, maxDistance=10, speciesName)->
-    agents = @getAgentsCloseTo(x, y, maxDistance, speciesName)
-    return null unless agents.length
-    for agent in agents
-      agent.__distance = ExtMath.distanceSquared agent.getLocation(), {x, y}
-    agents = agents.sort (a,b)->
-      return a.__distance - b.__distance
-    return agents[0]
-
-  setBarriers: (bars)->
-    barriers = bars.slice()
-    @barriers = []
-    for barrier in (barriers || [])
-      @addBarrier.apply this, barrier
-    @_view.rerenderBarriers() if @_view && @_view.barrierGraphics?
-
-  addBarrier: (x, y, width, height) ->
-    @barriers.push new Barrier x, y, width, height
-
-  crossesBarrier: (start, finish)->
-    if (!@wrapEastWest && (0 > finish.x || finish.x > @width)) ||
-        (!@wrapNorthSouth && (0 > finish.y || finish.y > @height))
-      return true
-
-    dx = finish.x - start.x
-    dy = finish.y - start.y
-    if dx isnt 0
-      m = dy/dx
-      line = (x,y)->
-        return m * (x - start.x) + start.y - y
-    else
-      line = (x,y)->
-        return x - start.x
-    for barrier in @barriers
-      return true if barrier.contains(finish.x, finish.y)
-      continue if (start.x > barrier.x2 and finish.x > barrier.x2) or # entirely to the right
-                  (start.x < barrier.x1 and finish.x < barrier.x1) or # entirely to the left
-                  (start.y > barrier.y2 and finish.y > barrier.y2) or # entirely below
-                  (start.y < barrier.y1 and finish.y < barrier.y1)    # entirely above
-      return true if barrier.intersectsLine(line)
-    return false
-
-  setSeasonLength: (season, length)->
-    idx = -1
-    switch season
-      when "spring",0 then idx = 0
-      when "summer",1 then idx = 1
-      when "fall",2 then idx = 2
-      when "winter",3 then idx = 3
-      else throw new Error("Invalid season '" + season + "'")
-
-    @seasonLengths[idx] = length
-    @_remapSeasonLengths()
-
-  isInBarrier: (x, y) ->
-    for barrier in @barriers
-      if barrier.contains x, y
-        return true
-    return false
-
-  pickUpAgent: (agent) ->
-    @removeAgent(agent)
-    @carriedAgent = agent
-
-  dropCarriedAgent: ->
-    unless @addAgent(@carriedAgent)
-      # drop the agent back on it's original location if addAgent returns false
-      @carriedAgent.setLocation @_agentOrigin
-      @addAgent(@carriedAgent)
-    @getView().removeCarriedAgent(@carriedAgent)
-    @carriedAgent = null
-
-  # Used for setting the default species and traits for
-  # creating and adding agents.
-  setDefaultAgentCreator: (@defaultSpecies, @defaultTraits, @agentAdderCallback) ->
-    undefined
-
-  addDefaultAgent: (x, y) ->
-    return unless @defaultSpecies?
-    agent = @defaultSpecies.createAgent(@defaultTraits)
-    agent.environment = @
-    agent.setLocation x: x, y: y
-    success = @addAgent agent
-    if success and @agentAdderCallback then @agentAdderCallback()
-
-  ### Run Loop ###
-
-  # Speed is a value between 0 and 100, 0 being slow and 100 being fast.
-  # The default is 50.
-  setSpeed: (speed)->
-    @_speed = speed
-    # fps curve that looks like this:
-    # http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIoLTEvKCh4LTE0MSkvNDAwMCkpLTI3LjMiLCJjb2xvciI6IiMwMDAwMDAifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIwIiwiMTAwIiwiMCIsIjgwIl19XQ--
-    fps = (-1/((speed-141)/4000))-27.3
-    delay = 1000/fps
-    @_runLoopDelay = delay
-
-  start: ->
-    @_isRunning = true
-    runloop = =>
-      setTimeout =>
-        @step()
-        runloop() if @_isRunning
-      , @_runLoopDelay
-
-    runloop()
-    Events.dispatchEvent(Environment.EVENTS.START, {})
-
-  stop: ->
-    @_isRunning = false
-    Events.dispatchEvent(Environment.EVENTS.STOP, {})
-
-  step: ->
-    @_incrementDate()
-    # Apply all of the rules
-    for r in @_rules
-      for a in @agents
-        r.execute(a)
-    for a in @agents
-      a._consumeResources() if a._consumeResources?
-      a.step()
-    @_replenishResources()
-    @removeDeadAgents()
-    Events.dispatchEvent(Environment.EVENTS.STEP, {})
-
-  reset: ->
-    @stop()
-    i = @agents.length
-    @removeAgent @agents[--i] while i
-    @date   = 0
-    Events.dispatchEvent(Environment.EVENTS.RESET, {})
-
-  ### Default properties ###
-
-  _columnWidth: 10
-  _rowHeight:   10
-  _rules: null
-  _speed: 50
-  _runLoopDelay: 54.5
-
-  _isRunning: false
-
-  ### Getters and Setters ###
-
-  getView: ->
-    return @_view
-
-  addRule: (rule)->
-    @_rules ||= []
-    @_rules.push(rule) unless @_rules.indexOf(rule) != -1
-
-  removeRule: (rule)->
-    @_rules ||= []
-    @_rules.removeObj rule
-
-  clearRules: ->
-    @_rules = []
-
-  setBackground: (path)->
-    @imgPath = path
-    @_view.updateBackground()
-
-  _incrementDate: ->
-    @date++
-    if @usingSeasons and @_totalSeasonLengths.length == 4
-      yearDate = @date % @yearLength
-      for length, i in @_totalSeasonLengths
-        if yearDate < length
-          if @season isnt SEASONS[i]
-            @season = SEASONS[i]
-            Events.dispatchEvent(Environment.EVENTS.SEASON_CHANGED, {season: @season})
-          break
-
-      if yearDate == @_totalSeasonLengths[2] # first day of winter
-        @_view.addWinterImage()
-      else if yearDate == @_totalSeasonLengths[3]-1 # last day of winter
-        @_view.removeWinterImage()
-
-  _replenishResources: ->
-    for x in [0..@columns]
-      for y in [0..@rows]
-        cell = @cells[x][y]
-        growthRate = cell['food regrowth rate']
-        max = cell['food full']
-        food = cell['food']
-        if food < max
-          cell['food'] = Math.min(max, food+growthRate)
-
-        food = cell['food animals']
-        if food < max
-          cell['food animals'] = Math.min(max, food+growthRate)
-
-  _wrapSingleDimension: (p, max) ->
-    if p < 0
-      p = max + p
-    else if p >= max
-      p = p - max
-    return p
-
-  _bounceSingleDimension: (p, max) ->
-    if p < 0
-      p = p * -1
-    else if p >= max
-      p = max - (p - max) - 1
-    return p
-
-  _remapSeasonLengths: ->
-    # re-map seasonLenths into end-dates for efficient access later
-    @_totalSeasonLengths = []
-    @_totalSeasonLengths[i] = length + (@_totalSeasonLengths[i-1] || 0) for length, i in @seasonLengths
-
-    @usingSeasons = @_totalSeasonLengths.length > 0
-
-    @yearLength = @_totalSeasonLengths[3] || 0
-
-  _setCellDefaults: ->
-    for x in [0..@columns]
-      for y in [0..@rows]
-        @cells[x][y] = helpers.clone cellDefaults
-
-  ### Events ###
-  @EVENTS:
-    START:  "environment-start"
-    STOP:   "environment-stop"
-    STEP:   "environment-step"
-    RESET:  "environment-reset"
-    AGENT_ADDED: "agent-added"
-    AGENT_EATEN: "agent-eaten"
-    SEASON_CHANGED: "season-changed"
-    USER_REMOVED_AGENTS: 'user-removed-agents'
-
-  ### UI States ###
-
-  UI_STATE:
-    NONE: "None"
-    ADD_AGENTS: "Add Agents"
-
-class Barrier
-  constructor: (@x1, @y1, width, height) ->
-    @x2 = @x1 + width
-    @y2 = @y1 + height
-    @corners = []
-    @corners.push {x: @x1, y: @y1}
-    @corners.push {x: @x1, y: @y2}
-    @corners.push {x: @x2, y: @y1}
-    @corners.push {x: @x2, y: @y2}
-
-  contains: (x, y) ->
-    @x2 >= x >= @x1 and @y2 >= y >= @y1
-
-  # check if we intersect. see: http://stackoverflow.com/questions/3590308/testing-if-a-line-has-a-point-within-a-triangle
-  # tl;dr - by plugging in the corner points of the rectangle into the equation that describes the line from start to finish,
-  # we can determine if all of the points lie on the same side of the line. If so, the path doesn't cross the barrier.
-  # lineFunc should accept two params, x and y and return a number where negative indicates one side of the line,
-  # positive indicates the other, with 0 indicating the point lies on the line. function(x,y) {...}
-  intersectsLine: (lineFunc)->
-    previousSign = null
-    for corner in @corners
-      number = lineFunc(corner.x, corner.y)
-      return true if number is 0
-      sign = if number < 0 then -1 else 1
-      if not previousSign?
-        previousSign = sign
-      else if sign isnt previousSign
-        return true
-    return false
-
-###
+};
+
+//Other options also accessible by @get
+// season          :   # set by seasonsLength
+// yearLength      :   # set by seasonsLength
+
+module.exports = (Environment = (function() {
+  Environment = class Environment extends StateMachine {
+    static initClass() {
+      this.DEFAULT_RUN_LOOP_DELAY = 54.5;
+  
+      /* Default properties */
+  
+      this.prototype._columnWidth = 10;
+      this.prototype._rowHeight =   10;
+      this.prototype._rules = null;
+      this.prototype._speed = 50;
+      this.prototype._runLoopDelay = 54.5;
+  
+      this.prototype._isRunning = false;
+  
+      /* Events */
+      this.EVENTS = {
+        START:  "environment-start",
+        STOP:   "environment-stop",
+        STEP:   "environment-step",
+        RESET:  "environment-reset",
+        AGENT_ADDED: "agent-added",
+        AGENT_EATEN: "agent-eaten",
+        SEASON_CHANGED: "season-changed",
+        USER_REMOVED_AGENTS: 'user-removed-agents'
+      };
+  
+      /* UI States */
+  
+      this.prototype.UI_STATE = {
+        NONE: "None",
+        ADD_AGENTS: "Add Agents"
+      };
+    }
+
+    constructor(opts) {
+      {
+        // Hack: trick Babel/TypeScript into allowing this before super.
+        if (false) { super(); }
+        let thisFn = (() => { return this; }).toString();
+        let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+        eval(`${thisName} = this;`);
+      }
+      opts = helpers.setDefaults(opts, defaultOptions);
+      for (let prop in opts) { this[prop] = opts[prop]; }     // give us immediate access to @columns, @barriers, etc
+
+      this.preload = [];
+      if (this.imgPath != null) { this.preload.push(this.imgPath); }
+      if (this.winterImgPath) { this.preload.push(this.winterImgPath); }
+
+      if (this.columns && this.width) {
+        throw new Error("You can set columns and rows, or width and height, but not both");
+      }
+      if (this.columns) {
+        this.width = this.columns * this._columnWidth;
+        this.height = this.rows * this._rowHeight;
+      }
+      if (this.width) {
+        if (!((this.width % this._columnWidth) === 0)) {
+          throw new Error(`Width ${this.width} is not evenly divisible by the column width ${this._columnWidth}`);
+        }
+        if (!((this.height % this._rowHeight) === 0)) {
+          throw new Error(`Height ${this.height} is not evenly divisible by the row height ${this._rowHeight}`);
+        }
+        this.columns = this.width / this._columnWidth;
+        this.rows = this.height / this._rowHeight;
+      }
+
+      this.cells = [];
+      for (let col = 0, end = this.columns, asc = 0 <= end; asc ? col <= end : col >= end; asc ? col++ : col--) { this.cells[col] = []; }
+      this._setCellDefaults();
+
+      this._runLoopDelay = Environment.DEFAULT_RUN_LOOP_DELAY;
+
+      this.setBarriers(this.barriers);
+
+      this.agents = [];
+      this._rules = [];
+
+      this.carriedAgent = null;
+
+      this._remapSeasonLengths();
+
+      this.season = SEASONS[0];
+      this.date   = 0;
+
+      // Add User Interaction states
+      this.addState(this.UI_STATE.NONE, EmptyState);
+      this.addState(this.UI_STATE.ADD_AGENTS, AddAgentsState);
+
+      this._view = new EnvironmentView({environment: this});
+
+      this.setState(this.UI_STATE.NONE);
+    }
+
+    /* Public API */
+
+    addAgent(agent){
+      agent.environment = this;
+      const loc = this.ensureValidLocation(agent.getLocation());
+      agent.setLocation(loc);
+      if (this.isInBarrier(loc.x, loc.y)) {
+        return false;
+      }
+
+      const col = Math.floor(loc.x / this._columnWidth);
+      const row = Math.floor(loc.y / this._rowHeight);
+      const agents = this.get(col, row, "num agents");
+      if ((agents == null)) {
+        this.set(col, row, "num agents", 1);
+      } else {
+        this.set(col, row, "num agents", agents+1);
+      }
+
+      if (this.agents.indexOf(agent) === -1) {
+        this.agents.push(agent);
+        Events.dispatchEvent(Environment.EVENTS.AGENT_ADDED, {agent});
+        return true;
+      }
+      return false;
+    }
+
+    removeAgent(agent){
+      const loc = agent.getLocation();
+      const col = Math.floor(loc.x / this._columnWidth);
+      const row = Math.floor(loc.y / this._rowHeight);
+      const agents = this.get(col, row, "num agents");
+      if ((agents == null)) {
+        this.set(col, row, "num agents", 0);
+      } else {
+        this.set(col, row, "num agents", agents-1);
+      }
+
+      if (this.agents.removeObj(agent)) { return this.getView().removeAgent(agent); }
+    }
+
+    removeDeadAgents() {
+      let i = 0;
+      return (() => {
+        const result = [];
+        while (i < this.agents.length) {
+          const a = this.agents[i];
+          if (a.isDead) {
+            result.push(this.removeAgent(a));
+          } else {
+            result.push(i++);
+          }
+        }
+        return result;
+      })();
+    }
+
+    agentsWithin({x,y,width,height}){
+      if ((x == null) || (y == null) || (width == null) || (height == null)) { throw new Error("Invalid rectangle definition!"); }
+      const area = new Barrier(x,y,width,height);
+      const found = [];
+      for (let agent of Array.from(this.agents)) {
+        const loc = agent.getLocation();
+        if (area.contains(loc.x, loc.y)) { found.push(agent); }
+      }
+
+      return found;
+    }
+
+    ensureValidLocation({x,y}) {
+      x = this.wrapEastWest   ? this._wrapSingleDimension(x,  this.width) : this._bounceSingleDimension(x,  this.width);
+      y = this.wrapNorthSouth ? this._wrapSingleDimension(y, this.height) : this._bounceSingleDimension(y, this.height);
+
+      return {x,y};
+    }
+
+    randomLocation() {
+      return this.randomLocationWithin(0,0,this.width,this.height);
+    }
+
+    randomLocationWithin(left, top, width, height, avoidBarriers){
+      if (avoidBarriers == null) { avoidBarriers = false; }
+      let point = {x: ExtMath.randomInt(width)+left, y: ExtMath.randomInt(height)+top};
+      while (avoidBarriers && this.isInBarrier(point.x, point.y)) {
+        point = {x: ExtMath.randomInt(width)+left, y: ExtMath.randomInt(height)+top};
+      }
+      return point;
+    }
+
+    set(col, row, prop, val) {
+      if (!this.cells[col][row]) {
+        this.cells[col][row] = {};
+      }
+
+      return this.cells[col][row][prop] = val;
+    }
+
+    get(col, row, prop) {
+      // get global properties first
+      if (this[prop] != null) {
+        return this[prop];
+      }
+      if (!this.cells[col][row]) {
+        return null;
+      }
+
+      return this.cells[col][row][prop];
+    }
+
+    getAt(x, y, prop) {
+      const col = Math.floor(x / this._columnWidth);
+      const row = Math.floor(y / this._rowHeight);
+      return this.get(col, row, prop);
+    }
+
+    setAt(x, y, prop, val) {
+      const col = Math.floor(x / this._columnWidth);
+      const row = Math.floor(y / this._rowHeight);
+      return this.set(col, row, prop, val);
+    }
+
+    getAgentsAt(x,y){
+      const agents = [];
+      for (let agent of Array.from(this.agents)) {
+        if (agent.getView().contains(x,y)) {
+          agents.push(agent);
+        }
+      }
+      return agents;
+    }
+
+    getAgentAt(x,y){
+      for (let agent of Array.from(this.agents)) {
+        if (agent.getView().contains(x,y)) {
+          return agent;
+        }
+      }
+      return null;
+    }
+
+    getAgentsCloseTo(x, y, maxDistance, speciesName){
+      if (maxDistance == null) { maxDistance = 10; }
+      const area = {x: x - maxDistance, y: y - maxDistance, width: maxDistance*2, height: maxDistance*2};
+      let agents = this.agentsWithin(area);
+      if (!agents.length) { return []; }
+      if (speciesName) {
+        const _agents = [];
+        for (let agent of Array.from(agents)) {
+          if (agent.species.speciesName === speciesName) { _agents.push(agent); }
+        }
+        agents = _agents;
+      }
+      return agents;
+    }
+
+    getAgentCloseTo(x, y, maxDistance, speciesName){
+      if (maxDistance == null) { maxDistance = 10; }
+      let agents = this.getAgentsCloseTo(x, y, maxDistance, speciesName);
+      if (!agents.length) { return null; }
+      for (let agent of Array.from(agents)) {
+        agent.__distance = ExtMath.distanceSquared(agent.getLocation(), {x, y});
+      }
+      agents = agents.sort((a,b)=> a.__distance - b.__distance);
+      return agents[0];
+    }
+
+    setBarriers(bars){
+      const barriers = bars.slice();
+      this.barriers = [];
+      for (let barrier of Array.from((barriers || []))) {
+        this.addBarrier.apply(this, barrier);
+      }
+      if (this._view && (this._view.barrierGraphics != null)) { return this._view.rerenderBarriers(); }
+    }
+
+    addBarrier(x, y, width, height) {
+      return this.barriers.push(new Barrier(x, y, width, height));
+    }
+
+    crossesBarrier(start, finish){
+      let line;
+      if ((!this.wrapEastWest && ((0 > finish.x) || (finish.x > this.width))) ||
+          (!this.wrapNorthSouth && ((0 > finish.y) || (finish.y > this.height)))) {
+        return true;
+      }
+
+      const dx = finish.x - start.x;
+      const dy = finish.y - start.y;
+      if (dx !== 0) {
+        const m = dy/dx;
+        line = (x,y)=> ((m * (x - start.x)) + start.y) - y;
+      } else {
+        line = (x,y)=> x - start.x;
+      }
+      for (let barrier of Array.from(this.barriers)) {
+        if (barrier.contains(finish.x, finish.y)) { return true; }
+        if (((start.x > barrier.x2) && (finish.x > barrier.x2)) || // entirely to the right
+                    ((start.x < barrier.x1) && (finish.x < barrier.x1)) || // entirely to the left
+                    ((start.y > barrier.y2) && (finish.y > barrier.y2)) || // entirely below
+                    ((start.y < barrier.y1) && (finish.y < barrier.y1))) { continue; }    // entirely above
+        if (barrier.intersectsLine(line)) { return true; }
+      }
+      return false;
+    }
+
+    setSeasonLength(season, length){
+      let idx = -1;
+      switch (season) {
+        case "spring":case 0: idx = 0; break;
+        case "summer":case 1: idx = 1; break;
+        case "fall":case 2: idx = 2; break;
+        case "winter":case 3: idx = 3; break;
+        default: throw new Error(`Invalid season '${season}'`);
+      }
+
+      this.seasonLengths[idx] = length;
+      return this._remapSeasonLengths();
+    }
+
+    isInBarrier(x, y) {
+      for (let barrier of Array.from(this.barriers)) {
+        if (barrier.contains(x, y)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    pickUpAgent(agent) {
+      this.removeAgent(agent);
+      return this.carriedAgent = agent;
+    }
+
+    dropCarriedAgent() {
+      if (!this.addAgent(this.carriedAgent)) {
+        // drop the agent back on it's original location if addAgent returns false
+        this.carriedAgent.setLocation(this._agentOrigin);
+        this.addAgent(this.carriedAgent);
+      }
+      this.getView().removeCarriedAgent(this.carriedAgent);
+      return this.carriedAgent = null;
+    }
+
+    // Used for setting the default species and traits for
+    // creating and adding agents.
+    setDefaultAgentCreator(defaultSpecies, defaultTraits, agentAdderCallback) {
+      this.defaultSpecies = defaultSpecies;
+      this.defaultTraits = defaultTraits;
+      this.agentAdderCallback = agentAdderCallback;
+      return undefined;
+    }
+
+    addDefaultAgent(x, y) {
+      if (this.defaultSpecies == null) { return; }
+      const agent = this.defaultSpecies.createAgent(this.defaultTraits);
+      agent.environment = this;
+      agent.setLocation({x, y});
+      const success = this.addAgent(agent);
+      if (success && this.agentAdderCallback) { return this.agentAdderCallback(); }
+    }
+
+    /* Run Loop */
+
+    // Speed is a value between 0 and 100, 0 being slow and 100 being fast.
+    // The default is 50.
+    setSpeed(speed){
+      this._speed = speed;
+      // fps curve that looks like this:
+      // http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIoLTEvKCh4LTE0MSkvNDAwMCkpLTI3LjMiLCJjb2xvciI6IiMwMDAwMDAifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIwIiwiMTAwIiwiMCIsIjgwIl19XQ--
+      const fps = (-1/((speed-141)/4000))-27.3;
+      const delay = 1000/fps;
+      return this._runLoopDelay = delay;
+    }
+
+    start() {
+      this._isRunning = true;
+      var runloop = () => {
+        return setTimeout(() => {
+          this.step();
+          if (this._isRunning) { return runloop(); }
+        }
+        , this._runLoopDelay);
+      };
+
+      runloop();
+      return Events.dispatchEvent(Environment.EVENTS.START, {});
+    }
+
+    stop() {
+      this._isRunning = false;
+      return Events.dispatchEvent(Environment.EVENTS.STOP, {});
+    }
+
+    step() {
+      let a;
+      this._incrementDate();
+      // Apply all of the rules
+      for (let r of Array.from(this._rules)) {
+        for (a of Array.from(this.agents)) {
+          r.execute(a);
+        }
+      }
+      for (a of Array.from(this.agents)) {
+        if (a._consumeResources != null) { a._consumeResources(); }
+        a.step();
+      }
+      this._replenishResources();
+      this.removeDeadAgents();
+      return Events.dispatchEvent(Environment.EVENTS.STEP, {});
+    }
+
+    reset() {
+      this.stop();
+      let i = this.agents.length;
+      while (i) { this.removeAgent(this.agents[--i]); }
+      this.date   = 0;
+      return Events.dispatchEvent(Environment.EVENTS.RESET, {});
+    }
+
+    /* Getters and Setters */
+
+    getView() {
+      return this._view;
+    }
+
+    addRule(rule){
+      if (!this._rules) { this._rules = []; }
+      if (this._rules.indexOf(rule) === -1) { return this._rules.push(rule); }
+    }
+
+    removeRule(rule){
+      if (!this._rules) { this._rules = []; }
+      return this._rules.removeObj(rule);
+    }
+
+    clearRules() {
+      return this._rules = [];
+    }
+
+    setBackground(path){
+      this.imgPath = path;
+      return this._view.updateBackground();
+    }
+
+    _incrementDate() {
+      this.date++;
+      if (this.usingSeasons && (this._totalSeasonLengths.length === 4)) {
+        const yearDate = this.date % this.yearLength;
+        for (let i = 0; i < this._totalSeasonLengths.length; i++) {
+          const length = this._totalSeasonLengths[i];
+          if (yearDate < length) {
+            if (this.season !== SEASONS[i]) {
+              this.season = SEASONS[i];
+              Events.dispatchEvent(Environment.EVENTS.SEASON_CHANGED, {season: this.season});
+            }
+            break;
+          }
+        }
+
+        if (yearDate === this._totalSeasonLengths[2]) { // first day of winter
+          return this._view.addWinterImage();
+        } else if (yearDate === (this._totalSeasonLengths[3]-1)) { // last day of winter
+          return this._view.removeWinterImage();
+        }
+      }
+    }
+
+    _replenishResources() {
+      return __range__(0, this.columns, true).map((x) =>
+        (() => {
+          const result = [];
+          for (let y = 0, end = this.rows, asc = 0 <= end; asc ? y <= end : y >= end; asc ? y++ : y--) {
+            const cell = this.cells[x][y];
+            const growthRate = cell['food regrowth rate'];
+            const max = cell['food full'];
+            let food = cell['food'];
+            if (food < max) {
+              cell['food'] = Math.min(max, food+growthRate);
+            }
+
+            food = cell['food animals'];
+            if (food < max) {
+              result.push(cell['food animals'] = Math.min(max, food+growthRate));
+            } else {
+              result.push(undefined);
+            }
+          }
+          return result;
+        })());
+    }
+
+    _wrapSingleDimension(p, max) {
+      if (p < 0) {
+        p = max + p;
+      } else if (p >= max) {
+        p = p - max;
+      }
+      return p;
+    }
+
+    _bounceSingleDimension(p, max) {
+      if (p < 0) {
+        p = p * -1;
+      } else if (p >= max) {
+        p = max - (p - max) - 1;
+      }
+      return p;
+    }
+
+    _remapSeasonLengths() {
+      // re-map seasonLenths into end-dates for efficient access later
+      let length;
+      this._totalSeasonLengths = [];
+      for (let i = 0; i < this.seasonLengths.length; i++) { length = this.seasonLengths[i]; this._totalSeasonLengths[i] = length + (this._totalSeasonLengths[i-1] || 0); }
+
+      this.usingSeasons = this._totalSeasonLengths.length > 0;
+
+      return this.yearLength = this._totalSeasonLengths[3] || 0;
+    }
+
+    _setCellDefaults() {
+      return __range__(0, this.columns, true).map((x) =>
+        __range__(0, this.rows, true).map((y) =>
+          (this.cells[x][y] = helpers.clone(cellDefaults))));
+    }
+  };
+  Environment.initClass();
+  return Environment;
+})());
+
+class Barrier {
+  constructor(x1, y1, width, height) {
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = this.x1 + width;
+    this.y2 = this.y1 + height;
+    this.corners = [];
+    this.corners.push({x: this.x1, y: this.y1});
+    this.corners.push({x: this.x1, y: this.y2});
+    this.corners.push({x: this.x2, y: this.y1});
+    this.corners.push({x: this.x2, y: this.y2});
+  }
+
+  contains(x, y) {
+    return (this.x2 >= x && x >= this.x1) && (this.y2 >= y && y >= this.y1);
+  }
+
+  // check if we intersect. see: http://stackoverflow.com/questions/3590308/testing-if-a-line-has-a-point-within-a-triangle
+  // tl;dr - by plugging in the corner points of the rectangle into the equation that describes the line from start to finish,
+  // we can determine if all of the points lie on the same side of the line. If so, the path doesn't cross the barrier.
+  // lineFunc should accept two params, x and y and return a number where negative indicates one side of the line,
+  // positive indicates the other, with 0 indicating the point lies on the line. function(x,y) {...}
+  intersectsLine(lineFunc){
+    let previousSign = null;
+    for (let corner of Array.from(this.corners)) {
+      const number = lineFunc(corner.x, corner.y);
+      if (number === 0) { return true; }
+      const sign = number < 0 ? -1 : 1;
+      if ((previousSign == null)) {
+        previousSign = sign;
+      } else if (sign !== previousSign) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+/*
       *** User Interaction States ***
-###
+*/
 
-EmptyState =
-  enter: ->
-    @_view.setCursor "default-cursor"
+var EmptyState = {
+  enter() {
+    return this._view.setCursor("default-cursor");
+  }
+};
 
-AddAgentsState =
-  enter: ->
-    @_view.setCursor "add-agents"
-  click: (evt) ->
-    @addDefaultAgent evt.envX, evt.envY
+var AddAgentsState = {
+  enter() {
+    return this._view.setCursor("add-agents");
+  },
+  click(evt) {
+    return this.addDefaultAgent(evt.envX, evt.envY);
+  }
+};
 
-## more states added by ui/tool-button
+//# more states added by ui/tool-button
+
+function __range__(left, right, inclusive) {
+  let range = [];
+  let ascending = left < right;
+  let end = !inclusive ? right : ascending ? right + 1 : right - 1;
+  for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
+    range.push(i);
+  }
+  return range;
+}

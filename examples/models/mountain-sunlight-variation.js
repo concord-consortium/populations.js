@@ -1,21 +1,29 @@
-helpers     = require 'helpers'
-Environment = require 'models/environment'
-Species     = require 'models/species'
-Agent       = require 'models/agent'
-Rule        = require 'models/rule'
-Trait       = require 'models/trait'
-Interactive = require 'ui/interactive'
-Events      = require 'events'
-ToolButton  = require 'ui/tool-button'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const helpers     = require('helpers');
+const Environment = require('models/environment');
+const Species     = require('models/species');
+const Agent       = require('models/agent');
+const Rule        = require('models/rule');
+const Trait       = require('models/trait');
+const Interactive = require('ui/interactive');
+const Events      = require('events');
+const ToolButton  = require('ui/tool-button');
 
-plantSpecies = require 'species/varied-plants'
-env          = require 'environments/sunlight-mountain'
+const plantSpecies = require('species/varied-plants');
+const env          = require('environments/sunlight-mountain');
 
-window.model =
+window.model = {
   emptyBarriers: [
     [  0,   0,  39, 520],
     [561,   0,  39, 520]
-  ]
+  ],
   mountainBarriers: [
     [  0,   0,  39, 520],
     [561,   0,  39, 520],
@@ -29,258 +37,320 @@ window.model =
     [360,   0,  25, 335],
     [385,   0,  20, 260],
     [405,   0,  20, 160]
-  ]
-  run: ->
-    plantSpecies.defs.CHANCE_OF_MUTATION = 0.21
-    plantSpecies.setMutatable 'root size', false
+  ],
+  run() {
+    plantSpecies.defs.CHANCE_OF_MUTATION = 0.21;
+    plantSpecies.setMutatable('root size', false);
 
-    @interactive = new Interactive
-      environment: env
-      speedSlider: true
+    this.interactive = new Interactive({
+      environment: env,
+      speedSlider: true,
       addOrganismButtons: [
         {
-          scatter: 8
-          limit: 40
-          species: plantSpecies
-          imagePath: "images/agents/varied-plants/buttons/seedpack_6.png"
+          scatter: 8,
+          limit: 40,
+          species: plantSpecies,
+          imagePath: "images/agents/varied-plants/buttons/seedpack_6.png",
           traits: [
-            new Trait {name: "size", default: 5}
-            new Trait {name: "root size", default: 5}
+            new Trait({name: "size", default: 5}),
+            new Trait({name: "root size", default: 5})
           ]
         }
-      ]
+      ],
       toolButtons: [
         {
           type: ToolButton.INFO_TOOL
         }
-      ]
+      ]});
 
-    document.getElementById('environment').appendChild @interactive.getEnvironmentPane()
+    document.getElementById('environment').appendChild(this.interactive.getEnvironmentPane());
 
-    @env = env
-    @plantSpecies = plantSpecies
+    this.env = env;
+    return this.plantSpecies = plantSpecies;
+  },
 
-  setupMountains: ->
-    mountains1 = document.getElementById('mountains1')
-    mountains2 = document.getElementById('mountains2')
-    mountains3 = document.getElementById('mountains3')
-    mountains4 = document.getElementById('mountains4')
-    mountains5 = document.getElementById('mountains5')
+  setupMountains() {
+    const mountains1 = document.getElementById('mountains1');
+    const mountains2 = document.getElementById('mountains2');
+    const mountains3 = document.getElementById('mountains3');
+    const mountains4 = document.getElementById('mountains4');
+    const mountains5 = document.getElementById('mountains5');
 
-    mountains1.onclick = =>
-      @_updateMountains "images/environments/mountains1.jpg", @emptyBarriers, 6, 6
-    mountains2.onclick = =>
-      @_updateMountains "images/environments/mountains2flipped.jpg", @mountainBarriers, 7, 5
-    mountains3.onclick = =>
-      @_updateMountains "images/environments/mountains3flipped.jpg", @mountainBarriers, 8, 4
-    mountains4.onclick = =>
-      @_updateMountains "images/environments/mountains4flipped.jpg", @mountainBarriers, 9, 3
-    mountains5.onclick = =>
-      @_updateMountains "images/environments/mountains5flipped.jpg", @mountainBarriers, 10, 2
+    mountains1.onclick = () => {
+      return this._updateMountains("images/environments/mountains1.jpg", this.emptyBarriers, 6, 6);
+    };
+    mountains2.onclick = () => {
+      return this._updateMountains("images/environments/mountains2flipped.jpg", this.mountainBarriers, 7, 5);
+    };
+    mountains3.onclick = () => {
+      return this._updateMountains("images/environments/mountains3flipped.jpg", this.mountainBarriers, 8, 4);
+    };
+    mountains4.onclick = () => {
+      return this._updateMountains("images/environments/mountains4flipped.jpg", this.mountainBarriers, 9, 3);
+    };
+    mountains5.onclick = () => {
+      return this._updateMountains("images/environments/mountains5flipped.jpg", this.mountainBarriers, 10, 2);
+    };
 
-    Events.addEventListener Environment.EVENTS.RESET, ->
-      mountains1.click()
+    return Events.addEventListener(Environment.EVENTS.RESET, () => mountains1.click());
+  },
 
-  _updateMountains: (imgPath, barriers, leftSunlight, rightSunlight)->
-    @env.setBackground imgPath
-    @env.setBarriers barriers
-    for col in [0..60]
-      light = if col > 30 then rightSunlight else leftSunlight
-      for row in [0..52]
-        @env.set col, row, "sunlight", light
+  _updateMountains(imgPath, barriers, leftSunlight, rightSunlight){
+    this.env.setBackground(imgPath);
+    this.env.setBarriers(barriers);
+    for (let col = 0; col <= 60; col++) {
+      const light = col > 30 ? rightSunlight : leftSunlight;
+      for (let row = 0; row <= 52; row++) {
+        this.env.set(col, row, "sunlight", light);
+      }
+    }
 
-    for agent in @env.agents
-      loc = agent.getLocation()
-      if @env.isInBarrier(loc.x, loc.y)
-        agent.die()
+    return (() => {
+      const result = [];
+      for (let agent of Array.from(this.env.agents)) {
+        const loc = agent.getLocation();
+        if (this.env.isInBarrier(loc.x, loc.y)) {
+          result.push(agent.die());
+        } else {
+          result.push(undefined);
+        }
+      }
+      return result;
+    })();
+  },
 
-  showMessage: (message, callback) ->
-    helpers.showMessage message, @env.getView().view.parentElement, callback
+  showMessage(message, callback) {
+    return helpers.showMessage(message, this.env.getView().view.parentElement, callback);
+  },
 
-  setupMessages: ->
-    extinctionCount = 0 # this does NOT reset between runs
-    successful = false  # this does NOT reset between runs
-    userAddedAgents = false
-    yearsSuccessful = 0 # don't win until final plants liev at least one year
-    shownMessage = false
-    allAgents = []
+  setupMessages() {
+    let extinctionCount = 0; // this does NOT reset between runs
+    let successful = false;  // this does NOT reset between runs
+    let userAddedAgents = false;
+    let yearsSuccessful = 0; // don't win until final plants liev at least one year
+    let shownMessage = false;
+    let allAgents = [];
 
-    Events.addEventListener Environment.EVENTS.RESET, ->
-      userAddedAgents = false
-      yearsSuccessful = 0 # don't win until final plants liev at least one year
-      shownMessage = false
-      allAgents = []
+    Events.addEventListener(Environment.EVENTS.RESET, function() {
+      userAddedAgents = false;
+      yearsSuccessful = 0; // don't win until final plants liev at least one year
+      shownMessage = false;
+      return allAgents = [];
+  });
 
-    Events.addEventListener Environment.EVENTS.AGENT_ADDED, ->
-      userAddedAgents = true
+    Events.addEventListener(Environment.EVENTS.AGENT_ADDED, () => userAddedAgents = true);
 
-    Events.addEventListener Environment.EVENTS.SEASON_CHANGED, (evt)=>
-      if !shownMessage
-        if evt.detail.season is "winter" || evt.detail.season is "spring"
-          return   # don't check on winter or spring, because it's hard for user to see what's happening
-        allAgents = @env.agents
-        allExtinct = false
-        halfExtinct = false
-        willAnyoneSurvive = false  # if half extinct but no one will survive (all wilted) wait until all are extinct
-        if allAgents.length is 0
-          allExtinct = true
-        else
-          sunlightTopLeft = @env.get(0,0,"sunlight")
-          mountainHeight = sunlightTopLeft - 6
-          if mountainHeight is 0
-            return
-          halfExtinct = @_getSideIsExtinct()
-          if halfExtinct
-            willAnyoneSurvive = @_getWillAnyoneSurvive()
-        if allExtinct || halfExtinct
-          if successful && (allExtinct || willAnyoneSurvive)
-            # case 2
-            @showMessage "The plants went extinct. Why did the plants go\nextinct when the mountains changed quickly?"
-            env.stop()
-            extinctionCount++
-          else if extinctionCount is 0
-            # case 1, first time
-            if allExtinct
-              @showMessage "Your plants went extinct. Click reset and try again."
-              env.stop()
-              extinctionCount++
-            else if willAnyoneSurvive
-              @showMessage "Your plants went extinct on one side. Remember, the challenge is to have flowering plants\ngrowing on both sides of the mountains. Click reset and try again."
-              env.stop()
-              extinctionCount++
-          else
-            # case 1, next times
-            if allExtinct
-              @showMessage "Your plants went extinct again. The environment changed too quickly.\nWait a few seasons before you change the mountain height."
-              env.stop()
-              extinctionCount++
-            else if willAnyoneSurvive
-              @showMessage "Half your plants went extinct again. The environment changed too quickly.\nWait a few seasons before you change the mountain height."
-              env.stop()
-              extinctionCount++
-          shownMessage = true
-          return
-        # not extinct
-        if mountainHeight is 4
-          # end
-          if evt.detail.season is "fall"
-            # only end on fall so we can see flowers
-            if @_atLeastTenPlantsHealthyOnBothSides()
-              yearsSuccessful++
-              if yearsSuccessful > 1
-                successful = true
-                if extinctionCount > 0
-                  # case 1 success
-                  @showMessage "Great job! The mountains grew slowly enough so that the plants could evolve.\nTake a Snapshot to help answer the question."
-                  env.stop()
-                  shownMessage = true
-                else
-                  # case 2 success
-                  @showMessage "Congratulations! The mountains grew slowly and the plants had time to evolve.\n Take a Snapshot to help answer the question.\nThen click reset and try changing the environment quickly. What do you think will happen?"
-                  env.stop()
-                  shownMessage = true
+    return Events.addEventListener(Environment.EVENTS.SEASON_CHANGED, evt=> {
+      if (!shownMessage) {
+        let mountainHeight;
+        if ((evt.detail.season === "winter") || (evt.detail.season === "spring")) {
+          return;   // don't check on winter or spring, because it's hard for user to see what's happening
+        }
+        allAgents = this.env.agents;
+        let allExtinct = false;
+        let halfExtinct = false;
+        let willAnyoneSurvive = false;  // if half extinct but no one will survive (all wilted) wait until all are extinct
+        if (allAgents.length === 0) {
+          allExtinct = true;
+        } else {
+          const sunlightTopLeft = this.env.get(0,0,"sunlight");
+          mountainHeight = sunlightTopLeft - 6;
+          if (mountainHeight === 0) {
+            return;
+          }
+          halfExtinct = this._getSideIsExtinct();
+          if (halfExtinct) {
+            willAnyoneSurvive = this._getWillAnyoneSurvive();
+          }
+        }
+        if (allExtinct || halfExtinct) {
+          if (successful && (allExtinct || willAnyoneSurvive)) {
+            // case 2
+            this.showMessage("The plants went extinct. Why did the plants go\nextinct when the mountains changed quickly?");
+            env.stop();
+            extinctionCount++;
+          } else if (extinctionCount === 0) {
+            // case 1, first time
+            if (allExtinct) {
+              this.showMessage("Your plants went extinct. Click reset and try again.");
+              env.stop();
+              extinctionCount++;
+            } else if (willAnyoneSurvive) {
+              this.showMessage("Your plants went extinct on one side. Remember, the challenge is to have flowering plants\ngrowing on both sides of the mountains. Click reset and try again.");
+              env.stop();
+              extinctionCount++;
+            }
+          } else {
+            // case 1, next times
+            if (allExtinct) {
+              this.showMessage("Your plants went extinct again. The environment changed too quickly.\nWait a few seasons before you change the mountain height.");
+              env.stop();
+              extinctionCount++;
+            } else if (willAnyoneSurvive) {
+              this.showMessage("Half your plants went extinct again. The environment changed too quickly.\nWait a few seasons before you change the mountain height.");
+              env.stop();
+              extinctionCount++;
+            }
+          }
+          shownMessage = true;
+          return;
+        }
+        // not extinct
+        if (mountainHeight === 4) {
+          // end
+          if (evt.detail.season === "fall") {
+            // only end on fall so we can see flowers
+            if (this._atLeastTenPlantsHealthyOnBothSides()) {
+              yearsSuccessful++;
+              if (yearsSuccessful > 1) {
+                successful = true;
+                if (extinctionCount > 0) {
+                  // case 1 success
+                  this.showMessage("Great job! The mountains grew slowly enough so that the plants could evolve.\nTake a Snapshot to help answer the question.");
+                  env.stop();
+                  return shownMessage = true;
+                } else {
+                  // case 2 success
+                  this.showMessage("Congratulations! The mountains grew slowly and the plants had time to evolve.\n Take a Snapshot to help answer the question.\nThen click reset and try changing the environment quickly. What do you think will happen?");
+                  env.stop();
+                  return shownMessage = true;
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+  },
 
-  _getSideIsExtinct: ->
-    eastAlive = false
-    westAlive = false
-    for agent in @env.agents
-      x = agent.getLocation().x
-      if x < ((@env.columns / 2) * @env._columnWidth)
-        eastAlive = true
-      else
-        westAlive = true
-      if eastAlive && westAlive
-        return false
-    return true
+  _getSideIsExtinct() {
+    let eastAlive = false;
+    let westAlive = false;
+    for (let agent of Array.from(this.env.agents)) {
+      const { x } = agent.getLocation();
+      if (x < ((this.env.columns / 2) * this.env._columnWidth)) {
+        eastAlive = true;
+      } else {
+        westAlive = true;
+      }
+      if (eastAlive && westAlive) {
+        return false;
+      }
+    }
+    return true;
+  },
 
-  _getWillAnyoneSurvive: ->
-    for agent in @env.agents
-      healthy = agent.get("health") > 0.99
-      if healthy
-        return true
-    return false
+  _getWillAnyoneSurvive() {
+    for (let agent of Array.from(this.env.agents)) {
+      const healthy = agent.get("health") > 0.99;
+      if (healthy) {
+        return true;
+      }
+    }
+    return false;
+  },
 
-  _atLeastTenPlantsHealthyOnBothSides: ->
-    eastHealthyCount = 0
-    westHealthyCount = 0
-    for agent in @env.agents
-      if agent.get("health") > 0.99 && !agent.get("is seed")
-        x = agent.getLocation().x
-        if x < ((@env.columns / 2) * @env._columnWidth)
-          eastHealthyCount++
-        else
-          westHealthyCount++
-      if eastHealthyCount >= 10 && westHealthyCount >= 10
-        return true
-    return false
+  _atLeastTenPlantsHealthyOnBothSides() {
+    let eastHealthyCount = 0;
+    let westHealthyCount = 0;
+    for (let agent of Array.from(this.env.agents)) {
+      if ((agent.get("health") > 0.99) && !agent.get("is seed")) {
+        const { x } = agent.getLocation();
+        if (x < ((this.env.columns / 2) * this.env._columnWidth)) {
+          eastHealthyCount++;
+        } else {
+          westHealthyCount++;
+        }
+      }
+      if ((eastHealthyCount >= 10) && (westHealthyCount >= 10)) {
+        return true;
+      }
+    }
+    return false;
+  },
 
-  chartData: null
-  chart: null
-  setupChart: ->
-    domChart = document.getElementById('chart')
+  chartData: null,
+  chart: null,
+  setupChart() {
+    const domChart = document.getElementById('chart');
 
-    if domChart?
-      toggleButton = document.getElementById('chart-visibility')
-      if toggleButton?
-        toggleButton.onclick = ->
-          if toggleButton.innerHTML is "Show Graph"
-            domChart.style.display = "block"
-            toggleButton.innerHTML = "Hide Graph"
-          else
-            domChart.style.display = "none"
-            toggleButton.innerHTML = "Show Graph"
+    if (domChart != null) {
+      const toggleButton = document.getElementById('chart-visibility');
+      if (toggleButton != null) {
+        toggleButton.onclick = function() {
+          if (toggleButton.innerHTML === "Show Graph") {
+            domChart.style.display = "block";
+            return toggleButton.innerHTML = "Hide Graph";
+          } else {
+            domChart.style.display = "none";
+            return toggleButton.innerHTML = "Show Graph";
+          }
+        };
+      }
 
-      # init chart
-      @chartData = new google.visualization.DataTable()
-      @chartData.addColumn('string', 'Plant Type (Leaf Size)')
-      @chartData.addColumn('number', 'Number of plants')
-      @chartData.addColumn({ type: 'string', role: 'style' })
-      @chartData.addRows [
-        ["1",  0, "color: #5942BF"]
-        ["2",  0, "color: #5F42B8"]
-        ["3",  0, "color: #65429F"]
-        ["4",  0, "color: #73419E"]
-        ["5",  0, "color: #874084"]
-        ["6",  0, "color: #904078"]
-        ["7",  0, "color: #9F416B"]
-        ["8",  0, "color: #B5435A"]
-        ["9",  0, "color: #C84349"]
+      // init chart
+      this.chartData = new google.visualization.DataTable();
+      this.chartData.addColumn('string', 'Plant Type (Leaf Size)');
+      this.chartData.addColumn('number', 'Number of plants');
+      this.chartData.addColumn({ type: 'string', role: 'style' });
+      this.chartData.addRows([
+        ["1",  0, "color: #5942BF"],
+        ["2",  0, "color: #5F42B8"],
+        ["3",  0, "color: #65429F"],
+        ["4",  0, "color: #73419E"],
+        ["5",  0, "color: #874084"],
+        ["6",  0, "color: #904078"],
+        ["7",  0, "color: #9F416B"],
+        ["8",  0, "color: #B5435A"],
+        ["9",  0, "color: #C84349"],
         ["10", 0, "color: #D34441"]
-      ]
+      ]);
 
-      # Set chart options
-      options =
-        title: 'Number of flowers'
-        hAxis:
+      // Set chart options
+      const options = {
+        title: 'Number of flowers',
+        hAxis: {
           title: 'Plant Type (Leaf Size)'
-        vAxis:
-          title: 'Flowers'
-          minValue: 0
-          maxValue: 10
-          gridlines:
+        },
+        vAxis: {
+          title: 'Flowers',
+          minValue: 0,
+          maxValue: 10,
+          gridlines: {
             count: 6
-        legend:
+          }
+        },
+        legend: {
           position: 'none'
-        width: 500
+        },
+        width: 500,
         height: 400
+      };
 
-      # Instantiate and draw our chart, passing in some options.
-      @chart = new google.visualization.ColumnChart(domChart)
-      @chart.draw(@chartData, options)
+      // Instantiate and draw our chart, passing in some options.
+      this.chart = new google.visualization.ColumnChart(domChart);
+      this.chart.draw(this.chartData, options);
 
-      Events.addEventListener Environment.EVENTS.STEP, =>
-        unless @env.get(0, 0, "season") is "summer" then return
-        counts = []; counts.push(0) for i in [0..9]
-        for agent in @env.agents
-          counts[agent.get('size')] += 1 if agent.get('has flowers')
+      return Events.addEventListener(Environment.EVENTS.STEP, () => {
+        let i;
+        if (this.env.get(0, 0, "season") !== "summer") { return; }
+        const counts = []; for (i = 0; i <= 9; i++) { counts.push(0); }
+        for (let agent of Array.from(this.env.agents)) {
+          if (agent.get('has flowers')) { counts[agent.get('size')] += 1; }
+        }
 
-        for i in [0..8]
-          @chartData.setValue(i, 1, counts[i+1])
+        for (i = 0; i <= 8; i++) {
+          this.chartData.setValue(i, 1, counts[i+1]);
+        }
 
-        if counts[1] > 10 or counts[5] > 10 or counts[9] > 10
-          options.vAxis.gridlines.count = -1
+        if ((counts[1] > 10) || (counts[5] > 10) || (counts[9] > 10)) {
+          options.vAxis.gridlines.count = -1;
+        }
 
-        @chart.draw(@chartData, options)
+        return this.chart.draw(this.chartData, options);
+      });
+    }
+  },
 
   preload: [
     "images/agents/varied-plants/buttons/seedpack_10.png",
@@ -290,10 +360,13 @@ window.model =
     "images/environments/mountains4flipped.jpg",
     "images/environments/mountains5flipped.jpg"
   ]
+};
 
-window.onload = ->
-  helpers.preload [model, env, plantSpecies], ->
-    model.run()
-    model.setupMountains()
-    model.setupMessages()
-    model.setupChart()
+window.onload = () =>
+  helpers.preload([model, env, plantSpecies], function() {
+    model.run();
+    model.setupMountains();
+    model.setupMessages();
+    return model.setupChart();
+  })
+;

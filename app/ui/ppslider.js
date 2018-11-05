@@ -1,34 +1,34 @@
-# Based on the code here: http://jsfiddle.net/LucP/BPdKR/2/
-# TODO We could probably convert this to not rely on jQuery...
-# coffeelint: disable=no_backticks
+// Based on the code here: http://jsfiddle.net/LucP/BPdKR/2/
+// TODO We could probably convert this to not rely on jQuery...
+// coffeelint: disable=no_backticks
 
-`
-var PPSliderClass;
+
+let PPSliderClass;
 (function ($) {
 
   PPSliderClass = function (el, opts) {
-    var startMouse, lastElemPos;
+    let startMouse, lastElemPos;
 
     if (typeof($) == 'undefined' || $ == null) {
       console.warn('jQuery not loaded! PPSlider is not supported');
       return;
     }
-    var element = $(el);
-    var options = opts;
-    var isMouseDown = false;
-    var currentVal = 0;
+    const element = $(el);
+    const options = opts;
+    let isMouseDown = false;
+    let currentVal = 0;
 
-    element.wrap('<div/>')
-    var container = $(el).parent();
+    element.wrap('<div/>');
+    const container = $(el).parent();
 
     container.addClass('pp-slider');
     if (opts.vertical) {
       container.addClass('vertical');
     }
     container.addClass('clearfix');
-    var minLabel = '<div class="pp-slider-min">' + opts.minLabel + '</div>';
-    var maxLabel = '<div class="pp-slider-max">' + opts.maxLabel + '</div>';
-    var content = '';
+    const minLabel = `<div class="pp-slider-min">${opts.minLabel}</div>`;
+    const maxLabel = `<div class="pp-slider-max">${opts.maxLabel}</div>`;
+    let content = '';
     if (opts.vertical) {
       content  += maxLabel;
     } else {
@@ -69,7 +69,7 @@ var PPSliderClass;
       container.find('.pp-slider-scale').css('width',(container.width()-30)+'px');
     }
 
-    var startSlide = function (e) {
+    const startSlide = function (e) {
       if (!options.moveable) {
         return true;
       }
@@ -77,7 +77,7 @@ var PPSliderClass;
         e.preventDefault();
       }
       isMouseDown = true;
-      var pos = getMousePosition(e);
+      const pos = getMousePosition(e);
       if (options.vertical) {
         startMouse = pos.y;
         lastElemPos = ($(this).offset().top - $(this).parent().offset().top);
@@ -92,8 +92,8 @@ var PPSliderClass;
     };
 
     var getMousePosition = function (e) {
-      var posx = 0;
-      var posy = 0;
+      let posx = 0;
+      let posy = 0;
 
       if (!e) var e = window.event;
 
@@ -113,7 +113,7 @@ var PPSliderClass;
       return { 'x': posx, 'y': posy };
     };
 
-    var positionSlider = function(newPos, currentVal) {
+    const positionSlider = function(newPos, currentVal) {
       if (options.vertical) {
         container.find('.pp-slider-button').css("top", newPos);
         container.find('.pp-slider-tooltip').html(currentVal+'%');
@@ -126,15 +126,15 @@ var PPSliderClass;
     };
 
     var updatePosition = function (e) {
-      var pos = getMousePosition(e);
-      var newPos, upperBound;
+      const pos = getMousePosition(e);
+      let newPos, upperBound;
       if (options.vertical) {
-        var spanY = (pos.y - startMouse);
-        newPos = (lastElemPos + spanY)
+        const spanY = (pos.y - startMouse);
+        newPos = (lastElemPos + spanY);
         upperBound = (container.find('.pp-slider-scale').height()-container.find('.pp-slider-button').height());
       } else {
-        var spanX = (pos.x - startMouse);
-        newPos = (lastElemPos + spanX)
+        const spanX = (pos.x - startMouse);
+        newPos = (lastElemPos + spanX);
         upperBound = (container.find('.pp-slider-scale').width()-container.find('.pp-slider-button').width());
       }
       newPos = Math.max(0,newPos);
@@ -148,9 +148,9 @@ var PPSliderClass;
       positionSlider(newPos, currentVal);
     };
 
-    var updatePositionByValue = function (val) {
+    const updatePositionByValue = function (val) {
       currentVal = val;
-      var upperBound, newPos;
+      let upperBound, newPos;
       if (options.vertical) {
         upperBound = (container.find('.pp-slider-scale').height()-container.find('.pp-slider-button').height());
         newPos = ((100-val)/100)*upperBound;
@@ -162,7 +162,7 @@ var PPSliderClass;
       positionSlider(newPos, val);
     };
 
-    var moving = function (e) {
+    const moving = function (e) {
       if(isMouseDown){
         if (e.originalEvent && e.originalEvent instanceof TouchEvent) {
           e.preventDefault();
@@ -172,7 +172,7 @@ var PPSliderClass;
       }
     };
 
-    var dropCallback = function (e) {
+    const dropCallback = function (e) {
       if (isMouseDown) {
         if (e.originalEvent && e.originalEvent instanceof TouchEvent) {
           e.preventDefault();
@@ -196,8 +196,8 @@ var PPSliderClass;
     $(document).on('touchend', function(e){ dropCallback(e); });
 
     return {
-      updatePositionByValue: updatePositionByValue
-    }
+      updatePositionByValue
+    };
 
   };
 
@@ -209,14 +209,14 @@ var PPSliderClass;
   }
 
   $.fn.PPSlider = function (options) {
-    var opts = $.extend({}, $.fn.PPSlider.defaults, options);
+    const opts = $.extend({}, $.fn.PPSlider.defaults, options);
 
-    var ret;
+    let ret;
     this.each(function () {
         ret = new PPSliderClass($(this), opts);
     });
     return ret;
-  }
+  };
 
   $.fn.PPSlider.defaults = {
     minLabel: '-',
@@ -228,5 +228,5 @@ var PPSliderClass;
 
 
 })(jQuery);
-`
-module.exports = PPSliderClass
+
+module.exports = PPSliderClass;

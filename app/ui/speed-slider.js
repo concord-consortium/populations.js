@@ -1,26 +1,36 @@
-PPSlider    = require 'ui/ppslider'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let SpeedSlider;
+const PPSlider    = require('ui/ppslider');
 
-module.exports = class SpeedSlider
+module.exports = (SpeedSlider = class SpeedSlider {
 
-  constructor: (env) ->
-    @view = document.createElement 'div'
-    @view.setAttribute "style", "height: 20px;"
+  constructor(env) {
+    this.view = document.createElement('div');
+    this.view.setAttribute("style", "height: 20px;");
 
-    input = document.createElement 'input'
+    const input = document.createElement('input');
 
-    input.setAttribute "id", "speed-slider"
-    input.setAttribute "type", 'hidden'
-    input.setAttribute "value", 50
+    input.setAttribute("id", "speed-slider");
+    input.setAttribute("type", 'hidden');
+    input.setAttribute("value", 50);
 
-    @view.appendChild input
+    this.view.appendChild(input);
 
-    # TODO Remove jQuery once we're no longer relying on it.
-    $( document ).ready ->
-      $(input).change ->
-        env.setSpeed(parseInt($(@).val()))
+    // TODO Remove jQuery once we're no longer relying on it.
+    $( document ).ready(function() {
+      $(input).change(function() {
+        return env.setSpeed(parseInt($(this).val()));
+      });
 
-      $(input).PPSlider({width: env.width})
+      return $(input).PPSlider({width: env.width});
+    });
+  }
 
-  getView: -> @view
+  getView() { return this.view; }
+});
 
 

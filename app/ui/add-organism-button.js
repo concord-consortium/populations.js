@@ -1,62 +1,99 @@
-module.exports = class AddOrganismButton
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS202: Simplify dynamic range loops
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let AddOrganismButton;
+module.exports = (AddOrganismButton = (function() {
+  AddOrganismButton = class AddOrganismButton {
+    static initClass() {
+  
+      this.prototype._count = 0;
+      this.prototype._disabled = false;
+    }
 
-  constructor: (@environment, @toolbar, {@species, @traits, @scatter, @limit, @imagePath, @showRemoveButton}) ->
-    if !@scatter
-      @toolbar.registerModalButton this
+    constructor(environment, toolbar, {species, traits, scatter, limit, imagePath, showRemoveButton}) {
+      this.environment = environment;
+      this.toolbar = toolbar;
+      this.species = species;
+      this.traits = traits;
+      this.scatter = scatter;
+      this.limit = limit;
+      this.imagePath = imagePath;
+      this.showRemoveButton = showRemoveButton;
+      if (!this.scatter) {
+        this.toolbar.registerModalButton(this);
+      }
+    }
 
-  render: ->
-    @button = document.createElement 'div'
-    @button.classList.add 'button'
-    @button.classList.add 'has-no-button' if @showRemoveButton
-    @button.addEventListener 'click', => @action()
-    if !@scatter then @button.classList.add 'modal'
+    render() {
+      this.button = document.createElement('div');
+      this.button.classList.add('button');
+      if (this.showRemoveButton) { this.button.classList.add('has-no-button'); }
+      this.button.addEventListener('click', () => this.action());
+      if (!this.scatter) { this.button.classList.add('modal'); }
 
-    image = document.createElement 'img'
-    image.setAttribute 'src', @imagePath
-    @button.appendChild image
+      const image = document.createElement('img');
+      image.setAttribute('src', this.imagePath);
+      this.button.appendChild(image);
 
-    return @button
+      return this.button;
+    }
 
-  getView: -> @button
+    getView() { return this.button; }
 
-  _count: 0
-  _disabled: false
+    disable() {
+      this._disabled = true;
+      return this.button.classList.add('disabled');
+    }
 
-  disable: ->
-    @_disabled = true
-    @button.classList.add 'disabled'
+    reset() {
+      this._count = 0;
+      this._disabled = false;
+      return this.button.classList.remove('disabled');
+    }
 
-  reset: ->
-    @_count = 0
-    @_disabled = false
-    @button.classList.remove 'disabled'
+    action() {
+      if (this._disabled) { return; }
+      if (this.scatter) {
+        return this.scatterOrganisms();
+      } else {
+        return this.enterAddOrganismsMode();
+      }
+    }
 
-  action: ->
-    return if @_disabled
-    if @scatter
-      @scatterOrganisms()
-    else
-      @enterAddOrganismsMode()
+    scatterOrganisms() {
+      for (let i = 0, end = this.scatter, asc = 0 <= end; asc ? i < end : i > end; asc ? i++ : i--) {
+        if (this.limit && (++this._count >= this.limit)) {
+          this.disable();
+          if (this._count > this.limit) { return; }
+        }
 
-  scatterOrganisms: ->
-    for i in [0...@scatter]
-      if @limit and ++@_count >= @limit
-        @disable()
-        return if @_count > @limit
+        const agent = this.species.createAgent(this.traits);
+        agent.environment = this.environment;
+        agent.setLocation(this.environment.randomLocation());
 
-      agent = @species.createAgent(@traits)
-      agent.environment = @environment
-      agent.setLocation @environment.randomLocation()
+        while (!this.environment.addAgent(agent)) {
+          agent.setLocation(this.environment.randomLocation());
+        }
+      }
+    }
 
-      while !@environment.addAgent(agent)
-        agent.setLocation @environment.randomLocation()
+    enterAddOrganismsMode() {
+      this.toolbar.activateModalButton(this);
+      this.environment.setDefaultAgentCreator(this.species, this.traits, () => {
+        if (this.limit && (++this._count >= this.limit)) {
+          this.environment.setDefaultAgentCreator(null);
+          this.environment.setState(this.environment.UI_STATE.NONE);
+          return this.disable();
+        }
+      });
 
-  enterAddOrganismsMode: ->
-    @toolbar.activateModalButton this
-    @environment.setDefaultAgentCreator @species, @traits, =>
-      if @limit and ++@_count >= @limit
-        @environment.setDefaultAgentCreator null
-        @environment.setState @environment.UI_STATE.NONE
-        @disable()
-
-    @environment.setState @environment.UI_STATE.ADD_AGENTS
+      return this.environment.setState(this.environment.UI_STATE.ADD_AGENTS);
+    }
+  };
+  AddOrganismButton.initClass();
+  return AddOrganismButton;
+})());

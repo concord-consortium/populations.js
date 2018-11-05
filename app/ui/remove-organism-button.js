@@ -1,46 +1,73 @@
-Events = require 'events'
-Environment = require 'models/environment'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let RemoveOrganismButton;
+const Events = require('events');
+const Environment = require('models/environment');
 
-module.exports = class RemoveOrganismButton
+module.exports = (RemoveOrganismButton = (function() {
+  RemoveOrganismButton = class RemoveOrganismButton {
+    static initClass() {
+  
+      this.prototype._disabled = false;
+    }
 
-  constructor: (@environment, @toolbar, {@species, @imagePath}) ->
-    undefined
+    constructor(environment, toolbar, {species, imagePath}) {
+      this.environment = environment;
+      this.toolbar = toolbar;
+      this.species = species;
+      this.imagePath = imagePath;
+      undefined;
+    }
 
-  render: ->
-    @button = document.createElement 'div'
-    @button.classList.add 'button'
-    @button.classList.add 'no-button'
-    @button.addEventListener 'click', => @action()
+    render() {
+      this.button = document.createElement('div');
+      this.button.classList.add('button');
+      this.button.classList.add('no-button');
+      this.button.addEventListener('click', () => this.action());
 
-    image = document.createElement 'img'
-    image.setAttribute 'src', @imagePath
-    @button.appendChild image
+      const image = document.createElement('img');
+      image.setAttribute('src', this.imagePath);
+      this.button.appendChild(image);
 
-    noImage = document.createElement 'div'
-    noImage.classList.add 'no-sign'
-    @button.appendChild noImage
+      const noImage = document.createElement('div');
+      noImage.classList.add('no-sign');
+      this.button.appendChild(noImage);
 
-    return @button
+      return this.button;
+    }
 
-  getView: -> @button
+    getView() { return this.button; }
 
-  _disabled: false
+    disable() {
+      this._disabled = true;
+      return this.button.classList.add('disabled');
+    }
 
-  disable: ->
-    @_disabled = true
-    @button.classList.add 'disabled'
+    reset() {
+      this._disabled = false;
+      return this.button.classList.remove('disabled');
+    }
 
-  reset: ->
-    @_disabled = false
-    @button.classList.remove 'disabled'
+    action() {
+      if (this._disabled) { return; }
+      this.removeOrganisms();
+      return Events.dispatchEvent(Environment.EVENTS.USER_REMOVED_AGENTS, {species: this.species});
+    }
 
-  action: ->
-    return if @_disabled
-    @removeOrganisms()
-    Events.dispatchEvent(Environment.EVENTS.USER_REMOVED_AGENTS, {species: @species})
-
-  removeOrganisms: ->
-    for agent in @environment.agents
-      if agent.species is @species
-        agent.die()
-    @environment.removeDeadAgents()
+    removeOrganisms() {
+      for (let agent of Array.from(this.environment.agents)) {
+        if (agent.species === this.species) {
+          agent.die();
+        }
+      }
+      return this.environment.removeDeadAgents();
+    }
+  };
+  RemoveOrganismButton.initClass();
+  return RemoveOrganismButton;
+})());

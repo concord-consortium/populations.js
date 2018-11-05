@@ -1,78 +1,110 @@
-Agent = require 'models/agent'
-helpers = require 'helpers'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let BasicPlant;
+const Agent = require('models/agent');
+const helpers = require('helpers');
 
-defaultProperties =
-  'is seed': true
-  'can seed': true
-  'has flowers': false
+const defaultProperties = {
+  'is seed': true,
+  'can seed': true,
+  'has flowers': false,
   'chance of flowering': 1
+};
 
-###
+/*
 	The base class of a simple plant
-###
-module.exports = class BasicPlant extends Agent
-  label: 'plant'
+*/
+module.exports = (BasicPlant = (function() {
+  BasicPlant = class BasicPlant extends Agent {
+    static initClass() {
+      this.prototype.label = 'plant';
+  
+      this.prototype._hasSeeded = false;
+    }
 
-  _hasSeeded: false
+    constructor(args) {
+      super(args);
+      this._props = helpers.setDefaults(this._props, defaultProperties);
+    }
 
-  constructor: (args) ->
-    super(args)
-    @_props = helpers.setDefaults(@_props, defaultProperties)
+    getSize() {
+      const age = this.get('age');
+      if (this.species.defs.SPROUT_AGE && (age < this.species.defs.SPROUT_AGE)) {
+        return 1;
+      } else if (this.species.defs.MATURITY_AGE) {
+        const maturity = this.get('age') / this.species.defs.MATURITY_AGE;
+        return Math.min(maturity, 1);
+      } else {
+        return 1;
+      }
+    }
 
-  getSize: ->
-    age = @get('age')
-    if @species.defs.SPROUT_AGE and age < @species.defs.SPROUT_AGE
-      1
-    else if @species.defs.MATURITY_AGE
-      maturity = @get('age') / @species.defs.MATURITY_AGE
-      Math.min maturity, 1
-    else
-      1
+    makeNewborn() {
+      super.makeNewborn();
+      return this.set('has flowers', false);
+    }
 
-  makeNewborn: ->
-    super()
-    @set 'has flowers', false
+    createSeeds() {
+      // quick addition to prevent over-popualtion. This could also be controlled
+      // by a species setting
+      if (this.get('num agents') > 2) { return; }
 
-  createSeeds: ->
-    # quick addition to prevent over-popualtion. This could also be controlled
-    # by a species setting
-    if @get('num agents') > 2 then return
+      this.reproduce();
+      this._hasSeeded = true;
+      return this.set('has flowers', false);
+    }
 
-    @reproduce()
-    @_hasSeeded = true
-    @set 'has flowers', false
+    step() {
+      const age     = this.get('age');
+      const season  = this.get('season');
 
-  step: ->
-    age     = @get 'age'
-    season  = @get 'season'
+      // seeds are frozen and do not start aging until spring
+      if ((age === 0) && (season !== "spring")) {
+        return;
+      }
 
-    # seeds are frozen and do not start aging until spring
-    if age is 0 and season isnt "spring"
-      return
+      this._incrementAge();
 
-    @_incrementAge()
+      if (this.get('is seed')) {
+        if (age < this.species.defs.SPROUT_AGE) {
+          return;
+        } else {
+          this.set('is seed', false);
+        }
+      }
 
-    if @get 'is seed'
-      if age < @species.defs.SPROUT_AGE
-        return
-      else
-        @set 'is seed', false
+      if ((!this._hasSeeded) && this.species.defs.CAN_SEED) {
+        if (!this.get('has flowers') && (age > this.species.defs.MATURITY_AGE) && ((!this.species.defs.IS_ANNUAL) || (season !== "fall"))) {
+          if (Math.random() < this.get('chance of flowering')) {
+            this.set('has flowers', true);
+          }
+        }
 
-    if (!@_hasSeeded) and @species.defs.CAN_SEED
-      if !@get('has flowers') and age > @species.defs.MATURITY_AGE and ((!@species.defs.IS_ANNUAL) || season isnt "fall")
-        if Math.random() < @get 'chance of flowering'
-          @set 'has flowers', true
+        if (this.get('has flowers')) {
+          if (this.species.defs.IS_ANNUAL) {
+            if ((season === "fall") && (Math.random() < this.species.defs.CHANCE_OF_SEEDING)) {
+              this.createSeeds();
+            }
+          } else {
+            if (Math.random() < this.species.defs.CHANCE_OF_SEEDING) {
+              this.createSeeds();
+            }
+          }
+        }
+      }
 
-      if @get 'has flowers'
-        if @species.defs.IS_ANNUAL
-          if season is "fall" and Math.random() < @species.defs.CHANCE_OF_SEEDING
-            @createSeeds()
-        else
-          if Math.random() < @species.defs.CHANCE_OF_SEEDING
-            @createSeeds()
+      if ((season === 'winter') && !this.get('is immortal')) {
+        const health = this.get('health');
+        this.set('health', health * 0.5);
+      }
 
-    if season is 'winter' and !@get 'is immortal'
-      health = @get 'health'
-      @set 'health', health * 0.5
-
-    @_checkSurvival()
+      return this._checkSurvival();
+    }
+  };
+  BasicPlant.initClass();
+  return BasicPlant;
+})());

@@ -1,226 +1,308 @@
-require 'animated-sprite'
-helpers       = require 'helpers'
-AnimatedAgent = require 'models/agents/animated-agent'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS202: Simplify dynamic range loops
+ * DS203: Remove `|| {}` from converted for-own loops
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let AgentView;
+require('animated-sprite');
+const helpers       = require('helpers');
+const AnimatedAgent = require('models/agents/animated-agent');
 
-module.exports = class AgentView
+module.exports = (AgentView = (function() {
+  AgentView = class AgentView {
+    static initClass() {
+  
+      this.prototype._images = null;
+      this.prototype._sprites = null;
+      this.prototype._container = null;
+  
+      this.prototype.defaultTextViewOptions = {
+        leaves: true,
+        roots: true
+      };
+    }
 
-  constructor: ({@agent}) ->
-    @imageProperties = @agent.species?.imageProperties || {}
+    constructor({agent}) {
+      this.agent = agent;
+      this.imageProperties = (this.agent.species != null ? this.agent.species.imageProperties : undefined) || {};
+    }
 
-  _images: null
-  _sprites: null
-  _container: null
+    render(stage, context) {
+      if (context == null) { context = 'environment'; }
+      const container = new PIXI.DisplayObjectContainer;
+      const sprites = {};
+      // create a texture from set of image paths
+      const images = this.agent.getImages({context});
+      for (let layer of Array.from(images)) {
+        const sprite = this._createOrUpdateSprite(layer.selectedImage);
+        sprites[layer.name] = sprite;
+        container.addChild(sprite);
+      }
 
-  render: (stage, context='environment') ->
-    container = new PIXI.DisplayObjectContainer
-    sprites = {}
-    # create a texture from set of image paths
-    images = @agent.getImages({context: context})
-    for layer in images
-      sprite = @_createOrUpdateSprite layer.selectedImage
-      sprites[layer.name] = sprite
-      container.addChild(sprite)
+      container.position.x = this.agent._x;
+      container.position.y = this.agent._y;
+      container.agent = this.agent;
 
-    container.position.x = @agent._x
-    container.position.y = @agent._y
-    container.agent = @agent
+      stage.addChild(container);
 
-    stage.addChild(container)
+      if ((context === 'environment') || (context === 'carry-tool')) {
+        this._rendered = true;
+        this._container = container;
+        this._sprites = sprites;
+        return this._images = images;
+      }
+    }
 
-    if context is 'environment' or context is 'carry-tool'
-      @_rendered = true
-      @_container = container
-      @_sprites = sprites
-      @_images = images
+    rerender(stage, context) {
+      let i, layer, sprite;
+      if (context == null) { context = 'environment'; }
+      if (!this._rendered) {
+        this.render(stage, context);
+        return;
+      }
+      const newImages = this.agent.getImages({context});
+      const names = [];
+      // update or create needed sprites
+      for (i = 0; i < newImages.length; i++) {
+        layer = newImages[i];
+        names.push(layer.name);
+        if ((this._sprites[layer.name] == null)) {
+          sprite = this._createOrUpdateSprite(layer.selectedImage);
+          this._sprites[layer.name] = sprite;
+          this._container.addChildAt(sprite,i);
+        } else if ((layer.selectedImage.path != null) && (layer.selectedImage.path !== this._sprites[layer.name].texture.baseTexture.source.src)) {
+          this._createOrUpdateSprite(layer.selectedImage, this._sprites[layer.name]);
+        } else if (this._sprites[layer.name] instanceof PIXI.AnimatedSprite) {
+          var animation;
+          const currentMovement = this.agent.getMovement();
+          // i = _i for animation, _i in layer.selectedImage.animations when animation.movement is currentMovement
+          for (let _animation of Array.from(layer.selectedImage.animations)) { if (_animation.movement === currentMovement) { animation = _animation; } }
+          if (animation && (animation.path !== this._sprites[layer.name].sequences[animation.movement].path)) {
+            // this._sprites[layer.name].sequences[layer.selectedImage.animations[0].movement]
+            sprite = this._sprites[layer.name];
+            this._createOrUpdateSprite(layer.selectedImage, sprite);
+          } else { this._setSpriteProperties(this._sprites[layer.name], layer.selectedImage); }
+        } else {
+          this._setSpriteProperties(this._sprites[layer.name], layer.selectedImage);
+        }
+      }
 
-  rerender: (stage, context='environment') ->
-    if !@_rendered
-      @render stage, context
-      return
-    newImages = @agent.getImages({context: context})
-    names = []
-    # update or create needed sprites
-    for layer,i in newImages
-      names.push layer.name
-      if not @_sprites[layer.name]?
-        sprite = @_createOrUpdateSprite layer.selectedImage
-        @_sprites[layer.name] = sprite
-        @_container.addChildAt(sprite,i)
-      else if layer.selectedImage.path? and layer.selectedImage.path != @_sprites[layer.name].texture.baseTexture.source.src
-        @_createOrUpdateSprite layer.selectedImage, @_sprites[layer.name]
-      else if @_sprites[layer.name] instanceof PIXI.AnimatedSprite
-        currentMovement = @agent.getMovement()
-        # i = _i for animation, _i in layer.selectedImage.animations when animation.movement is currentMovement
-        animation = _animation for _animation in layer.selectedImage.animations when _animation.movement is currentMovement
-        if animation and animation.path != @_sprites[layer.name].sequences[animation.movement].path
-          # this._sprites[layer.name].sequences[layer.selectedImage.animations[0].movement]
-          sprite = @_sprites[layer.name]
-          @_createOrUpdateSprite layer.selectedImage, sprite
-        else @_setSpriteProperties(@_sprites[layer.name], layer.selectedImage)
-      else
-        @_setSpriteProperties(@_sprites[layer.name], layer.selectedImage)
+      // remove the no-longer-needed sprites
+      for (let name of Object.keys(this._sprites || {})) {
+        sprite = this._sprites[name];
+        if (names.indexOf(name) === -1) {
+          this._container.removeChild(sprite);
+          delete this._sprites[name];
+        }
+      }
 
-    # remove the no-longer-needed sprites
-    for own name,sprite of @_sprites
-      if names.indexOf(name) == -1
-        @_container.removeChild sprite
-        delete @_sprites[name]
+      this._container.position.x = this.agent._x;
+      this._container.position.y = this.agent._y;
 
-    @_container.position.x = @agent._x
-    @_container.position.y = @agent._y
+      for (i = 0; i < newImages.length; i++) {
+        layer = newImages[i];
+        if (((sprite = this._sprites[layer.name]) != null) && sprite instanceof PIXI.AnimatedSprite) {
+          const sequence = (this.agent.environment._isRunning) ? this.agent.getMovement() : AnimatedAgent.MOVEMENTS.STOPPED;
+          if (!sequence || (sprite.sequences[sequence] == null)) { return; }
+          if (sequence !== sprite.currentSequence) {
+            if (!sprite.playing) {
+              sprite.gotoAndPlay(sequence);
+            } else {
+              if ((sprite.sequences[sprite.currentSequence] != null ? sprite.sequences[sprite.currentSequence].interruptible : undefined)) {
+                sprite.gotoAndPlay(sequence);
+              } else {
+                sprite.nextSequence = sequence;
+              }
+            }
+          }
+          sprite.advanceTime();
+        }
+      }
+    }
 
-    for layer,i in newImages
-      if (sprite = @_sprites[layer.name])? and sprite instanceof PIXI.AnimatedSprite
-        sequence = if (@agent.environment._isRunning) then @agent.getMovement() else AnimatedAgent.MOVEMENTS.STOPPED
-        return unless sequence and sprite.sequences[sequence]?
-        if sequence isnt sprite.currentSequence
-          if not sprite.playing
-            sprite.gotoAndPlay sequence
-          else
-            if sprite.sequences[sprite.currentSequence]?.interruptible
-              sprite.gotoAndPlay sequence
-            else
-              sprite.nextSequence = sequence
-        sprite.advanceTime()
+    remove(stage){
+      try {
+        if (this._rendered) { if (stage != null) {
+          stage.removeChild(this._container);
+        } }
+      } catch (e) {
+        console.error("Tried to remove an agent from a stage it wasn't rendered within.");
+      }
+      return this._rendered = false;
+    }
 
-  remove: (stage)->
-    try
-      stage?.removeChild(@_container) if @_rendered
-    catch e
-      console.error("Tried to remove an agent from a stage it wasn't rendered within.")
-    @_rendered = false
+    contains(x,y){
+      if (!this._container) { return false; }
+      const intManager = new PIXI.InteractionManager();
+      return intManager.hitTest(this._container, {
+        global: {
+          x,
+          y
+        }
+      }
+      );
+    }
 
-  contains: (x,y)->
-    return false unless @_container
-    intManager = new PIXI.InteractionManager()
-    return intManager.hitTest @_container,
-      global:
-        x: x
-        y: y
+    textView(options){
+      if (options == null) { options = {}; }
+      const opts = helpers.setDefaults(options, this.defaultTextViewOptions);
+      const content = document.createElement('div');
 
-  defaultTextViewOptions:
-    leaves: true
-    roots: true
+      if (this.agent.species.defs.INFO_VIEW_PROPERTIES != null) {
+        for (let k of Object.keys(this.agent.species.defs.INFO_VIEW_PROPERTIES || {})) {
+          const v = this.agent.species.defs.INFO_VIEW_PROPERTIES[k];
+          this._appendPropVals(content, k, v);
+        }
+      }
 
-  textView: (options = {})->
-    opts = helpers.setDefaults(options, @defaultTextViewOptions)
-    content = document.createElement 'div'
+      return content;
+    }
 
-    if @agent.species.defs.INFO_VIEW_PROPERTIES?
-      for own k,v of @agent.species.defs.INFO_VIEW_PROPERTIES
-        @_appendPropVals(content, k, v)
+    _appendPropVals(container, propLabel, propKey){
+      const prop = document.createElement('div');
+      prop.classList.add('agent-property');
+      prop.innerHTML = propLabel;
 
-    return content
+      const val = document.createElement('div');
+      val.classList.add('agent-property-value');
+      val.innerHTML = this.agent.get(propKey);
 
-  _appendPropVals: (container, propLabel, propKey)->
-    prop = document.createElement 'div'
-    prop.classList.add 'agent-property'
-    prop.innerHTML = propLabel
+      container.appendChild(prop);
+      container.appendChild(val);
+      return container;
+    }
 
-    val = document.createElement 'div'
-    val.classList.add 'agent-property-value'
-    val.innerHTML = @agent.get propKey
+    _createOrUpdateSprite(image, sprite){
+      // create a new Sprite using the texture
+      if (!image.animations) {
+        let texture;
+        if (image.path) {
+          texture = PIXI.Texture.fromImage(image.path);
+        } else if (image.render) {
+          const graphics = new PIXI.Graphics();
+          image.render(graphics);
+          texture = graphics.generateTexture();
+        }
 
-    container.appendChild(prop)
-    container.appendChild(val)
-    return container
+        if (!sprite) {
+          sprite = new PIXI.Sprite(texture);
+        } else {
+          sprite.setTexture(texture);
+        }
+        this._setSpriteProperties(sprite, image);
+      } else {
 
-  _createOrUpdateSprite: (image, sprite)->
-    # create a new Sprite using the texture
-    if not image.animations
-      if image.path
-        texture = PIXI.Texture.fromImage image.path
-      else if image.render
-        graphics = new PIXI.Graphics()
-        image.render(graphics)
-        texture = graphics.generateTexture()
+        var setupAnimatedSprite = (image, sprite)=> {
+          let sequences;
+          for (let animation of Array.from(image.animations)) {
+            const spriteTextures = [];
+            for (let i = 0, end = animation.length, asc = 0 <= end; asc ? i < end : i > end; asc ? i++ : i--) {
+              spriteTextures.push(PIXI.Texture.fromFrame(animation.animationName+"-"+i));
+            }
 
-      if not sprite
-        sprite = new PIXI.Sprite(texture)
-      else
-        sprite.setTexture texture
-      @_setSpriteProperties(sprite, image)
-    else
+            if (!sprite) {
+              sequences = {};
+              sequences[animation.movement]               = {frames: spriteTextures};
+              if (animation.frameRate) { sequences[animation.movement].frameRate     = animation.frameRate; }
+              if (animation.loop) { sequences[animation.movement].loop          = animation.loop; }
+              if (animation.onComplete) { sequences[animation.movement].onComplete    = animation.onComplete; }
+              sequences[animation.movement].interruptible = animation.interruptible;
+              sequences[animation.movement].path          = animation.path;
+              sprite = new PIXI.AnimatedSprite(sequences);
+            } else {
+              sprite.sequences[animation.movement]                = {frames: spriteTextures};
+              if (animation.frameRate) { sprite.sequences[animation.movement].frameRate      = animation.frameRate; }
+              if (animation.loop) { sprite.sequences[animation.movement].loop           = animation.loop; }
+              if (animation.onComplete) { sprite.sequences[animation.movement].onComplete     = animation.onComplete; }
+              sprite.sequences[animation.movement].interruptible  = animation.interruptible;
+              sprite.sequences[animation.movement].path           = animation.path;
+            }
+          }
 
-      setupAnimatedSprite = (image, sprite)=>
-        for animation in image.animations
-          spriteTextures = []
-          for i in [0...animation.length]
-            spriteTextures.push PIXI.Texture.fromFrame(animation.animationName+"-"+i)
+          sprite.nextSequence = null;
+          sprite.onComplete = sequence => {
+            let func;
+            if (func = sprite.sequences[sprite.currentSequence].onComplete) {
+              this.agent[func]();
+            }
+            if (sprite.nextSequence) {
+              sprite.gotoAndPlay(sprite.nextSequence);
+              sprite.nextSequence = null;
+            } else {
+              if (!sprite.sequences[sequence].loop) {
+                sprite.currentSequence = null;
+              }
+            }
+            if (sprite.nextImage != null) {
+              setupAnimatedSprite(image, sprite);
+              return sprite.nextImage = null;
+            }
+          };
 
-          if not sprite
-            sequences = {}
-            sequences[animation.movement]               = {frames: spriteTextures}
-            sequences[animation.movement].frameRate     = animation.frameRate if animation.frameRate
-            sequences[animation.movement].loop          = animation.loop if animation.loop
-            sequences[animation.movement].onComplete    = animation.onComplete if animation.onComplete
-            sequences[animation.movement].interruptible = animation.interruptible
-            sequences[animation.movement].path          = animation.path
-            sprite = new PIXI.AnimatedSprite sequences
-          else
-            sprite.sequences[animation.movement]                = {frames: spriteTextures}
-            sprite.sequences[animation.movement].frameRate      = animation.frameRate if animation.frameRate
-            sprite.sequences[animation.movement].loop           = animation.loop if animation.loop
-            sprite.sequences[animation.movement].onComplete     = animation.onComplete if animation.onComplete
-            sprite.sequences[animation.movement].interruptible  = animation.interruptible
-            sprite.sequences[animation.movement].path           = animation.path
-
-        sprite.nextSequence = null
-        sprite.onComplete = (sequence) =>
-          if func = sprite.sequences[sprite.currentSequence].onComplete
-            @agent[func]()
-          if sprite.nextSequence
-            sprite.gotoAndPlay sprite.nextSequence
-            sprite.nextSequence = null
-          else
-            if not sprite.sequences[sequence].loop
-              sprite.currentSequence = null
-          if sprite.nextImage?
-            setupAnimatedSprite(image, sprite)
-            sprite.nextImage = null
-
-        @_setSpriteProperties(sprite, image)
-        return sprite
-
-
-      if sprite and sprite.playing
-        sprite.nextImage = image
-      else
-        sprite = setupAnimatedSprite(image, sprite)
-
-    return sprite
-
-  _setSpriteProperties: (sprite, image)->
-    # default scale of 1 -- same size as the original image
-    scale = image.scale || 1
-    scale *= @agent.getSize()
-    sprite.scale.x = scale
-    sprite.scale.y = scale
-
-    if @imageProperties.initialFlipDirection
-      d = ExtMath.normalizeRads @agent.get('direction')
-      switch @imageProperties.initialFlipDirection
-        when "left"
-          sprite.scale.x *= -1 if -ExtMath.HALF_PI < d < ExtMath.HALF_PI
-        when "right"
-          sprite.scale.x *= -1 if -ExtMath.HALF_PI > d || d > ExtMath.HALF_PI
-        when "up"
-          sprite.scale.y *= -1 if 0 < d < Math.PI
-        when "down"
-          sprite.scale.y *= -1 if -Math.PI < d < 0
-
-    if @imageProperties.rotate
-      initialDirection = @imageProperties.initialRotationDirection || 0
-      d = ExtMath.normalizeRads @agent.get('direction')
-      dd = d - initialDirection
-      sprite.rotation = dd
+          this._setSpriteProperties(sprite, image);
+          return sprite;
+        };
 
 
-    # default anchor of 0.5 -- the image is centered on the container's position
-    sprite.anchor.x = if image.anchor?.x? then image.anchor.x else 0.5
-    sprite.anchor.y = if image.anchor?.y? then image.anchor.y else 0.5
+        if (sprite && sprite.playing) {
+          sprite.nextImage = image;
+        } else {
+          sprite = setupAnimatedSprite(image, sprite);
+        }
+      }
 
-    # default position of 0 -- the image won't be shifted up/down or left/right
-    sprite.position.x = if image.position?.x? then image.position.x else 0
-    sprite.position.y = if image.position?.y? then image.position.y else 0
-    return sprite
+      return sprite;
+    }
+
+    _setSpriteProperties(sprite, image){
+      // default scale of 1 -- same size as the original image
+      let d;
+      let scale = image.scale || 1;
+      scale *= this.agent.getSize();
+      sprite.scale.x = scale;
+      sprite.scale.y = scale;
+
+      if (this.imageProperties.initialFlipDirection) {
+        d = ExtMath.normalizeRads(this.agent.get('direction'));
+        switch (this.imageProperties.initialFlipDirection) {
+          case "left":
+            if (-ExtMath.HALF_PI < d && d < ExtMath.HALF_PI) { sprite.scale.x *= -1; }
+            break;
+          case "right":
+            if ((-ExtMath.HALF_PI > d) || (d > ExtMath.HALF_PI)) { sprite.scale.x *= -1; }
+            break;
+          case "up":
+            if (0 < d && d < Math.PI) { sprite.scale.y *= -1; }
+            break;
+          case "down":
+            if (-Math.PI < d && d < 0) { sprite.scale.y *= -1; }
+            break;
+        }
+      }
+
+      if (this.imageProperties.rotate) {
+        const initialDirection = this.imageProperties.initialRotationDirection || 0;
+        d = ExtMath.normalizeRads(this.agent.get('direction'));
+        const dd = d - initialDirection;
+        sprite.rotation = dd;
+      }
+
+
+      // default anchor of 0.5 -- the image is centered on the container's position
+      sprite.anchor.x = ((image.anchor != null ? image.anchor.x : undefined) != null) ? image.anchor.x : 0.5;
+      sprite.anchor.y = ((image.anchor != null ? image.anchor.y : undefined) != null) ? image.anchor.y : 0.5;
+
+      // default position of 0 -- the image won't be shifted up/down or left/right
+      sprite.position.x = ((image.position != null ? image.position.x : undefined) != null) ? image.position.x : 0;
+      sprite.position.y = ((image.position != null ? image.position.y : undefined) != null) ? image.position.y : 0;
+      return sprite;
+    }
+  };
+  AgentView.initClass();
+  return AgentView;
+})());

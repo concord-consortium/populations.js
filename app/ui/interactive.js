@@ -1,93 +1,121 @@
-helpers = require "helpers"
-Toolbar = require "ui/toolbar"
-InfoView = require "ui/info-view"
-SpeedSlider = require "ui/speed-slider"
-Events = require 'events'
-Environment = require 'models/environment'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let Interactive;
+const helpers = require("helpers");
+const Toolbar = require("ui/toolbar");
+const InfoView = require("ui/info-view");
+const SpeedSlider = require("ui/speed-slider");
+const Events = require('events');
+const Environment = require('models/environment');
 
-defaultOptions =
-  environment : null
-  playButton  : true
-  resetButton : true
-  speedSlider : false
-  addOrganismButtons  : []
+const defaultOptions = {
+  environment : null,
+  playButton  : true,
+  resetButton : true,
+  speedSlider : false,
+  addOrganismButtons  : [],
   toolButtons: []
+};
 
-module.exports = class Interactive
+module.exports = (Interactive = class Interactive {
 
-  constructor: (options) ->
-    @_opts = helpers.setDefaults(options, defaultOptions)
-    @environment = @_opts.environment
-    @addOrganismButtons = @_opts.addOrganismButtons
-    @toolButtons = @_opts.toolButtons
-    if Shutterbug?
-      window.shutterbug = new Shutterbug("body")
+  constructor(options) {
+    this._opts = helpers.setDefaults(options, defaultOptions);
+    this.environment = this._opts.environment;
+    this.addOrganismButtons = this._opts.addOrganismButtons;
+    this.toolButtons = this._opts.toolButtons;
+    if (typeof Shutterbug !== 'undefined' && Shutterbug !== null) {
+      window.shutterbug = new Shutterbug("body");
 
-      # When Shutterbug wants to take a snapshot of the page, it first emits a 'shutterbug-
-      # saycheese' event. By default, any WebGL canvas will return a blank image when Shutterbug
-      # calls .toDataURL on it, However, if we ask Pixi to render to the canvas during the
-      # Shutterbug event loop (remember synthetic events such as 'shutterbug-saycheese' are
-      # handled synchronously) the rendered image will still be in the WebGL drawing buffer where
-      # Shutterbug can see it.
-      $(window).on 'shutterbug-saycheese', =>
-        @repaint()
-    if iframePhone?
-      phone = iframePhone.getIFrameEndpoint()
-      ignoreEvent = false
-      phone.addListener 'stop', =>
-        ignoreEvent = true
-        @stop()
-        ignoreEvent = false
-      phone.addListener 'play', =>
-        ignoreEvent = true
-        @play()
-        ignoreEvent = false
-      phone.addListener 'reset', =>
-        ignoreEvent = true
-        @reset()
-        ignoreEvent = false
-      Events.addEventListener Environment.EVENTS.START, ->
-        phone.post({type: 'play'}) unless ignoreEvent
-      Events.addEventListener Environment.EVENTS.STOP, ->
-        phone.post({type: 'stop'}) unless ignoreEvent
-      Events.addEventListener Environment.EVENTS.RESET, ->
-        phone.post({type: 'reset'}) unless ignoreEvent
-      phone.initialize()
+      // When Shutterbug wants to take a snapshot of the page, it first emits a 'shutterbug-
+      // saycheese' event. By default, any WebGL canvas will return a blank image when Shutterbug
+      // calls .toDataURL on it, However, if we ask Pixi to render to the canvas during the
+      // Shutterbug event loop (remember synthetic events such as 'shutterbug-saycheese' are
+      // handled synchronously) the rendered image will still be in the WebGL drawing buffer where
+      // Shutterbug can see it.
+      $(window).on('shutterbug-saycheese', () => {
+        return this.repaint();
+      });
+    }
+    if (typeof iframePhone !== 'undefined' && iframePhone !== null) {
+      const phone = iframePhone.getIFrameEndpoint();
+      let ignoreEvent = false;
+      phone.addListener('stop', () => {
+        ignoreEvent = true;
+        this.stop();
+        return ignoreEvent = false;
+      });
+      phone.addListener('play', () => {
+        ignoreEvent = true;
+        this.play();
+        return ignoreEvent = false;
+      });
+      phone.addListener('reset', () => {
+        ignoreEvent = true;
+        this.reset();
+        return ignoreEvent = false;
+      });
+      Events.addEventListener(Environment.EVENTS.START, function() {
+        if (!ignoreEvent) { return phone.post({type: 'play'}); }
+      });
+      Events.addEventListener(Environment.EVENTS.STOP, function() {
+        if (!ignoreEvent) { return phone.post({type: 'stop'}); }
+      });
+      Events.addEventListener(Environment.EVENTS.RESET, function() {
+        if (!ignoreEvent) { return phone.post({type: 'reset'}); }
+      });
+      phone.initialize();
+    }
+  }
 
-  getEnvironmentPane: ->
-    @view = document.createElement 'div'
+  getEnvironmentPane() {
+    this.view = document.createElement('div');
 
-    @view.setAttribute "style", "height: #{@environment.height}px;"
+    this.view.setAttribute("style", `height: ${this.environment.height}px;`);
 
-    if @_opts.speedSlider
-      speedSlider = new SpeedSlider(@environment)
-      @view.appendChild speedSlider.getView()
+    if (this._opts.speedSlider) {
+      const speedSlider = new SpeedSlider(this.environment);
+      this.view.appendChild(speedSlider.getView());
+    }
 
-    @view.appendChild @environment.getView().render()
+    this.view.appendChild(this.environment.getView().render());
 
-    @toolbar = new Toolbar(this)
-    @view.appendChild @toolbar.getView()
+    this.toolbar = new Toolbar(this);
+    this.view.appendChild(this.toolbar.getView());
 
-    return @view
+    return this.view;
+  }
 
-  showPlayButton: -> @_opts.playButton
-  showResetButton: -> @_opts.resetButton
+  showPlayButton() { return this._opts.playButton; }
+  showResetButton() { return this._opts.resetButton; }
 
-  repaint: ->
-    for view in InfoView.instances()
-      view.repaint()
-    @environment.getView().repaint()
+  repaint() {
+    for (let view of Array.from(InfoView.instances())) {
+      view.repaint();
+    }
+    return this.environment.getView().repaint();
+  }
 
-  play: ->
-    @toolbar.toggleButtons['play'].click() unless @environment._isRunning
+  play() {
+    if (!this.environment._isRunning) { return this.toolbar.toggleButtons['play'].click(); }
+  }
 
-  stop: ->
-    @toolbar.toggleButtons['pause'].click() if @environment._isRunning
+  stop() {
+    if (this.environment._isRunning) { return this.toolbar.toggleButtons['pause'].click(); }
+  }
 
-  reset: ->
-    @toolbar.toggleButtons['reset'].click()
+  reset() {
+    return this.toolbar.toggleButtons['reset'].click();
+  }
+});
 
-window.onerror = (msg, url, line)->
-  message = "<div>There was an error in the model!<br/><pre>" + msg + "</pre></div>"
-  message += "<div>source: " + url + ", line: " + line + "</div>"
-  helpers.showMessage message, document.body
+window.onerror = function(msg, url, line){
+  let message = `<div>There was an error in the model!<br/><pre>${msg}</pre></div>`;
+  message += `<div>source: ${url}, line: ${line}</div>`;
+  return helpers.showMessage(message, document.body);
+};

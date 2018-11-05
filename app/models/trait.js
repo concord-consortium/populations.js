@@ -1,4 +1,10 @@
-###
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+/*
   A Trait is a property of a species, and all traits have a set of possible values.
   Each agent in a species has a specific value for each of these traits. This set
   is the agent's properties.
@@ -15,67 +21,94 @@
 
   The Trait class defines the allowed values for each trait and has helper methods for
   picking random values and mutating a value.
-###
+*/
 
-require 'helpers'
+let Trait;
+require('helpers');
 
-module.exports = class Trait
+module.exports = (Trait = class Trait {
 
-  constructor: ({@name, @possibleValues, @min, @max, @default, @float, @mutatable, @isGenetic, @isNumeric}) ->
-    undefined
+  constructor({name, possibleValues, min, max, default1, float, mutatable, isGenetic, isNumeric}) {
+    this.name = name;
+    this.possibleValues = possibleValues;
+    this.min = min;
+    this.max = max;
+    this.default = default1;
+    this.float = float;
+    this.mutatable = mutatable;
+    this.isGenetic = isGenetic;
+    this.isNumeric = isNumeric;
+    undefined;
+  }
 
-  getDefaultValue: ->
-    if @default? then @default
-    else @getRandomValue()
+  getDefaultValue() {
+    if (this.default != null) { return this.default;
+    } else { return this.getRandomValue(); }
+  }
 
-  getRandomValue: ->
-    if (@possibleValues)
-      @possibleValues.randomElement()
-    else
-      if @float
-        ExtMath.randomValue @min, @max
-      else
-        Math.floor ExtMath.randomValue @min, @max+1
+  getRandomValue() {
+    if (this.possibleValues) {
+      return this.possibleValues.randomElement();
+    } else {
+      if (this.float) {
+        return ExtMath.randomValue(this.min, this.max);
+      } else {
+        return Math.floor(ExtMath.randomValue(this.min, this.max+1));
+      }
+    }
+  }
 
-  mutate: (val) ->
-    return val unless @mutatable
-    if (@possibleValues and @possibleValues.length > 1)
-      loop              # silly coffeescript do-while
-        newVal = @getRandomValue()
-        break if newVal isnt val
-      return newVal
-    else if @max
-      return @_mutateValueFromRange(val)
-    else
-      return val
+  mutate(val) {
+    if (!this.mutatable) { return val; }
+    if (this.possibleValues && (this.possibleValues.length > 1)) {
+      let newVal;
+      while (true) {              // silly coffeescript do-while
+        newVal = this.getRandomValue();
+        if (newVal !== val) { break; }
+      }
+      return newVal;
+    } else if (this.max) {
+      return this._mutateValueFromRange(val);
+    } else {
+      return val;
+    }
+  }
 
-  isPossibleValue: (val)->
-    return @possibleValues.indexOf(val) != -1
+  isPossibleValue(val){
+    return this.possibleValues.indexOf(val) !== -1;
+  }
 
-  inherit: (motherVal, fatherVal) ->
-    inheritedVal = null
-    if !@isGenetic
-      if @possibleValues?
-        # randomly pick either the mother's or the father's
-        inheritedVal = (if ExtMath.flip() is 0 then motherVal else fatherVal)
-      else
-        if @float
-          inheritedVal = ExtMath.randomValue motherVal, fatherVal
-        else
-          if motherVal > fatherVal
-            motherVal += 1
-          else
-            fatherVal += 1
-          inheritedVal = Math.floor ExtMath.randomValue motherVal, fatherVal
-    return inheritedVal
+  inherit(motherVal, fatherVal) {
+    let inheritedVal = null;
+    if (!this.isGenetic) {
+      if (this.possibleValues != null) {
+        // randomly pick either the mother's or the father's
+        inheritedVal = (ExtMath.flip() === 0 ? motherVal : fatherVal);
+      } else {
+        if (this.float) {
+          inheritedVal = ExtMath.randomValue(motherVal, fatherVal);
+        } else {
+          if (motherVal > fatherVal) {
+            motherVal += 1;
+          } else {
+            fatherVal += 1;
+          }
+          inheritedVal = Math.floor(ExtMath.randomValue(motherVal, fatherVal));
+        }
+      }
+    }
+    return inheritedVal;
+  }
 
-  _mutateValueFromRange: (val) ->
-    sign = if ExtMath.flip() then 1 else -1
-    diff  = if @float then 0.1 else 1
-    val += (diff * sign)
+  _mutateValueFromRange(val) {
+    const sign = ExtMath.flip() ? 1 : -1;
+    const diff  = this.float ? 0.1 : 1;
+    val += (diff * sign);
 
-    val = Math.max val, @min
-    val = Math.min val, @max
+    val = Math.max(val, this.min);
+    val = Math.min(val, this.max);
 
-    return val
+    return val;
+  }
+});
 

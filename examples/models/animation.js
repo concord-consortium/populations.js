@@ -1,31 +1,38 @@
-helpers     = require 'helpers'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const helpers     = require('helpers');
 
-Interactive = require 'ui/interactive'
-ToolButton  = require 'ui/tool-button'
+const Interactive = require('ui/interactive');
+const ToolButton  = require('ui/tool-button');
 
-foxSpecies  = require 'species/animated-foxes'
-env         = require 'environments/open'
+const foxSpecies  = require('species/animated-foxes');
+const env         = require('environments/open');
 
-window.model =
-  run: ->
-    @interactive = new Interactive
-      environment: env
-      speedSlider: false
+window.model = {
+  run() {
+    this.interactive = new Interactive({
+      environment: env,
+      speedSlider: false,
       addOrganismButtons: [
         {
-          species: foxSpecies
-          scatter: 1
+          species: foxSpecies,
+          scatter: 1,
           imagePath: "images/agents/foxes/fox.png"
         }
-      ]
+      ],
       toolButtons: [
         {
           type: ToolButton.INFO_TOOL
         }
-      ]
+      ]});
 
-    document.getElementById('environment').appendChild @interactive.getEnvironmentPane()
+    return document.getElementById('environment').appendChild(this.interactive.getEnvironmentPane());
+  }
+};
 
-window.onload = ->
-  helpers.preload [model, env, foxSpecies], ->
-    model.run()
+window.onload = () =>
+  helpers.preload([model, env, foxSpecies], () => model.run())
+;

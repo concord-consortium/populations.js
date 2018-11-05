@@ -1,73 +1,85 @@
-PIXI.AnimatedSprite = (sequences, firstSequence) ->
-  @sequences  = sequences
-  unless firstSequence?
-    for key of sequences
-      @currentSequence = key
-      break
-  else
-    @currentSequence = firstSequence
+/*
+ * decaffeinate suggestions:
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+PIXI.AnimatedSprite = function(sequences, firstSequence) {
+  this.sequences  = sequences;
+  if (firstSequence == null) {
+    for (let key in sequences) {
+      this.currentSequence = key;
+      break;
+    }
+  } else {
+    this.currentSequence = firstSequence;
+  }
 
-  @frames = @sequences[@currentSequence].frames
-  @frameRate = @sequences[@currentSequence].frameRate || 60
-  @loop = @sequences[@currentSequence].loop || false
+  this.frames = this.sequences[this.currentSequence].frames;
+  this.frameRate = this.sequences[this.currentSequence].frameRate || 60;
+  this.loop = this.sequences[this.currentSequence].loop || false;
 
-  PIXI.Sprite.call this, @frames[0]
-  @anchor.x = @anchor.y = .5
-  @onComplete = null
-  @currentFrame = 0
-  @previousFrame
-  @playing = false
-  @loop = false
-  return
+  PIXI.Sprite.call(this, this.frames[0]);
+  this.anchor.x = (this.anchor.y = .5);
+  this.onComplete = null;
+  this.currentFrame = 0;
+  this.previousFrame;
+  this.playing = false;
+  this.loop = false;
+};
 
 
-#animatedSprite
-PIXI.AnimatedSprite.constructor = PIXI.AnimatedSprite
-PIXI.AnimatedSprite:: = Object.create(PIXI.Sprite::)
-PIXI.AnimatedSprite::gotoAndPlay = (where) ->
-  if Object::toString.call(where) is "[object String]"
-    @currentFrame = 0
-    @currentSequence = where
-    @frames = @sequences[where].frames
-    @frameRate = @sequences[where].frameRate || 60
-    @loop = @sequences[where].loop || false
-  else
-    @frames = @sequences[@currentSequence].frames
-    @currentFrame = where
-  @playing = true
-  return
+//animatedSprite
+PIXI.AnimatedSprite.constructor = PIXI.AnimatedSprite;
+PIXI.AnimatedSprite.prototype = Object.create(PIXI.Sprite.prototype);
+PIXI.AnimatedSprite.prototype.gotoAndPlay = function(where) {
+  if (Object.prototype.toString.call(where) === "[object String]") {
+    this.currentFrame = 0;
+    this.currentSequence = where;
+    this.frames = this.sequences[where].frames;
+    this.frameRate = this.sequences[where].frameRate || 60;
+    this.loop = this.sequences[where].loop || false;
+  } else {
+    this.frames = this.sequences[this.currentSequence].frames;
+    this.currentFrame = where;
+  }
+  this.playing = true;
+};
 
-PIXI.AnimatedSprite::gotoAndStop = (where) ->
-  if Object::toString.call(where) is "[object String]"
-    @currentFrame = 0
-    @currentSequence = where
-    @frames = @sequences[where].frames
-    @frameRate = @sequences[where].frameRate || 60
-    @loop = @sequences[where].loop || false
-  else
-    @currentFrame = where
-  @setTexture @frames[@currentFrame]
-  @playing = false
-  return
+PIXI.AnimatedSprite.prototype.gotoAndStop = function(where) {
+  if (Object.prototype.toString.call(where) === "[object String]") {
+    this.currentFrame = 0;
+    this.currentSequence = where;
+    this.frames = this.sequences[where].frames;
+    this.frameRate = this.sequences[where].frameRate || 60;
+    this.loop = this.sequences[where].loop || false;
+  } else {
+    this.currentFrame = where;
+  }
+  this.setTexture(this.frames[this.currentFrame]);
+  this.playing = false;
+};
 
-PIXI.AnimatedSprite::play = ->
-  @playing = true
-  return
+PIXI.AnimatedSprite.prototype.play = function() {
+  this.playing = true;
+};
 
-PIXI.AnimatedSprite::stop = ->
-  @playing = false
-  return
+PIXI.AnimatedSprite.prototype.stop = function() {
+  this.playing = false;
+};
 
-PIXI.AnimatedSprite::advanceTime = (dt) ->
-  dt = 1 / 60  if typeof dt is "undefined"
-  if @playing
-    @currentFrame += @frameRate * dt
-    constrainedFrame = Math.floor(Math.min(@currentFrame, @frames.length - 1))
-    @setTexture @frames[constrainedFrame]
-    if @currentFrame >= @frames.length
-      if @loop
-        @gotoAndPlay 0
-      else
-        @stop()
-      @onComplete @currentSequence  if @onComplete
-  return
+PIXI.AnimatedSprite.prototype.advanceTime = function(dt) {
+  if (typeof dt === "undefined") { dt = 1 / 60; }
+  if (this.playing) {
+    this.currentFrame += this.frameRate * dt;
+    const constrainedFrame = Math.floor(Math.min(this.currentFrame, this.frames.length - 1));
+    this.setTexture(this.frames[constrainedFrame]);
+    if (this.currentFrame >= this.frames.length) {
+      if (this.loop) {
+        this.gotoAndPlay(0);
+      } else {
+        this.stop();
+      }
+      if (this.onComplete) { this.onComplete(this.currentSequence); }
+    }
+  }
+};

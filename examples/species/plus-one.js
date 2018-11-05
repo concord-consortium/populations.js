@@ -1,28 +1,37 @@
-require.register "species/plus-one", (exports, require, module) ->
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+require.register("species/plus-one", function(exports, require, module) {
 
-  Species = require 'models/species'
-  Inanimate = require 'models/inanimate'
+  const Species = require('models/species');
+  const Inanimate = require('models/inanimate');
 
-  module.exports = new Species
-    speciesName: "plus one"
-    agentClass: Inanimate
-    defs: {}
-    traits: []
+  return module.exports = new Species({
+    speciesName: "plus one",
+    agentClass: Inanimate,
+    defs: {},
+    traits: [],
     imageRules: [
       {
-        name: 'plus one'
-        contexts: ['environment']
+        name: 'plus one',
+        contexts: ['environment'],
         rules: [
           {
-            image:
-              path: "images/agents/hawks/hawkPlus1.png"
-              scale: 0.2
-              anchor:
-                x: 0
+            image: {
+              path: "images/agents/hawks/hawkPlus1.png",
+              scale: 0.2,
+              anchor: {
+                x: 0,
                 y: 1
-              position:
+              },
+              position: {
                 y: -11
+              }
+            }
           }
         ]
       }
-    ]
+    ]});
+});
