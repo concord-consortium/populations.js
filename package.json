@@ -7,7 +7,7 @@
   "repository": "",
   "scripts": {
     "start": "webpack --mode=development",
-    "build": "webpack --mode=development"
+    "build": "webpack --mode=production"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
