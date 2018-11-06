@@ -3,43 +3,71 @@
 This library originally evolved from the [Evolution Readiness](http://concord.org/projects/evolution-readiness) project created by
 the [Concord Consortium](http://www.concord.org/)
 
-## Running Locally
+## Using the Populations library
 
-This project is built using Brunch.io, which compiles the CoffeeScript,
-stylesheets, and other assets.
+In the browser
 
-### Dependencies
+```
+  <html>
+    <head>
+      <script src="path/to/populations.js"></script>
+    </head>
+    <body>
+      <div id="environment" />
+
+      <script>
+        var mySpecies = new Populations.Species(...);
+        var env = new Populations.Environment(...);
+        var interactive = new Populations.Interactive(...);
+        document.getElementById('environment').appendChild(interactive.getEnvironmentPane());
+      </script>
+
+    </body>
+  </html>
+```
+
+Or imported via NPM
+
+`npm install populations.js`
+
+```
+import {Species, Environment, Interactive} from 'populations.js';
+
+var mySpecies = new Species(...);
+var env = new Environment(...);
+var interactive = new Interactive(...);
+
+// append `interactive.getEnvironmentPane()` somewhere in the DOM
+```
+
+
+## Building and Running the project
+
+Install global dependencies
 
 * [Node](http://nodejs.org/) [Download an installer](http://nodejs.org/download/) or run `brew install node`
 * [Bower](http://bower.io/) Run `npm install -g bower`
 
-### Setup Brunch and Project Libraries
-
-You'll need to install the plugins required for the brunch project, as well
-as libraries the project depends on. Run these commands:
+Install local dependencies
 
 ```
   npm install
   bower install
 ```
 
-### Starting the Server
-
-Run this command:
+Build the project
 
 ```
-  npm start
+  npm run build
 ```
 
-Now open http://localhost:3333 in your browser. Whenever you make a change to a file the
-browser will be automatically refreshed. Thanks
-[auto-reload-brunch](https://github.com/brunch/auto-reload-brunch).
+This builds the JS in dist/ and also copies the examples/ and build library into public/
 
-Your files will automatically be built into the /public directory
-whenever they change.
+View public/ using something like
 
-You can also just run `brunch build` to simply build the files into /public without starting 
-the server.
+```
+  live-server public
+```
 
 ### Running the tests
 
@@ -53,32 +81,6 @@ A new Chrome window will open, and the results of the tests will be shown in you
 
 If you have the server running (`npm start`) then any time you update a file the tests will
 be re-run.
-
-#### Running the tests with PhantomJS
-
-* Install the latest version of Node (>= 0.10.11). You can use [Node Version Manager](https://github.com/creationix/nvm).
-* Edit the file test/karma.conf.js to change `browsers: ['Chrome']` to `browsers: ['PhantomJS']`
-* Run the tests with `npm test`
-
-### Running the model integration tests
-
-Run this command:
-
-```
-  ./test-models.sh
-```
-
-A new Chrome window will open, and the results of the tests will be shown in your console.
-
-The model test files can be found in /test/models/
-
-
-## Libraries and Frameworks Used
-
-* [CoffeeScript](http://coffeescript.org/) - Making JavaScript suck less.
-* [Brunch](http://brunch.io) - Asset Compilation
-* [Node](http://nodejs.org/) - For Brunch
-* [Stylus](http://learnboost.github.com/stylus/) - CSS Templating
 
 ## License
 
