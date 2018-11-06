@@ -39,6 +39,10 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([
       {
+        from: 'app/populations.d.ts',
+        toType: 'file'
+      },
+      {
         from: 'examples/',
         to: '../public',
         toType: 'dir'
