@@ -21,6 +21,7 @@ declare module "populations.js" {
     label: string;
     bred: boolean;
     species: Species;
+    alleles: any;
 
     getLocation(): Location;
     setLocation(location: Location): void;
