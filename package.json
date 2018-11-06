@@ -7,7 +7,7 @@
   "types": "dist/populations.d.ts",
   "repository": "",
   "scripts": {
-    "start": "webpack --mode=development",
+    "start": "webpack --mode=development --watch",
     "build": "webpack --mode=production"
   },
   "devDependencies": {
@@ -18,6 +18,7 @@
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^1.0.1",
     "file-loader": "^2.0.0",
+    "filemanager-webpack-plugin": "^2.0.5",
     "style-loader": "^0.23.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",

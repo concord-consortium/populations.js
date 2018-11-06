@@ -1,6 +1,7 @@
 
 var path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 module.exports = {
   entry: './src/app.js',
@@ -46,12 +47,17 @@ module.exports = {
         from: 'examples/',
         to: '../public',
         toType: 'dir'
-      },
-      {
-        from: 'dist/populations.js',
-        to: '../public/lib/populations.js',
-        toType: 'file'
       }
-    ], {})
+    ], {}),
+    new FileManagerPlugin({
+      onEnd: {
+        copy: [
+          {
+            source: 'dist/populations.js',
+            destination: 'public/lib/populations.js'
+          }
+        ]
+      }
+    })
   ]
 };
