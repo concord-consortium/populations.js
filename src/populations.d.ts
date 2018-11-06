@@ -342,6 +342,7 @@ declare module "populations.js" {
       addOrganismButtons?: IAddOrganismButtonSpec[],
       toolButtons?: IToolButtonSpec[],
       speedSlider?: boolean,
+      showToolbar?: boolean,
       playButton?: () => void,
       resetButton?: () => void
     });

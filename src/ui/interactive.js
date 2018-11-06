@@ -20,7 +20,8 @@ const defaultOptions = {
   resetButton : true,
   speedSlider : false,
   addOrganismButtons  : [],
-  toolButtons: []
+  toolButtons: [],
+  showToolbar: true
 };
 
 export default class Interactive {
@@ -87,13 +88,19 @@ export default class Interactive {
     this.view.appendChild(this.environment.getView().render());
 
     this.toolbar = new Toolbar(this);
-    this.view.appendChild(this.toolbar.getView());
+    if (this._opts.showToolbar) {
+      this.view.appendChild(this.toolbar.getView());
+    }
 
     return this.view;
   }
 
   showPlayButton() { return this._opts.playButton; }
   showResetButton() { return this._opts.resetButton; }
+
+  get isPlaying() {
+    return this.environment._isRunning;
+  }
 
   repaint() {
     for (let view of Array.from(InfoView.instances())) {
@@ -103,11 +110,19 @@ export default class Interactive {
   }
 
   play() {
-    if (!this.environment._isRunning) { return this.toolbar.toggleButtons['play'].click(); }
+    if (!this.isPlaying) { return this.toolbar.toggleButtons['play'].click(); }
   }
 
   stop() {
-    if (this.environment._isRunning) { return this.toolbar.toggleButtons['pause'].click(); }
+    if (this.isPlaying) { return this.toolbar.toggleButtons['pause'].click(); }
+  }
+
+  togglePlay() {
+    if (!this.isPlaying) {
+      this.play();
+    } else {
+      this.stop();
+    }
   }
 
   reset() {

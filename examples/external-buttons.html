@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>populations.js</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <!-- build library -->
+    <script src="lib/populations.js"></script>
+    <!-- model files here-->
+    <script src="species/fast-plants-roots.js"></script>
+    <script src="species/white-brown-rabbits.js"></script>
+    <script src="environments/snow.js"></script>
+    <script src="models/external-buttons.js"></script>
+
+    <style type="text/css">
+      button {
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="environment"></div>
+    <div style="display: flex;">
+      <button id="add-grass">Add grass</button>
+      <button id="add-rabbits">Add rabbits</button>
+      <button id="play-pause">Play</button>
+      <button id="reset">Reset</button>
+    </div>
+
+    <script>
+
+      // would be nice to have the organism-adders be defined and accessible directly
+      // in the interactive, and the buttons just call the methods on the interactive
+      document.getElementById("add-grass").onclick = function() {
+        interactive.toolbar.organismButtons[0].action();
+      }
+      document.getElementById("add-rabbits").onclick = function() {
+        interactive.toolbar.organismButtons[1].action();
+      }
+
+      document.getElementById("play-pause").onclick = function() {
+        interactive.togglePlay();
+        if (interactive.isPlaying) {
+          document.getElementById("play-pause").innerHTML = "Pause";
+        } else {
+          document.getElementById("play-pause").innerHTML = "Play";
+        }
+      }
+
+      document.getElementById("reset").onclick = function() {
+        interactive.reset();
+        document.getElementById("play-pause").innerHTML = "Play";
+      }
+    </script>
+  </body>
+</html>
