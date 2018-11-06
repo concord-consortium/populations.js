@@ -11,14 +11,17 @@ In the browser
   <html>
     <head>
       <script src="path/to/populations.js"></script>
+    </head>
+    <body>
+      <div id="environment" />
+
       <script>
         var mySpecies = new Populations.Species(...);
         var env = new Populations.Environment(...);
         var interactive = new Populations.Interactive(...);
+        document.getElementById('environment').appendChild(interactive.getEnvironmentPane());
       </script>
-    </head>
-    <body>
-      <div id="environment" />
+
     </body>
   </html>
 ```
@@ -33,6 +36,8 @@ import {Species, Environment, Interactive} from 'populations.js';
 var mySpecies = new Species(...);
 var env = new Environment(...);
 var interactive = new Interactive(...);
+
+// append `interactive.getEnvironmentPane()` somewhere in the DOM
 ```
 
 
