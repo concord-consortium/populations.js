@@ -8,24 +8,21 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 
-const plantSpecies  = FastPlantsRootsSpecies;
-const rabbitSpecies = WhiteBrownRabbitsSpecies;
-
-window.model = {
+window.model2 = {
   run() {
     const interactive = new Populations.Interactive({
-      environment: env,
+      environment: env2,
       showToolbar: false,
       addOrganismButtons: [
         {
-          species: plantSpecies,
+          species: FastPlantsRootsSpecies,
           imagePath: "images/agents/grass/tallgrass.png",
           traits: [          ],
           limit: 180,
           scatter: 65
         },
         {
-          species: rabbitSpecies,
+          species: WhiteBrownRabbitsSpecies,
           imagePath: "images/agents/rabbits/rabbit2.png",
           traits: [
             new Populations.Trait({name: "mating desire bonus", default: -20}),
@@ -43,13 +40,14 @@ window.model = {
         }
       ]});
 
-    document.getElementById('environment').appendChild(interactive.getEnvironmentPane());
-    window.interactive = interactive;
+    document.getElementById('interactive-2').appendChild(interactive.getEnvironmentPane());
+    window.interactive2 = interactive;
   }
 };
 
 window.onload = () =>
-  Populations.helpers.preload([model, env, plantSpecies, rabbitSpecies], function() {
+  Populations.helpers.preload([model, env2, FastPlantsRootsSpecies, WhiteBrownRabbitsSpecies], function() {
     model.run();
+    model2.run();
   });
 ;

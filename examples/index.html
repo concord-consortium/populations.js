@@ -4,7 +4,6 @@
         <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
     <title>Populations.js Models</title>
-        <script src="js/vendor.js"></script>
     <script>
       var models = {
         "five-sunlight-three-plants.html":        "Flowerpots with three plants",
@@ -15,9 +14,10 @@
         "mountain-sunlight-variation-chart.html": "Plant variation with mountains",
         "dam-plants-rabbits.html":                "Dam model",
         "super-model-foxes-open.html":            "Open model: grass, rabbits, hawks and foxes",
-        "animation.html":                         "Animation",
-        "drawn-agents.html":                      "Demo: non-image agents (faster)",
-        "external-buttons.html":                  "Demo: external buttons",
+        "animation.html":                         "Demo: Animation",
+        "drawn-agents.html":                      "Demo: Non-image agents (faster)",
+        "external-buttons.html":                  "Demo: External buttons",
+        "two-models.html":                        "Demo: Two models",
       };
 
       var modelDivs = [], phone;
@@ -45,31 +45,6 @@
             iframe.classList.remove("zoom-out");
           }
         });
-
-        initPhone(iframe);
-      };
-
-      initPhone = function(iframe) {
-        if (phone && phone.removeAllListeners) {
-          phone.removeAllListeners();
-        }
-        phone = new iframePhone.ParentEndpoint(iframe);
-
-        play = document.getElementById('play');
-        play.addEventListener('click', function(evt) {
-          // Send play event via iframe-phone
-          phone.post({type: 'play'});
-        });
-        stop = document.getElementById('stop');
-        stop.addEventListener('click', function(evt) {
-          // Send stop event via iframe-phone
-          phone.post({type: 'stop'});
-        });
-        reset = document.getElementById('reset');
-        reset.addEventListener('click', function(evt) {
-          // Send reset event via iframe-phone
-          phone.post({type: 'reset'});
-        });
       };
 
       createModelDiv = function(model, container) {
@@ -93,7 +68,6 @@
         }
         el.classList.add("active");
         iframe.setAttribute("src", model);
-        setTimeout(function() { initPhone(iframe); }, 50);
       };
 
     </script>
@@ -217,7 +191,6 @@
       <p>GitHub repository:<a href="https://github.com/concord-consortium/populations.js">github.com/concord-consortium/populations.js</a></p>
     </div>
     <div class="left-column">
-      <div class="controls"><span class="control"><a id="play" href="#">Play</a></span><span class="control"><a id="stop" href="#">Stop</a></span><span class="control"><a id="reset" href="#">Reset</a></span></div>
       <div class="model-collection"></div>
     </div>
     <div class="model">

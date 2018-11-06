@@ -1,33 +1,128 @@
 @import 'mixins.styl'
 
-body
-  background-color: white
+.populations-interactive
+  display: flex
+  flex-direction: column
 
-#environment
-  display: inline-block
-  overflow: auto
-  padding: 10px
+  .interactive-main
+    display: flex
 
-  canvas
-    float: left
+    .toolbar
+      cursor: default
+      background-color: #DDD
 
-  > div > img
-    float: left
+      .button
+        position: relative
+        clear: both
+        float: left
+        width: 52px
+        height: 52px
+        padding: 5px
+        margin: 3px
+        cursor: pointer
+        border-radius(7px)
+        box-shadow(0, 0, 5px)
+        background-linear-gradient(top, #ffffff, 0%, #cccccc, 100%)
 
-  .toolbar
-    cursor: default
-    float: left
-    background-color: #DDD
+        &:hover
+          box-shadow(0, 0, 5px, #444)
 
+        &:active
+          box-shadow(0, 0, 5px, #FFF)
+          background-linear-gradient(top, #ffffff, 0%, #bbbbbb, 100%)
+
+        img
+          position: absolute
+          top: 5%
+          left: 5%
+          width: 90%
+          height: 90%
+
+          &:active
+            margin: -1px -1px
+
+        div
+          position: relative
+          width: 48px
+          height: 48px
+          top: 3px
+          left: 3px
+          background-repeat:no-repeat
+          background-size: contain
+
+          &:active
+            background-position: 2px 2px
+
+          &.play
+            background-image: url('../assets/ui/themes/default/play.png')
+          &.pause
+            background-image: url('../assets/ui/themes/default/pause.png')
+          &.reset
+            background-image: url('../assets/ui/themes/default/reset.png')
+
+          &.carry-tool
+            width: 50px
+            height: 50px
+            top: 1px
+            left: 1px
+            background-image: url('../assets/ui/themes/default/carry-plant.png')
+          &.info-tool
+            width: 50px
+            height: 50px
+            top: 1px
+            left: 1px
+            background-image: url('../assets/ui/themes/default/info-tool.png')
+
+        &.no-button
+          clear: none
+
+          div.no-sign
+            position: absolute
+            width: 90%
+            height: 90%
+            background-image: url('../assets/ui/themes/default/no.png')
+            background-size: 100% 100%
+
+        &.modal:active
+        &.modal-active
+          box-shadow(inset, 0, 0, 5px, #333)
+          background-linear-gradient(top, #bbbbbb, 0%, #777777, 100%)
+
+          img
+            margin: -1px -1px
+
+        &.disabled
+          background-linear-gradient(top, #dddddd, 0%, #dddddd, 100%)
+
+          img
+            opacity(0.5)
+
+
+  .interactive-main
+    .add-agents
+      cursor: copy
+    .info-tool
+      cursor: crosshair
+      cursor: -webkit-zoom-in
+      cursor: -moz-zoom-in
+      cursor: zoom-in
+    .carry-tool
+      cursor: url("data:image/gif;base64,R0lGODlhHQAgAPcAAAAAAP///wMDAgICAAQCAAMCAAIBAAMCARMMBAYDAgwJBQUDAgUEAxQLAxEKAxYOBhYMAxYOBxYNBxIMBxoRCxEMCBYRDBcSDgUCAAcDAQwGAhEJAxcOBxwSCxwTDBoSDCYbEwwJBxAMCQ4GABcQCQwIBQcEAxALBxkRDCQaEiIYES4iGaVxVJ5tUZpsTyIZEqRxVJxsUZtsUJZpTpdrTygdFi8jGjoqIDQnHSkfFzwtIjcpHyIaFBcTEBoSDaBuUpZpTiwfF6VxVKRwVJ1sUY9lS5ZpT5FmTY9lTI5lS41kS4xjSoNeRoNeRo5lTItjSoliSohhSYdgSYZfSH1ZRHxZQ3dVQYReR4RfR4FdRn1aRX1ZRHxZRHhXQXVUQXlXQnZVQXFSPm9QPW1PPGdKOTcoHy8iGmxOPGRJN2NHN19GNUEvJDsrITgpH2dLOl5ENFlBMllBMj0tIllBMlQ9L086LUg1KUUyJzcpH19GNl1ENFQ+MD8uJEIxJjUoHykfGEExJzcpICogGikdFmFGNlQ9L0c0KFpBM0o1KVY/MUIwJllBNDAkHC4iHAsDAAQCAAIBAAQDAgUDAwUCAAgCAAMBAAcEAwkCAAMBAAQBAAcBAAkAAAcAAAQAAAMAAAMAAAIAAAIAAAEAAAIBAQICAv///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAKUALAAAAAAdACAAAAj/AEsJHEiwoMFSAAAcXLgwIQBRFj4xnOgQQIlGeYoMqaNw4kCHkz4w2sOEBQwWLIa0mNCR4SgAPPRsATIEZUoYMIYMEeKl5cFQProMyXkSp0mcOk+yMbAQUpAlQ1EOrYn0JNUZDnwKlESBTYcYNocSTZqTahqtCDtwmlNUp1iqSN2y+LOgYEJCLGSY3JtTqsmpOM9I/AhA0ZA2OPzq/Htz7JAxgwUCoESkEIA3SBvjPCmVapwMBE3cgOLpzt6Ui29SjcpCUCSCmNyU4fDDRRsue2uKRcl5iAwMBUEd2hSHRZ9QWlD/3VwzJYtFWjUMauAiiSdDu62WPcqihQKtIgCY5NnYaQnSH1W+/ODtfAggtAh1wIjgh7cVFAlt2PwLBj7CQEsAcEZNTmjQEQBkGDXEFCMw0NAFaHiiREp8DDAQAYjchIQHCUz0yQoP7ASDBC1d9lcOTE1kCQAp5HREZD1AoNcQc/hnlwo5YSHKR3DgFAUmNhIEAAk1NdFRBSDU9MMLQRbkCBEwRBGKQJ5oUZMcO3ok5BUsGFFAQj0OkUiTBomiBk4nALBDSmEAIICWBYWwAk41XELDEFRoQuZBAGTBgh0ASPHEBm/CadAja7AgBgAIdJKloWXSgccBpEDKkACVZGJpQAA7") 10 27, auto
+
+  .message-box
+    position: absolute
+    background-color: #FDF1D1
+    padding: 15px
+    border-radius(4px)
+    border: #FAE8B8 5px solid
+    box-shadow(0, 0, 50px, #000)
     .button
-      position: relative
-      clear: both
-      float: left
-      width: 52px
-      height: 52px
-      padding: 5px
-      margin: 3px
+      width: 70px
+      padding: 2px
+      margin-left: 170px
+      margin-top: 30px
       cursor: pointer
+      text-align: center
       border-radius(7px)
       box-shadow(0, 0, 5px)
       background-linear-gradient(top, #ffffff, 0%, #cccccc, 100%)
@@ -39,127 +134,19 @@ body
         box-shadow(0, 0, 5px, #FFF)
         background-linear-gradient(top, #ffffff, 0%, #bbbbbb, 100%)
 
-      img
-        position: absolute
-        top: 5%
-        left: 5%
-        width: 90%
-        height: 90%
-
-        &:active
-          margin: -1px -1px
-
-      div
-        position: relative
-        width: 48px
-        height: 48px
-        top: 3px
-        left: 3px
-        background-repeat:no-repeat
-        background-size: contain
-
-        &:active
-          background-position: 2px 2px
-
-        &.play
-          background-image: url('../assets/ui/themes/default/play.png')
-        &.pause
-          background-image: url('../assets/ui/themes/default/pause.png')
-        &.reset
-          background-image: url('../assets/ui/themes/default/reset.png')
-
-        &.carry-tool
-          width: 50px
-          height: 50px
-          top: 1px
-          left: 1px
-          background-image: url('../assets/ui/themes/default/carry-plant.png')
-        &.info-tool
-          width: 50px
-          height: 50px
-          top: 1px
-          left: 1px
-          background-image: url('../assets/ui/themes/default/info-tool.png')
-
-      &.no-button
-        clear: none
-
-        div.no-sign
-          position: absolute
-          width: 90%
-          height: 90%
-          background-image: url('../assets/ui/themes/default/no.png')
-          background-size: 100% 100%
-
-      &.modal:active
-      &.modal-active
-        box-shadow(inset, 0, 0, 5px, #333)
-        background-linear-gradient(top, #bbbbbb, 0%, #777777, 100%)
-
-        img
-          margin: -1px -1px
-
-      &.disabled
-        background-linear-gradient(top, #dddddd, 0%, #dddddd, 100%)
-
-        img
-          opacity(0.5)
-
-
-#environment
-  .add-agents
-    cursor: copy
-  .info-tool
-    cursor: crosshair
-    cursor: -webkit-zoom-in
-    cursor: -moz-zoom-in
-    cursor: zoom-in
-  .carry-tool
-    cursor: url("data:image/gif;base64,R0lGODlhHQAgAPcAAAAAAP///wMDAgICAAQCAAMCAAIBAAMCARMMBAYDAgwJBQUDAgUEAxQLAxEKAxYOBhYMAxYOBxYNBxIMBxoRCxEMCBYRDBcSDgUCAAcDAQwGAhEJAxcOBxwSCxwTDBoSDCYbEwwJBxAMCQ4GABcQCQwIBQcEAxALBxkRDCQaEiIYES4iGaVxVJ5tUZpsTyIZEqRxVJxsUZtsUJZpTpdrTygdFi8jGjoqIDQnHSkfFzwtIjcpHyIaFBcTEBoSDaBuUpZpTiwfF6VxVKRwVJ1sUY9lS5ZpT5FmTY9lTI5lS41kS4xjSoNeRoNeRo5lTItjSoliSohhSYdgSYZfSH1ZRHxZQ3dVQYReR4RfR4FdRn1aRX1ZRHxZRHhXQXVUQXlXQnZVQXFSPm9QPW1PPGdKOTcoHy8iGmxOPGRJN2NHN19GNUEvJDsrITgpH2dLOl5ENFlBMllBMj0tIllBMlQ9L086LUg1KUUyJzcpH19GNl1ENFQ+MD8uJEIxJjUoHykfGEExJzcpICogGikdFmFGNlQ9L0c0KFpBM0o1KVY/MUIwJllBNDAkHC4iHAsDAAQCAAIBAAQDAgUDAwUCAAgCAAMBAAcEAwkCAAMBAAQBAAcBAAkAAAcAAAQAAAMAAAMAAAIAAAIAAAEAAAIBAQICAv///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAKUALAAAAAAdACAAAAj/AEsJHEiwoMFSAAAcXLgwIQBRFj4xnOgQQIlGeYoMqaNw4kCHkz4w2sOEBQwWLIa0mNCR4SgAPPRsATIEZUoYMIYMEeKl5cFQProMyXkSp0mcOk+yMbAQUpAlQ1EOrYn0JNUZDnwKlESBTYcYNocSTZqTahqtCDtwmlNUp1iqSN2y+LOgYEJCLGSY3JtTqsmpOM9I/AhA0ZA2OPzq/Htz7JAxgwUCoESkEIA3SBvjPCmVapwMBE3cgOLpzt6Ui29SjcpCUCSCmNyU4fDDRRsue2uKRcl5iAwMBUEd2hSHRZ9QWlD/3VwzJYtFWjUMauAiiSdDu62WPcqihQKtIgCY5NnYaQnSH1W+/ODtfAggtAh1wIjgh7cVFAlt2PwLBj7CQEsAcEZNTmjQEQBkGDXEFCMw0NAFaHiiREp8DDAQAYjchIQHCUz0yQoP7ASDBC1d9lcOTE1kCQAp5HREZD1AoNcQc/hnlwo5YSHKR3DgFAUmNhIEAAk1NdFRBSDU9MMLQRbkCBEwRBGKQJ5oUZMcO3ok5BUsGFFAQj0OkUiTBomiBk4nALBDSmEAIICWBYWwAk41XELDEFRoQuZBAGTBgh0ASPHEBm/CadAja7AgBgAIdJKloWXSgccBpEDKkACVZGJpQAA7") 10 27, auto
-
-#chart
-  display: inline-block
-  width: 400px
-  height: 400px
-
-.message-box
-  position: absolute
-  background-color: #FDF1D1
-  padding: 15px
-  border-radius(4px)
-  border: #FAE8B8 5px solid
-  box-shadow(0, 0, 50px, #000)
-  .button
-    width: 70px
-    padding: 2px
-    margin-left: 170px
-    margin-top: 30px
-    cursor: pointer
-    text-align: center
-    border-radius(7px)
-    box-shadow(0, 0, 5px)
-    background-linear-gradient(top, #ffffff, 0%, #cccccc, 100%)
-
-    &:hover
-      box-shadow(0, 0, 5px, #444)
-
-    &:active
-      box-shadow(0, 0, 5px, #FFF)
-      background-linear-gradient(top, #ffffff, 0%, #bbbbbb, 100%)
-
-.preload-message
-  background-color: white
-  position: absolute
-  top: 0
-  left: 0
-  right: 0
-  bottom: 0
-  .text
-    width: 120px
-    height: 20px
+  .preload-message
+    background-color: white
     position: absolute
     top: 0
     left: 0
     right: 0
     bottom: 0
-    margin: auto
+    .text
+      width: 120px
+      height: 20px
+      position: absolute
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+      margin: auto

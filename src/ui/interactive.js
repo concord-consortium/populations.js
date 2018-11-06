@@ -76,23 +76,32 @@ export default class Interactive {
   }
 
   getEnvironmentPane() {
-    this.view = document.createElement('div');
-
-    this.view.setAttribute("style", `height: ${this.environment.height}px;`);
+    const view = document.createElement('div');
+    view.setAttribute("class", "populations-interactive");
 
     if (this._opts.speedSlider) {
+      const top = document.createElement('div');
+      top.setAttribute("class", "interactive-top");
+
       const speedSlider = new SpeedSlider(this.environment);
-      this.view.appendChild(speedSlider.getView());
+      top.appendChild(speedSlider.getView());
+      view.appendChild(top);
     }
 
-    this.view.appendChild(this.environment.getView().render());
+    const main = document.createElement('div');
+    main.setAttribute("class", "interactive-main");
+    main.setAttribute("style", `height: ${this.environment.height}px;`);
+
+    main.appendChild(this.environment.getView().render());
 
     this.toolbar = new Toolbar(this);
     if (this._opts.showToolbar) {
-      this.view.appendChild(this.toolbar.getView());
+      main.appendChild(this.toolbar.getView());
     }
 
-    return this.view;
+    view.appendChild(main);
+
+    return view;
   }
 
   showPlayButton() { return this._opts.playButton; }

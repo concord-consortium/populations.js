@@ -30,8 +30,6 @@
 
       #side {
         padding: 2px;
-        display: inline-block;
-        vertical-align: top;
         margin-top: 10px;
       }
 
@@ -43,16 +41,18 @@
     </style>
   </head>
   <body>
-    <div id="environment"></div>
-    <div id="side">
-      <div class="mountain-selection"><span class="title">Mountain height:</span><br>
-        <input id="mountains5" type="radio" name="mountain-size">High<br>
-        <input id="mountains4" type="radio" name="mountain-size"><br>
-        <input id="mountains3" type="radio" name="mountain-size"><br>
-        <input id="mountains2" type="radio" name="mountain-size"><br>
-        <input id="mountains1" type="radio" name="mountain-size" checked="checked">Low
+    <div style="display: flex">
+      <div id="environment"></div>
+      <div id="side">
+        <div class="mountain-selection"><span class="title">Mountain height:</span><br>
+          <input id="mountains5" type="radio" name="mountain-size">High<br>
+          <input id="mountains4" type="radio" name="mountain-size"><br>
+          <input id="mountains3" type="radio" name="mountain-size"><br>
+          <input id="mountains2" type="radio" name="mountain-size"><br>
+          <input id="mountains1" type="radio" name="mountain-size" checked="checked">Low
+        </div>
+        <div id="chart"></div>
       </div>
-      <div id="chart"></div>
     </div>
   </body>
 </html>
