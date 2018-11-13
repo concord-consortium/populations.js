@@ -22,6 +22,7 @@ declare module "populations.js" {
     bred: boolean;
     species: Species;
     alleles: any;
+    organism?: any;
 
     getLocation(): Location;
     setLocation(location: Location): void;
@@ -78,7 +79,6 @@ declare module "populations.js" {
     _hasEatenOnce: boolean;
     _timeLastMated: number;
     label: string;
-    organism: Agent;
 
     static BEHAVIOR: {
       EATING: string,
@@ -325,7 +325,7 @@ declare module "populations.js" {
     limit: number;
     imagePath: string;
     traits: ITraitValue[];
-    scatter: boolean;
+    scatter: number;
   }
 
   export interface IToolButtonSpec {
@@ -337,6 +337,7 @@ declare module "populations.js" {
     addOrganismButtons?: IAddOrganismButtonSpec[];
     toolButtons?: IToolButtonSpec[];
     view?: HTMLDivElement;
+    isPlaying: boolean;
 
     constructor(options: {
       environment: Environment,
@@ -357,6 +358,7 @@ declare module "populations.js" {
     play(): void;
     stop(): void;
     reset(): void;
+    togglePlay(): void;
   }
 
   export class InfoView {
