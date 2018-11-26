@@ -1,12 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import * as helpers from '../helpers';
 import Toolbar from './toolbar';
 import InfoView from './info-view';
@@ -41,7 +32,7 @@ export default class Interactive {
       // handled synchronously) the rendered image will still be in the WebGL drawing buffer where
       // Shutterbug can see it.
       $(window).on('shutterbug-saycheese', () => {
-        return this.repaint();
+        this.repaint();
       });
     }
     if (typeof iframePhone !== 'undefined' && iframePhone !== null) {
@@ -50,26 +41,26 @@ export default class Interactive {
       phone.addListener('stop', () => {
         ignoreEvent = true;
         this.stop();
-        return ignoreEvent = false;
+        ignoreEvent = false;
       });
       phone.addListener('play', () => {
         ignoreEvent = true;
         this.play();
-        return ignoreEvent = false;
+        ignoreEvent = false;
       });
       phone.addListener('reset', () => {
         ignoreEvent = true;
         this.reset();
-        return ignoreEvent = false;
+        ignoreEvent = false;
       });
       Events.addEventListener(Environment.EVENTS.START, function() {
-        if (!ignoreEvent) { return phone.post({type: 'play'}); }
+        if (!ignoreEvent) { phone.post({type: 'play'}); }
       });
       Events.addEventListener(Environment.EVENTS.STOP, function() {
-        if (!ignoreEvent) { return phone.post({type: 'stop'}); }
+        if (!ignoreEvent) { phone.post({type: 'stop'}); }
       });
       Events.addEventListener(Environment.EVENTS.RESET, function() {
-        if (!ignoreEvent) { return phone.post({type: 'reset'}); }
+        if (!ignoreEvent) { phone.post({type: 'reset'}); }
       });
       phone.initialize();
     }
@@ -112,18 +103,18 @@ export default class Interactive {
   }
 
   repaint() {
-    for (let view of Array.from(InfoView.instances())) {
+    for (let view of InfoView.instances()) {
       view.repaint();
     }
-    return this.environment.getView().repaint();
+    this.environment.getView().repaint();
   }
 
   play() {
-    if (!this.isPlaying) { return this.toolbar.toggleButtons['play'].click(); }
+    if (!this.isPlaying) { this.toolbar.toggleButtons['play'].click(); }
   }
 
   stop() {
-    if (this.isPlaying) { return this.toolbar.toggleButtons['pause'].click(); }
+    if (this.isPlaying) { this.toolbar.toggleButtons['pause'].click(); }
   }
 
   togglePlay() {
@@ -135,12 +126,12 @@ export default class Interactive {
   }
 
   reset() {
-    return this.toolbar.toggleButtons['reset'].click();
+    this.toolbar.toggleButtons['reset'].click();
   }
 };
 
 window.onerror = function(msg, url, line){
   let message = `<div>There was an error in the model!<br/><pre>${msg}</pre></div>`;
   message += `<div>source: ${url}, line: ${line}</div>`;
-  return helpers.showMessage(message, document.body);
+  helpers.showMessage(message, document.body);
 };
