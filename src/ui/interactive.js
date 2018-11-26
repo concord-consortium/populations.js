@@ -67,8 +67,8 @@ export default class Interactive {
   }
 
   getEnvironmentPane() {
-    const view = document.createElement('div');
-    view.setAttribute("class", "populations-interactive");
+    this.container = document.createElement('div');
+    this.container.setAttribute("class", "populations-interactive");
 
     if (this._opts.speedSlider) {
       const top = document.createElement('div');
@@ -76,23 +76,22 @@ export default class Interactive {
 
       const speedSlider = new SpeedSlider(this.environment);
       top.appendChild(speedSlider.getView());
-      view.appendChild(top);
+      this.container.appendChild(top);
     }
 
-    const main = document.createElement('div');
-    main.setAttribute("class", "interactive-main");
-    main.setAttribute("style", `height: ${this.environment.height}px;`);
+    this.main = document.createElement('div');
+    this.main.setAttribute("class", "interactive-main");
 
-    main.appendChild(this.environment.getView().render());
+    this.main.appendChild(this.environment.getView().render());
 
     this.toolbar = new Toolbar(this);
     if (this._opts.showToolbar) {
-      main.appendChild(this.toolbar.getView());
+      this.main.appendChild(this.toolbar.getView());
     }
 
-    view.appendChild(main);
+    this.container.appendChild(this.main);
 
-    return view;
+    return this.container;
   }
 
   showPlayButton() { return this._opts.playButton; }
@@ -100,6 +99,29 @@ export default class Interactive {
 
   get isPlaying() {
     return this.environment._isRunning;
+  }
+
+  setEnvironmentDisplayWidth(width) {
+    this.scale(width / this.environment.width);
+  }
+
+  setEnvironmentDisplayHeight(height) {
+    this.scale(height / this.environment.height);
+  }
+
+  constrain(width, height) {
+    const xScale = width / this.environment.width;
+    const yScale = height / this.environment.height;
+    this.scale(Math.min(xScale, yScale));
+  }
+
+  scale(scale) {
+    this.main.style.transformOrigin = "0 0";
+    this.main.style.transform = `scale(${scale})`;
+
+    const newRect = this.main.getBoundingClientRect();
+    this.container.style.width = Math.ceil(newRect.width) + "px";
+    this.container.style.height = Math.ceil(newRect.height) + "px";
   }
 
   repaint() {

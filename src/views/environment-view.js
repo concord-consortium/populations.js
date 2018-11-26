@@ -145,15 +145,18 @@ export default class EnvironmentView {
   addMouseHandlers() {
     ["click", "mousedown", "mouseup", "mousemove", "touchstart", "touchmove", "touchend"].map((eventName) =>
       this.view.addEventListener(eventName,  evt => {
+        const rect = this.view.getBoundingClientRect();
+        const scale = rect.width / this.environment.width;
         if (evt instanceof TouchEvent) {
           // touch events get their coordinates from a different place
-          evt.envX = evt.changedTouches[0].pageX - this.view.offsetLeft;
-          evt.envY = evt.changedTouches[0].pageY - this.view.offsetTop;
+          evt.envX = (evt.changedTouches[0].pageX - rect.x) / scale;
+          evt.envY = (evt.changedTouches[0].pageY - rect.y) / scale;
         } else {
           // use page+offset location, which remain correct after iframe zoom
-          evt.envX = evt.pageX - this.view.offsetLeft;
-          evt.envY = evt.pageY - this.view.offsetTop;
+          evt.envX = (evt.pageX - rect.x) / scale;
+          evt.envY = (evt.pageY - rect.y) / scale;
         }
+
         this.environment.send(evt.type, evt);
       }));
   }
@@ -178,6 +181,14 @@ export default class EnvironmentView {
       this._backgroundSprite.height = this.environment.height * this.environment.backgroundScaleY;
       this._backgroundSprite.width *= (this._backgroundSprite.height / origHeight);
     }
+  }
+
+  get canvas() {
+    return this.renderer.view;
+  }
+
+  get container() {
+    return this.canvas.parentElement;
   }
 
   _getOrCreateLayer(idx){

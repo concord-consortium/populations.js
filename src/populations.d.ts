@@ -359,6 +359,11 @@ declare module "populations.js" {
     stop(): void;
     reset(): void;
     togglePlay(): void;
+
+    setEnvironmentDisplayWidth(width: number): void;
+    setEnvironmentDisplayHeight(height: number): void;
+    constrain(width: number, height: number): void;
+    scale(scale: number): void
   }
 
   export class InfoView {

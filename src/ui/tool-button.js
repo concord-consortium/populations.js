@@ -29,7 +29,8 @@ export default class ToolButton {
             this.infoPopup.setAgent(agent);
           } else {
             this.infoPopup = new InfoView({agent});
-            document.getElementById('environment').appendChild(this.infoPopup.render());  // TODO We shouldn't be hard-coding the container...
+            const envView = environment.getView();
+            envView.container.appendChild(this.infoPopup.render());
           }
           for (let style of ['top','left','bottom','right']) {
             this.infoPopup.view.classList.remove(style);
