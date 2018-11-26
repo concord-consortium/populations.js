@@ -18,8 +18,8 @@ window.env = new Populations.Environment({
   wrapNorthSouth: false
 });
 
-for (let col = 0; col <= 60; col++) {
-  for (let row = 0; row <= 52; row++) {
+for (let col = 0; col < 60; col++) {
+  for (let row = 0; row < 52; row++) {
     env.set(col, row, "sunlight", 6);
   }
 }

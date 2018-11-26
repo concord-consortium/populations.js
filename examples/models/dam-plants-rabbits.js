@@ -255,9 +255,9 @@ window.model = {
     if (all == null) { all = false; }
     return (() => {
       const result = [];
-      for (var row = 0, end = this.env.rows, asc = 0 <= end; asc ? row <= end : row >= end; asc ? row++ : row--) {
+      for (var row = 0, end = this.env.rows, asc = 0 < end; asc ? row < end : row > end; asc ? row++ : row--) {
         if (all || (row > (this.env.rows/2))) {
-          result.push(__range__(0, (this.env.columns), true).map((col) =>
+          result.push(__range__(0, (this.env.columns), false).map((col) =>
             this.env.set(col, row, prop, val)));
         } else {
           result.push(undefined);

@@ -24,8 +24,8 @@ window.env = new Populations.Environment({
   wrapNorthSouth: true
 });
 
-for (let col = 0; col <= 58; col++) {
-  for (var row = 0; row <= 52; row++) {
+for (let col = 0; col < 58; col++) {
+  for (var row = 0; row < 52; row++) {
     sunlight = (() => { switch (false) {
       case !(row < 13): return 10;
       case !(row < 22): return 8;
@@ -33,7 +33,6 @@ for (let col = 0; col <= 58; col++) {
       case !(row < 41): return 4;
       default: return 2;
     } })();
-
     env.set(col, row, "sunlight", sunlight);
   }
 }

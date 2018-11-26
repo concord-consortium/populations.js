@@ -90,9 +90,9 @@ window.model = {
   _updateMountains(imgPath, barriers, leftSunlight, rightSunlight){
     this.env.setBackground(imgPath);
     this.env.setBarriers(barriers);
-    for (let col = 0; col <= 60; col++) {
+    for (let col = 0; col < 60; col++) {
       const light = col > 30 ? rightSunlight : leftSunlight;
-      for (let row = 0; row <= 52; row++) {
+      for (let row = 0; row < 52; row++) {
         this.env.set(col, row, "sunlight", light);
       }
     }

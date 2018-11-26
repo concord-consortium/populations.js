@@ -1,15 +1,3 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS001: Remove Babel/TypeScript constructor workaround
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS202: Simplify dynamic range loops
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import EnvironmentView from '../views/environment-view';
 import StateMachine from '../state-machine';
 import * as helpers from '../helpers';
@@ -69,7 +57,7 @@ export default class Environment extends StateMachine {
     for (let prop in opts) { this[prop] = opts[prop]; }     // give us immediate access to @columns, @barriers, etc
 
     this.preload = [];
-    if (this.imgPath != null) { this.preload.push(this.imgPath); }
+    if (this.imgPath) { this.preload.push(this.imgPath); }
     if (this.winterImgPath) { this.preload.push(this.winterImgPath); }
 
     if (this.columns && this.width) {
@@ -91,7 +79,10 @@ export default class Environment extends StateMachine {
     }
 
     this.cells = [];
-    for (let col = 0, end = this.columns, asc = 0 <= end; asc ? col <= end : col >= end; asc ? col++ : col--) { this.cells[col] = []; }
+    for (let col = 0; col < this.columns; col++) {
+      this.cells[col] = [];
+    }
+
     this._setCellDefaults();
 
     this._runLoopDelay = Environment.DEFAULT_RUN_LOOP_DELAY;
@@ -160,25 +151,21 @@ export default class Environment extends StateMachine {
 
   removeDeadAgents() {
     let i = 0;
-    return (() => {
-      const result = [];
-      while (i < this.agents.length) {
-        const a = this.agents[i];
-        if (a.isDead) {
-          result.push(this.removeAgent(a));
-        } else {
-          result.push(i++);
-        }
+    while (i < this.agents.length) {
+      const a = this.agents[i];
+      if (a.isDead) {
+        this.removeAgent(a);
+      } else {
+        i++;
       }
-      return result;
-    })();
+    }
   }
 
   agentsWithin({x,y,width,height}){
     if ((x == null) || (y == null) || (width == null) || (height == null)) { throw new Error("Invalid rectangle definition!"); }
     const area = new Barrier(x,y,width,height);
     const found = [];
-    for (let agent of Array.from(this.agents)) {
+    for (let agent of this.agents) {
       const loc = agent.getLocation();
       if (area.contains(loc.x, loc.y)) { found.push(agent); }
     }
@@ -211,12 +198,12 @@ export default class Environment extends StateMachine {
       this.cells[col][row] = {};
     }
 
-    return this.cells[col][row][prop] = val;
+    this.cells[col][row][prop] = val;
   }
 
   get(col, row, prop) {
     // get global properties first
-    if (this[prop] != null) {
+    if (this[prop]) {
       return this[prop];
     }
     if (!this.cells[col][row]) {
@@ -235,12 +222,12 @@ export default class Environment extends StateMachine {
   setAt(x, y, prop, val) {
     const col = Math.floor(x / this._columnWidth);
     const row = Math.floor(y / this._rowHeight);
-    return this.set(col, row, prop, val);
+    this.set(col, row, prop, val);
   }
 
   getAgentsAt(x,y){
     const agents = [];
-    for (let agent of Array.from(this.agents)) {
+    for (let agent of this.agents) {
       if (agent.getView().contains(x,y)) {
         agents.push(agent);
       }
@@ -249,7 +236,7 @@ export default class Environment extends StateMachine {
   }
 
   getAgentAt(x,y){
-    for (let agent of Array.from(this.agents)) {
+    for (let agent of this.agents) {
       if (agent.getView().contains(x,y)) {
         return agent;
       }
@@ -264,7 +251,7 @@ export default class Environment extends StateMachine {
     if (!agents.length) { return []; }
     if (speciesName) {
       const _agents = [];
-      for (let agent of Array.from(agents)) {
+      for (let agent of agents) {
         if (agent.species.speciesName === speciesName) { _agents.push(agent); }
       }
       agents = _agents;
@@ -276,7 +263,7 @@ export default class Environment extends StateMachine {
     if (maxDistance == null) { maxDistance = 10; }
     let agents = this.getAgentsCloseTo(x, y, maxDistance, speciesName);
     if (!agents.length) { return null; }
-    for (let agent of Array.from(agents)) {
+    for (let agent of agents) {
       agent.__distance = helpers.ExtMath.distanceSquared(agent.getLocation(), {x, y});
     }
     agents = agents.sort((a,b)=> a.__distance - b.__distance);
@@ -286,14 +273,16 @@ export default class Environment extends StateMachine {
   setBarriers(bars){
     const barriers = bars.slice();
     this.barriers = [];
-    for (let barrier of Array.from((barriers || []))) {
+    for (let barrier of (barriers || [])) {
       this.addBarrier.apply(this, barrier);
     }
-    if (this._view && (this._view.barrierGraphics != null)) { return this._view.rerenderBarriers(); }
+    if (this._view && (this._view.barrierGraphics)) {
+      this._view.rerenderBarriers();
+    }
   }
 
   addBarrier(x, y, width, height) {
-    return this.barriers.push(new Barrier(x, y, width, height));
+    this.barriers.push(new Barrier(x, y, width, height));
   }
 
   crossesBarrier(start, finish){
@@ -311,7 +300,7 @@ export default class Environment extends StateMachine {
     } else {
       line = (x,y)=> x - start.x;
     }
-    for (let barrier of Array.from(this.barriers)) {
+    for (let barrier of this.barriers) {
       if (barrier.contains(finish.x, finish.y)) { return true; }
       if (((start.x > barrier.x2) && (finish.x > barrier.x2)) || // entirely to the right
                   ((start.x < barrier.x1) && (finish.x < barrier.x1)) || // entirely to the left
@@ -333,11 +322,11 @@ export default class Environment extends StateMachine {
     }
 
     this.seasonLengths[idx] = length;
-    return this._remapSeasonLengths();
+    this._remapSeasonLengths();
   }
 
   isInBarrier(x, y) {
-    for (let barrier of Array.from(this.barriers)) {
+    for (let barrier of this.barriers) {
       if (barrier.contains(x, y)) {
         return true;
       }
@@ -347,7 +336,7 @@ export default class Environment extends StateMachine {
 
   pickUpAgent(agent) {
     this.removeAgent(agent);
-    return this.carriedAgent = agent;
+    this.carriedAgent = agent;
   }
 
   dropCarriedAgent() {
@@ -357,7 +346,7 @@ export default class Environment extends StateMachine {
       this.addAgent(this.carriedAgent);
     }
     this.getView().removeCarriedAgent(this.carriedAgent);
-    return this.carriedAgent = null;
+    this.carriedAgent = null;
   }
 
   // Used for setting the default species and traits for
@@ -366,7 +355,6 @@ export default class Environment extends StateMachine {
     this.defaultSpecies = defaultSpecies;
     this.defaultTraits = defaultTraits;
     this.agentAdderCallback = agentAdderCallback;
-    return undefined;
   }
 
   addDefaultAgent(x, y) {
@@ -375,7 +363,9 @@ export default class Environment extends StateMachine {
     agent.environment = this;
     agent.setLocation({x, y});
     const success = this.addAgent(agent);
-    if (success && this.agentAdderCallback) { return this.agentAdderCallback(); }
+    if (success && this.agentAdderCallback) {
+      this.agentAdderCallback();
+    }
   }
 
   /* Run Loop */
@@ -388,44 +378,46 @@ export default class Environment extends StateMachine {
     // http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIoLTEvKCh4LTE0MSkvNDAwMCkpLTI3LjMiLCJjb2xvciI6IiMwMDAwMDAifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIwIiwiMTAwIiwiMCIsIjgwIl19XQ--
     const fps = (-1/((speed-141)/4000))-27.3;
     const delay = 1000/fps;
-    return this._runLoopDelay = delay;
+    this._runLoopDelay = delay;
   }
 
   start() {
     this._isRunning = true;
     var runloop = () => {
-      return setTimeout(() => {
+      setTimeout(() => {
         this.step();
-        if (this._isRunning) { return runloop(); }
+        if (this._isRunning) {
+          runloop();
+        }
       }
       , this._runLoopDelay);
     };
 
     runloop();
-    return Events.dispatchEvent(Environment.EVENTS.START, {});
+    Events.dispatchEvent(Environment.EVENTS.START, {});
   }
 
   stop() {
     this._isRunning = false;
-    return Events.dispatchEvent(Environment.EVENTS.STOP, {});
+    Events.dispatchEvent(Environment.EVENTS.STOP, {});
   }
 
   step() {
     let a;
     this._incrementDate();
     // Apply all of the rules
-    for (let r of Array.from(this._rules)) {
-      for (a of Array.from(this.agents)) {
+    for (let r of this._rules) {
+      for (a of this.agents) {
         r.execute(a);
       }
     }
-    for (a of Array.from(this.agents)) {
-      if (a._consumeResources != null) { a._consumeResources(); }
+    for (a of this.agents) {
+      if (a._consumeResources) { a._consumeResources(); }
       a.step();
     }
     this._replenishResources();
     this.removeDeadAgents();
-    return Events.dispatchEvent(Environment.EVENTS.STEP, {});
+    Events.dispatchEvent(Environment.EVENTS.STEP, {});
   }
 
   reset() {
@@ -433,7 +425,7 @@ export default class Environment extends StateMachine {
     let i = this.agents.length;
     while (i) { this.removeAgent(this.agents[--i]); }
     this.date   = 0;
-    return Events.dispatchEvent(Environment.EVENTS.RESET, {});
+    Events.dispatchEvent(Environment.EVENTS.RESET, {});
   }
 
   /* Getters and Setters */
@@ -444,21 +436,23 @@ export default class Environment extends StateMachine {
 
   addRule(rule){
     if (!this._rules) { this._rules = []; }
-    if (this._rules.indexOf(rule) === -1) { return this._rules.push(rule); }
+    if (this._rules.indexOf(rule) === -1) {
+      this._rules.push(rule);
+    }
   }
 
   removeRule(rule){
     if (!this._rules) { this._rules = []; }
-    return this._rules.removeObj(rule);
+    this._rules.removeObj(rule);
   }
 
   clearRules() {
-    return this._rules = [];
+    this._rules = [];
   }
 
   setBackground(path){
     this.imgPath = path;
-    return this._view.updateBackground();
+    this._view.updateBackground();
   }
 
   _incrementDate() {
@@ -477,35 +471,29 @@ export default class Environment extends StateMachine {
       }
 
       if (yearDate === this._totalSeasonLengths[2]) { // first day of winter
-        return this._view.addWinterImage();
+        this._view.addWinterImage();
       } else if (yearDate === (this._totalSeasonLengths[3]-1)) { // last day of winter
-        return this._view.removeWinterImage();
+        this._view.removeWinterImage();
       }
     }
   }
 
   _replenishResources() {
-    return __range__(0, this.columns, true).map((x) =>
-      (() => {
-        const result = [];
-        for (let y = 0, end = this.rows, asc = 0 <= end; asc ? y <= end : y >= end; asc ? y++ : y--) {
-          const cell = this.cells[x][y];
-          const growthRate = cell['food regrowth rate'];
-          const max = cell['food full'];
-          let food = cell['food'];
-          if (food < max) {
-            cell['food'] = Math.min(max, food+growthRate);
-          }
-
-          food = cell['food animals'];
-          if (food < max) {
-            result.push(cell['food animals'] = Math.min(max, food+growthRate));
-          } else {
-            result.push(undefined);
-          }
+    this.cells.forEach( column => {
+      column.forEach( cell => {
+        const growthRate = cell['food regrowth rate'];
+        const max = cell['food full'];
+        const food = cell['food'];
+        if (food < max) {
+          cell['food'] = Math.min(max, food + growthRate);
         }
-        return result;
-      })());
+
+        const foodAnimals = cell['food animals'];
+        if (foodAnimals < max) {
+          cell['food animals'] = Math.min(max, foodAnimals + growthRate);
+        }
+      })
+    })
   }
 
   _wrapSingleDimension(p, max) {
@@ -534,13 +522,15 @@ export default class Environment extends StateMachine {
 
     this.usingSeasons = this._totalSeasonLengths.length > 0;
 
-    return this.yearLength = this._totalSeasonLengths[3] || 0;
+    this.yearLength = this._totalSeasonLengths[3] || 0;
   }
 
   _setCellDefaults() {
-    return __range__(0, this.columns, true).map((x) =>
-      __range__(0, this.rows, true).map((y) =>
-        (this.cells[x][y] = helpers.clone(cellDefaults))));
+    this.cells.forEach( col => {
+      for (let row = 0; row < this.rows; row++) {
+        col[row] = helpers.clone(cellDefaults);
+      }
+    });
   }
 }
 
@@ -581,7 +571,7 @@ class Barrier {
   // positive indicates the other, with 0 indicating the point lies on the line. function(x,y) {...}
   intersectsLine(lineFunc){
     let previousSign = null;
-    for (let corner of Array.from(this.corners)) {
+    for (let corner of this.corners) {
       const number = lineFunc(corner.x, corner.y);
       if (number === 0) { return true; }
       const sign = number < 0 ? -1 : 1;
@@ -601,27 +591,18 @@ class Barrier {
 
 var EmptyState = {
   enter() {
-    return this._view.setCursor("default-cursor");
+    this._view.setCursor("default-cursor");
   }
 };
 
 var AddAgentsState = {
   enter() {
-    return this._view.setCursor("add-agents");
+    this._view.setCursor("add-agents");
   },
   click(evt) {
-    return this.addDefaultAgent(evt.envX, evt.envY);
+    this.addDefaultAgent(evt.envX, evt.envY);
   }
 };
 
-//# more states added by ui/tool-button
 
-function __range__(left, right, inclusive) {
-  let range = [];
-  let ascending = left < right;
-  let end = !inclusive ? right : ascending ? right + 1 : right - 1;
-  for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-    range.push(i);
-  }
-  return range;
-}
+//# more states added by ui/tool-button
