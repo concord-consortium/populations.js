@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>populations.js</title>
+        <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
+        <script src="lib/populations.js"></script>
+    <!-- model files here-->
+        <script src="species/varied-plants.js"></script>
+        <script src="environments/sunlight-flowerboxes.js"></script>
+        <script src="models/five-sunlight-scale.js"></script>
+  </head>
+  <body>
+    <div id="environment"></div>
+    <div>
+      <button onClick="tiny();">Tiny</button>
+      <button onClick="big();">Big</button>
+      <button onClick="fit();">Fit to screen</button>
+    </div>
+  </body>
+</html>
