@@ -24,7 +24,7 @@ export default class EnvironmentView {
 
   render(el) {
     if (this.stage == null) { this.stage = new PIXI.Stage(0xFFFFFF, true); }
-    this.renderer = new PIXI.CanvasRenderer(this.environment.width, this.environment.height);
+    this.renderer = new PIXI.autoDetectRenderer(this.environment.width, this.environment.height);
     // create a texture from an image path
     const texture = PIXI.Texture.fromImage(this.environment.imgPath);
 
