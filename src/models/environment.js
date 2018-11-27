@@ -398,8 +398,9 @@ export default class Environment extends StateMachine {
     }
   }
 
-  addMouseListener(callback, getNearestAgents) {
+  addMouseListener(callback, getNearestAgents, distance) {
     callback.getNearestAgents = getNearestAgents;
+    callback.distance = distance || 10;
     this._listeners.push(callback);
   }
 
@@ -410,7 +411,7 @@ export default class Environment extends StateMachine {
         // only callback for mousedown/click events
         if (["click", "mousedown", "touchstart"].includes(evt.type)) {
           if (!closestAgents) {
-            closestAgents = this.getAgentsOfEachSpeciesCloseTo(evt.envX, evt.envY);
+            closestAgents = this.getAgentsOfEachSpeciesCloseTo(evt.envX, evt.envY, callback.distance);
           }
           evt.agents = closestAgents;
           callback(evt);

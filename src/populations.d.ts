@@ -384,7 +384,7 @@ declare module "populations.js" {
     scale(scale: number): void
 
     addMouseListener(callback: (evt: EnvironmentMouseEvent) => void): void;
-    addAgentMouseListener(callback: (evt: AgentEnvironmentMouseEvent) => void): void;
+    addAgentMouseListener(callback: (evt: AgentEnvironmentMouseEvent) => void, distance?: number): void;
   }
 
   export class InfoView {

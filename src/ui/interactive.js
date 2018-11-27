@@ -155,8 +155,8 @@ export default class Interactive {
     this.environment.addMouseListener(listener);
   }
 
-  addAgentMouseListener(listener) {
-    this.environment.addMouseListener(listener, true);
+  addAgentMouseListener(listener, distance) {
+    this.environment.addMouseListener(listener, true, distance);
   }
 };
 
