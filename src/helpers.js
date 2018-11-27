@@ -162,7 +162,7 @@ function setDefaults(opts, defaults) {
     if (opts[p] === undefined) {
       opts[p] = defaults[p];
     } else if (typeof opts[p] === "object") {
-      opts[p] = this.setDefaults(opts[p], defaults[p]);
+      opts[p] = setDefaults(opts[p], defaults[p]);
     }
   }
   return opts;
@@ -179,7 +179,7 @@ function clone(obj) {
   const cloneObj = new obj.constructor();
 
   for (let key in obj) {
-    cloneObj[key] = this.clone(obj[key]);
+    cloneObj[key] = clone(obj[key]);
   }
 
   return cloneObj;
