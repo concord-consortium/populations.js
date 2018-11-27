@@ -152,12 +152,12 @@ export default class EnvironmentView {
           evt.envX = (evt.changedTouches[0].pageX - rect.x) / scale;
           evt.envY = (evt.changedTouches[0].pageY - rect.y) / scale;
         } else {
-          // use page+offset location, which remain correct after iframe zoom
           evt.envX = (evt.pageX - rect.x) / scale;
           evt.envY = (evt.pageY - rect.y) / scale;
         }
 
         this.environment.send(evt.type, evt);
+        this.environment.notifyListeners(evt);
       }));
   }
 

@@ -204,6 +204,7 @@ declare module "populations.js" {
     getAgentAt(x: number, y: number): Agent;
     getAgentsCloseTo(x: number, y: number, maxDistance?: number, speciesName?: string): Agent[];
     getAgentCloseTo(x: number, y: number, maxDistance?: number, speciesName?: string): Agent;
+    getAgentsOfEachSpeciesCloseTo(x: number, y: number, maxDistance?: number): AgentMap;
 
     setBarriers(bars: any): void;    // TODO
     addBarrier(x: number, y: number, width: number, height: number): void;
@@ -217,6 +218,9 @@ declare module "populations.js" {
 
     setDefaultAgentCreator(defaultSpecies: any, defaultTraits: any, agentAdderCallback: any): void; // TODO
     addDefaultAgent(x: number, y: number): void;
+
+    addMouseListener(callback: (evt: EnvironmentMouseEvent | AgentEnvironmentMouseEvent) => void,
+      getNearestAgents: boolean): void;
 
     /*** Run Loop ***/
 
@@ -332,6 +336,20 @@ declare module "populations.js" {
     type: string;
   }
 
+  export interface AgentMap {
+    [key: string]: Agent;
+  }
+
+  export interface EnvironmentMouseEvent {
+    type: string;
+    evtX: number;
+    evtY: number;
+  }
+
+  export interface AgentEnvironmentMouseEvent extends EnvironmentMouseEvent {
+    agents: AgentsMap;
+  }
+
   export class Interactive {
     environment: Environment;
     addOrganismButtons?: IAddOrganismButtonSpec[];
@@ -364,6 +382,9 @@ declare module "populations.js" {
     setEnvironmentDisplayHeight(height: number): void;
     constrain(width: number, height: number): void;
     scale(scale: number): void
+
+    addMouseListener(callback: (evt: EnvironmentMouseEvent) => void): void;
+    addAgentMouseListener(callback: (evt: AgentEnvironmentMouseEvent) => void): void;
   }
 
   export class InfoView {

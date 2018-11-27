@@ -150,6 +150,14 @@ export default class Interactive {
   reset() {
     this.toolbar.toggleButtons['reset'].click();
   }
+
+  addMouseListener(listener) {
+    this.environment.addMouseListener(listener);
+  }
+
+  addAgentMouseListener(listener) {
+    this.environment.addMouseListener(listener, true);
+  }
 };
 
 window.onerror = function(msg, url, line){

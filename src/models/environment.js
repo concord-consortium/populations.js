@@ -46,6 +46,8 @@ export default class Environment extends StateMachine {
 
     this._isRunning = false;
 
+    this._listeners = [];
+
     /* UI States */
 
     this.UI_STATE = {
@@ -270,6 +272,34 @@ export default class Environment extends StateMachine {
     return agents[0];
   }
 
+  /**
+   * Returns an object containing each of the closest orgs by species name. E.g.
+   *
+   * {
+   *  rabbits: RabbitAgent,
+   *  plants: PlantAgent
+   * }
+  */
+  getAgentsOfEachSpeciesCloseTo(x, y, maxDistance){
+    if (maxDistance == null) { maxDistance = 10; }
+    let agents = this.getAgentsCloseTo(x, y, maxDistance);
+
+    const foundAgents = {};
+    if (!agents.length) { return foundAgents; }
+
+    for (let agent of agents) {
+      agent.__distance = helpers.ExtMath.distanceSquared(agent.getLocation(), {x, y});
+    }
+    agents = agents.sort((a,b)=> a.__distance - b.__distance);
+
+    for (let agent of agents) {
+      if (!foundAgents[agent.species.speciesName]) {
+        foundAgents[agent.species.speciesName] = agent;
+      }
+    }
+    return foundAgents;
+  }
+
   setBarriers(bars){
     const barriers = bars.slice();
     this.barriers = [];
@@ -366,6 +396,29 @@ export default class Environment extends StateMachine {
     if (success && this.agentAdderCallback) {
       this.agentAdderCallback();
     }
+  }
+
+  addMouseListener(callback, getNearestAgents) {
+    callback.getNearestAgents = getNearestAgents;
+    this._listeners.push(callback);
+  }
+
+  notifyListeners(evt) {
+    let closestAgents;
+    this._listeners.forEach( callback => {
+      if (callback.getNearestAgents) {
+        // only callback for mousedown/click events
+        if (["click", "mousedown", "touchstart"].includes(evt.type)) {
+          if (!closestAgents) {
+            closestAgents = this.getAgentsOfEachSpeciesCloseTo(evt.envX, evt.envY);
+          }
+          evt.agents = closestAgents;
+          callback(evt);
+        }
+      } else {
+        callback(evt)
+      }
+    });
   }
 
   /* Run Loop */
