@@ -347,7 +347,7 @@ declare module "populations.js" {
   }
 
   export interface AgentEnvironmentMouseEvent extends EnvironmentMouseEvent {
-    agents: AgentsMap;
+    agents: AgentMap;
   }
 
   export class Interactive {
