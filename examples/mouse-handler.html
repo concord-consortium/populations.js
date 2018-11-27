@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>populations.js</title>
+        <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
+        <script src="lib/populations.js"></script>
+    <!-- model files here-->
+    <script src="species/fast-plants-roots.js"></script>
+    <script src="species/white-brown-rabbits.js"></script>
+    <script src="environments/open.js"></script>
+        <script src="models/rabbits-mouse-handler.js"></script>
+  </head>
+  <body>
+    <div id="environment"></div>
+    <div>
+      Last mouse event: <span id="event-type"></span>, X: <span id="event-x"></span>, Y: <span id="event-y"></span>
+    </div>
+    <div>
+      Clicked rabbit age: <span id="event-rabbit-age"></span>
+    </div>
+    <div>
+      Clicked plant age: <span id="event-plant-age"></span>
+    </div>
+  </body>
+</html>
