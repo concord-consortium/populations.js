@@ -169,18 +169,11 @@ export default class EnvironmentView {
 
   // scales background relative to actual env size
   scaleBackground() {
-    const [origWidth, origHeight] = [this._backgroundSprite.width, this._backgroundSprite.height];
-    if (this.environment.backgroundScaleX) {
-      this._backgroundSprite.width = this.environment.width * this.environment.backgroundScaleX;
-      if (this.environment.backgroundScaleY) {
-        this._backgroundSprite.height = this.environment.height * this.environment.backgroundScaleY;
-      } else {
-        this._backgroundSprite.height *= (this._backgroundSprite.width / origWidth);
-      }
-    } else if (this.environment.backgroundScaleY) {
-      this._backgroundSprite.height = this.environment.height * this.environment.backgroundScaleY;
-      this._backgroundSprite.width *= (this._backgroundSprite.height / origHeight);
-    }
+    const scaleX = this.environment.width / this._backgroundSprite.width;
+    const scaleY = this.environment.height / this._backgroundSprite.height;
+    const scale = Math.max(scaleX, scaleY);
+    this._backgroundSprite.width *= scale;
+    this._backgroundSprite.height *= scale;
   }
 
   get canvas() {
