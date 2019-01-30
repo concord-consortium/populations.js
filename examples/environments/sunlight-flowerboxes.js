@@ -10,6 +10,7 @@ window.env = new Populations.Environment({
   columns:  58,
   rows:     52,
   imgPath: "images/environments/sun5levels.jpg",
+  viewWidth: 900,
   barriers: [
       [0, 0, 95, 520],     // East
       [540, 0, 40, 580],   // West

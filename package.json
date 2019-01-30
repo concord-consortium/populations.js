@@ -1,7 +1,7 @@
 {
   "name": "populations.js",
   "author": "Sam Fentress",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": false,
   "main": "dist/populations.js",
   "types": "dist/populations.d.ts",

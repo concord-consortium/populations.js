@@ -102,16 +102,16 @@ export default class Interactive {
   }
 
   setEnvironmentDisplayWidth(width) {
-    this.scale(width / this.environment.width);
+    this.scale(width / this.environment.viewWidth);
   }
 
   setEnvironmentDisplayHeight(height) {
-    this.scale(height / this.environment.height);
+    this.scale(height / this.environment.viewHeight);
   }
 
   constrain(width, height) {
-    const xScale = width / this.environment.width;
-    const yScale = height / this.environment.height;
+    const xScale = width / this.environment.viewWidth;
+    const yScale = height / this.environment.viewHeight;
     this.scale(Math.min(xScale, yScale));
   }
 

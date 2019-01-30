@@ -13,8 +13,10 @@ export default class EnvironmentView {
     this.environment = environment;
     this.showingWinter = false;
     this._layers = [];
+    this.baseScale = this.environment.viewWidth / this.environment.width;
     if (this.environment.winterImgPath) {
-      this.winterImgSprite = new PIXI.TilingSprite(PIXI.Texture.fromImage(this.environment.winterImgPath), this.environment.width, this.environment.height);
+      this.winterImgSprite = new PIXI.TilingSprite(PIXI.Texture.fromImage(this.environment.winterImgPath),
+        this.environment.viewWidth, this.environment.viewHeight);
       this.winterImgSprite.anchor.x = 0;
       this.winterImgSprite.anchor.y = 0;
       this.winterImgSprite.position.x = 0;
@@ -24,7 +26,7 @@ export default class EnvironmentView {
 
   render(el) {
     if (this.stage == null) { this.stage = new PIXI.Stage(0xFFFFFF, true); }
-    this.renderer = new PIXI.autoDetectRenderer(this.environment.width, this.environment.height);
+    this.renderer = new PIXI.autoDetectRenderer(this.environment.viewWidth, this.environment.viewHeight);
     // create a texture from an image path
     const texture = PIXI.Texture.fromImage(this.environment.imgPath);
 
@@ -52,7 +54,7 @@ export default class EnvironmentView {
       window.requestAnimationFrame( animate );
       for (let agent of this.environment.agents) {
 
-        agent.getView().rerender(this._getOrCreateLayer(agent._viewLayer));
+        agent.getView().rerender(this._getOrCreateLayer(agent._viewLayer), 'environment', this.baseScale);
       }
 
       if (this.environment.carriedAgent) {
@@ -79,7 +81,7 @@ export default class EnvironmentView {
 
   renderAgents(stage) {
     this.environment.agents.map((agent) =>
-      agent.getView().render(this._getOrCreateLayer(agent._viewLayer)));
+      agent.getView().render(this._getOrCreateLayer(agent._viewLayer), 'environment', this.baseScale));
   }
 
   renderBarriers(stage) {
@@ -169,8 +171,8 @@ export default class EnvironmentView {
 
   // scales background relative to actual env size
   scaleBackground() {
-    const scaleX = this.environment.width / this._backgroundSprite.width;
-    const scaleY = this.environment.height / this._backgroundSprite.height;
+    const scaleX = this.environment.viewWidth / this._backgroundSprite.width;
+    const scaleY = this.environment.viewHeight / this._backgroundSprite.height;
     const scale = Math.max(scaleX, scaleY);
     this._backgroundSprite.width *= scale;
     this._backgroundSprite.height *= scale;
@@ -210,8 +212,12 @@ export default class EnvironmentView {
     // will be drawn on top of agents higher up in the environment
     this.stage.children.map((container) =>
       container.children.sort(function(a,b){
-        const aIdx = (a.agent && a.agent.zIndex) ? a.agent.zIndex() : ((a.position.y * this.environment.width) + a.position.x);
-        const bIdx = (b.agent && b.agent.zIndex) ? b.agent.zIndex() : ((b.position.y * this.environment.width) + b.position.x);
+        const aIdx = (a.agent && a.agent.zIndex)
+          ? a.agent.zIndex()
+          : ((a.position.y * this.environment.viewWidth) + a.position.x);
+        const bIdx = (b.agent && b.agent.zIndex)
+          ? b.agent.zIndex()
+          : ((b.position.y * this.environment.viewWidth) + b.position.x);
         return aIdx - bIdx;
       }));
   }

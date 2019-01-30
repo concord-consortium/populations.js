@@ -29,7 +29,7 @@ export default class AgentView {
     };
   }
 
-  render(stage, context) {
+  render(stage, context, scale) {
     if (context == null) { context = 'environment'; }
     const container = new PIXI.DisplayObjectContainer;
     const sprites = {};
@@ -41,8 +41,10 @@ export default class AgentView {
       container.addChild(sprite);
     }
 
-    container.position.x = this.agent._x;
-    container.position.y = this.agent._y;
+    container.position.x = this.agent._x * scale;
+    container.position.y = this.agent._y * scale;
+    container.scale.x = scale;
+    container.scale.y = scale;
     container.agent = this.agent;
 
     stage.addChild(container);
@@ -55,7 +57,7 @@ export default class AgentView {
     }
   }
 
-  rerender(stage, context) {
+  rerender(stage, context, scale) {
     let i, layer, sprite;
     if (context == null) { context = 'environment'; }
     if (!this._rendered) {
@@ -98,8 +100,10 @@ export default class AgentView {
       }
     }
 
-    this._container.position.x = this.agent._x;
-    this._container.position.y = this.agent._y;
+    this._container.position.x = this.agent._x * scale;
+    this._container.position.y = this.agent._y* scale;
+    this._container.scale.x = scale;
+    this._container.scale.y = scale;
 
     for (i = 0; i < newImages.length; i++) {
       layer = newImages[i];

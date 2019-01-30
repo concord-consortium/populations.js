@@ -80,6 +80,17 @@ export default class Environment extends StateMachine {
       this.rows = this.height / this._rowHeight;
     }
 
+    let viewWidth = opts.viewWidth;
+    let viewHeight = opts.viewHeight;
+    if (viewWidth && !viewHeight) {
+      viewHeight = this.height * (this.viewWidth / this.width);
+    } else if (viewHeight && !viewWidth) {
+      viewWidth = this.width * (this.viewHeight / this.height);
+    }
+
+    this.viewWidth = viewWidth || this.width;
+    this.viewHeight = viewHeight || this.height;
+
     this.cells = [];
     for (let col = 0; col < this.columns; col++) {
       this.cells[col] = [];

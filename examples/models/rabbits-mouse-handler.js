@@ -74,3 +74,20 @@ window.onload = () =>
     model.run();
   })
 ;
+
+window.tiny = () => {
+  model.displayWidth = 60;
+  model.interactive.setEnvironmentDisplayWidth(model.displayWidth);
+}
+
+window.big = () => {
+  model.displayWidth = 800;
+  model.interactive.setEnvironmentDisplayWidth(model.displayWidth);
+}
+
+// inexact, because of toolbar buttons
+window.fit = () => {
+  const maxWidth = window.innerWidth - 50; // toolbar
+  const maxHeight = window.innerHeight - 30; // buttons
+  model.interactive.constrain(maxWidth, maxHeight);
+}

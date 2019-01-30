@@ -26,7 +26,8 @@ export default class InfoView {
     while (this._container.children.length > 0) {
       this._container.removeChild(this._container.children[0]);
     }
-    this.agent.getView().render(this._container, 'info-tool');
+    const scale = this.agent.environment._view.baseScale;
+    this.agent.getView().render(this._container, 'info-tool', scale);
     this._repositionAgent();
     this._rescaleAgent();
 
@@ -63,8 +64,8 @@ export default class InfoView {
     this.view = document.createElement('div');
     this.view.classList.add('bubble');
 
-    if (this.agent._x < (this.agent.environment.width/2)) { this.view.classList.add('left'); } else { this.view.classList.add('right'); }
-    if (this.agent._y < (this.agent.environment.height/2)) { this.view.classList.add('top'); } else { this.view.classList.add('bottom'); }
+    if (this.agent._x < (this.agent.environment.viewWidth/2)) { this.view.classList.add('left'); } else { this.view.classList.add('right'); }
+    if (this.agent._y < (this.agent.environment.viewWidth/2)) { this.view.classList.add('top'); } else { this.view.classList.add('bottom'); }
 
     const titleBar = document.createElement('div');
     titleBar.classList.add('title-bar');

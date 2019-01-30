@@ -9,9 +9,10 @@
     <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
         <script src="lib/populations.js"></script>
     <!-- model files here-->
-        <script src="species/varied-plants.js"></script>
-        <script src="environments/sunlight-flowerboxes.js"></script>
-        <script src="models/five-sunlight-scale.js"></script>
+        <script src="species/fast-plants-roots.js"></script>
+        <script src="species/white-brown-rabbits.js"></script>
+        <script src="environments/high-res-snow.js"></script>
+        <script src="models/rabbits-mouse-handler.js"></script>
   </head>
   <body>
     <div id="environment"></div>
@@ -19,6 +20,17 @@
       <button onClick="tiny();">Tiny</button>
       <button onClick="big();">Big</button>
       <button onClick="fit();">Fit to screen</button>
+    </div>
+    <div>
+      <div>
+        Last mouse event: <span id="event-type"></span>, X: <span id="event-x"></span>, Y: <span id="event-y"></span>
+      </div>
+      <div>
+        Clicked rabbit age: <span id="event-rabbit-age"></span>
+      </div>
+      <div>
+        Clicked plant age: <span id="event-plant-age"></span>
+      </div>
     </div>
   </body>
 </html>
