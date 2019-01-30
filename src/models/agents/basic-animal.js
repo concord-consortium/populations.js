@@ -172,6 +172,7 @@ export default class BasicAnimal extends Agent {
 
   move(speed) {
     const dir = this.get('direction');
+    if (speed == null) { speed = this.get('speed'); }
     if (speed === 0) { return; }
     if (typeof(speed) !== 'number') { throw new Error('invalid speed'); }
     if (typeof(dir) !== 'number') { throw new Error('invalid direction'); }
@@ -182,7 +183,11 @@ export default class BasicAnimal extends Agent {
     const newLoc = {x: loc.x + dx, y: loc.y + dy};
     if (this.environment.crossesBarrier(loc, newLoc)) {
       // stay where you are and turn around, for now
-      return this.set('direction', dir + Math.PI);
+      if (Math.cos(dir) > 0) {
+        return this.set('direction', dir + Math.PI);
+      } else {
+        return this.set('direction', dir - Math.PI);
+      }
     } else {
       return this.setLocation(newLoc);
     }
