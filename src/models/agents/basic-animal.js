@@ -183,11 +183,7 @@ export default class BasicAnimal extends Agent {
     const newLoc = {x: loc.x + dx, y: loc.y + dy};
     if (this.environment.crossesBarrier(loc, newLoc)) {
       // stay where you are and turn around, for now
-      if (Math.cos(dir) > 0) {
-        return this.set('direction', dir + Math.PI);
-      } else {
-        return this.set('direction', dir - Math.PI);
-      }
+      return this.set('direction', dir + Math.PI);
     } else {
       return this.setLocation(newLoc);
     }

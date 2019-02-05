@@ -22,16 +22,12 @@ class Mouse extends Populations.helpers.mixOf(Populations.BasicAnimal, Populatio
     }
     const change = (Math.random() * 1 - .5) / 10;
     let newDir = this.get("direction") + change;
-
-    if ((newDir > (Math.PI * 5 / 4) || newDir < (Math.PI * 3 / 4)) && newDir > (Math.PI / 2)) {
+    const newAngle = newDir * (180 / Math.PI);
+    if ((newAngle > 45 && newAngle < 135) || (newAngle > 225 && newAngle < 315)) {
       newDir = this.get("direction") - change;
     }
-    if ((newDir < (Math.PI / -4) || newDir > (Math.PI / 4)) && newDir < (Math.PI / 2)){
-      newDir = this.get("direction") - change;
-    }
-
     if (Math.random() < .03) {
-      newDir = Math.cos(newDir) > 0 ? newDir + Math.PI : newDir - Math.PI;
+      newDir = newDir + Math.PI;
     }
     this.set("direction", newDir);
     return this.move(speed);
@@ -50,11 +46,7 @@ class Mouse extends Populations.helpers.mixOf(Populations.BasicAnimal, Populatio
     const newLoc = {x: loc.x + dx, y: loc.y + dy};
     if (this.environment.crossesBarrier(loc, newLoc)) {
       // stay where you are and turn around, for now
-      if (Math.cos(dir) > 0) {
-        return this.set('direction', dir + Math.PI);
-      } else {
-        return this.set('direction', dir - Math.PI);
-      }
+      return this.set('direction', dir + Math.PI);
     } else {
       this.setMovement(Populations.AnimatedAgent.MOVEMENTS.MOVESTEP);
       return this.setLocation(newLoc);
