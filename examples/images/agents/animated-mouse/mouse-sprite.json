@@ -1,0 +1,52 @@
+{
+  "frames": {
+    "stop-0" : {
+      "frame": {"x":0,"y":0,"w":350,"h":108},
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {"x":0,"y":0,"w":350,"h":108},
+      "sourceSize": {"w":350,"h":108}
+    },
+    "walk-0" : {
+      "frame": {"x":350,"y":0,"w":350,"h":108},
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {"x":0,"y":0,"w":350,"h":108},
+      "sourceSize": {"w":350,"h":108}
+    },
+    "walk-1" : {
+      "frame": {"x":700,"y":0,"w":350,"h":108},
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {"x":0,"y":0,"w":350,"h":108},
+      "sourceSize": {"w":350,"h":108}
+    },
+    "walk-2" : {
+      "frame": {"x":1050,"y":0,"w":350,"h":108},
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {"x":0,"y":0,"w":350,"h":108},
+      "sourceSize": {"w":350,"h":108}
+    },
+    "walk-3" : {
+      "frame": {"x":1400,"y":0,"w":350,"h":108},
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {"x":0,"y":0,"w":350,"h":108},
+      "sourceSize": {"w":350,"h":108}
+    },
+    "walk-4" : {
+      "frame": {"x":1750,"y":0,"w":350,"h":108},
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {"x":0,"y":0,"w":350,"h":108},
+      "sourceSize": {"w":350,"h":108}
+    }
+  },
+  "meta": {
+    "image": "mouse-sprite.png",
+    "format": "RGBA8888",
+    "size": {"w":2100,"h":108},
+    "scale": "1"
+  }
+}

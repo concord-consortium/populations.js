@@ -172,6 +172,7 @@ export default class BasicAnimal extends Agent {
 
   move(speed) {
     const dir = this.get('direction');
+    if (speed == null) { speed = this.get('speed'); }
     if (speed === 0) { return; }
     if (typeof(speed) !== 'number') { throw new Error('invalid speed'); }
     if (typeof(dir) !== 'number') { throw new Error('invalid direction'); }
