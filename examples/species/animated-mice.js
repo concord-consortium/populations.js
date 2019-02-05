@@ -22,7 +22,7 @@ class Mouse extends Populations.helpers.mixOf(Populations.BasicAnimal, Populatio
     }
     const change = (Math.random() * 1 - .5) / 10;
     let newDir = this.get("direction") + change;
-    const newAngle = newDir * (180 / Math.PI);
+    const newAngle = (newDir * (180 / Math.PI) % 360);
     if ((newAngle > 45 && newAngle < 135) || (newAngle > 225 && newAngle < 315)) {
       newDir = this.get("direction") - change;
     }
