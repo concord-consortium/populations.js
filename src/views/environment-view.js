@@ -210,14 +210,15 @@ export default class EnvironmentView {
     if (!this.environment.depthPerception) { return; }
     // sort each of the stage's childrens' children by y value, ascending, so that agents on the bottom of the environment
     // will be drawn on top of agents higher up in the environment
+    const envViewWidth = this.environment.viewWidth;
     this.stage.children.map((container) =>
       container.children.sort(function(a,b){
         const aIdx = (a.agent && a.agent.zIndex)
           ? a.agent.zIndex()
-          : ((a.position.y * this.environment.viewWidth) + a.position.x);
+          : ((a.position.y * envViewWidth) + a.position.x);
         const bIdx = (b.agent && b.agent.zIndex)
           ? b.agent.zIndex()
-          : ((b.position.y * this.environment.viewWidth) + b.position.x);
+          : ((b.position.y * envViewWidth) + b.position.x);
         return aIdx - bIdx;
       }));
   }
