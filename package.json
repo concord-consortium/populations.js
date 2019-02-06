@@ -8,7 +8,8 @@
   "repository": "",
   "scripts": {
     "start": "webpack --mode=development --watch",
-    "build": "webpack --mode=production"
+    "build": "webpack --mode=production",
+    "prepack": "npm run build"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
