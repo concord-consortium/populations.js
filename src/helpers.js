@@ -263,7 +263,9 @@ function preload(sources, callback){
   loader.onComplete = function() {
     statusDom.innerHTML = "Loading complete!";
     return setTimeout(function() {
-      callback();
+      if (callback) {
+        callback();
+      }
       return document.body.removeChild(statusContainer);
     }
     , 10);

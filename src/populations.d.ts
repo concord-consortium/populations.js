@@ -11,6 +11,10 @@ declare module "populations.js" {
     height: number;
   }
 
+  export class helpers {
+    static preload(sources: any[], callback?: () => void): void;
+  }
+
   export class Events {
     static dispatchEvent(type: string, data: any): void;
     static addEventListener(type: string, listener: (evt: any) => void): void;
