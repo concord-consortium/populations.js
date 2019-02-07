@@ -21,7 +21,9 @@ export default class ToolButton {
         },
         click(evt) {
           // get clicked agent
-          const agents = this.getAgentsAt(evt.envX, evt.envY).filter(a=> a.canShowInfo());
+          const scaleX = environment.viewWidth / environment.width;
+          const scaleY = environment.viewHeight / environment.height;
+          const agents = this.getAgentsAt(evt.envX * scaleX, evt.envY * scaleY).filter(a=> a.canShowInfo());
           if (!(agents.length > 0)) { return; }
           const agent = agents[0];
           // Display info pop-up for that agent
@@ -35,19 +37,19 @@ export default class ToolButton {
           for (let style of ['top','left','bottom','right']) {
             this.infoPopup.view.classList.remove(style);
           }
-          if (evt.envX > (this.width/2)) {
+          if ((evt.envX * scaleX) > (environment.viewWidth / 2)) {
             this.infoPopup.view.classList.add('right');
-            this.infoPopup.view.style.left = (evt.envX - 225) + "px";
+            this.infoPopup.view.style.left = (evt.envX * scaleX - 225) + "px";
           } else {
             this.infoPopup.view.classList.add('left');
-            this.infoPopup.view.style.left = (evt.envX + 35) + "px";
+            this.infoPopup.view.style.left = (evt.envX * scaleX + 35) + "px";
           }
-          if (evt.envY > (this.height/2)) {
+          if ((evt.envY * scaleY) > (environment.viewHeight / 2)) {
             this.infoPopup.view.classList.add('bottom');
-            this.infoPopup.view.style.top = (evt.envY - 162) + "px";
+            this.infoPopup.view.style.top = (evt.envY * scaleY - 162) + "px";
           } else {
             this.infoPopup.view.classList.add('top');
-            this.infoPopup.view.style.top = (evt.envY - 25) + "px";
+            this.infoPopup.view.style.top = (evt.envY * scaleY  - 25) + "px";
           }
           return this.infoPopup.show();
         }
