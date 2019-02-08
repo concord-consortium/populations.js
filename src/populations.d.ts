@@ -56,6 +56,7 @@ declare module "populations.js" {
 
     canShowInfo(): boolean;
 
+    zIndex(zIndex: number): void;
     zIndex(): number;
 
     isInteractive(): boolean;
