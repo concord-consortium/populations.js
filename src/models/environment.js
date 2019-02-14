@@ -419,14 +419,11 @@ export default class Environment extends StateMachine {
     let closestAgents;
     this._listeners.forEach( callback => {
       if (callback.getNearestAgents) {
-        // only callback for mousedown/click events
-        if (["click", "mousedown", "touchstart"].includes(evt.type)) {
-          if (!closestAgents) {
-            closestAgents = this.getAgentsOfEachSpeciesCloseTo(evt.envX, evt.envY, callback.distance);
-          }
-          evt.agents = closestAgents;
-          callback(evt);
+        if (!closestAgents) {
+          closestAgents = this.getAgentsOfEachSpeciesCloseTo(evt.envX, evt.envY, callback.distance);
         }
+        evt.agents = closestAgents;
+        callback(evt);
       } else {
         callback(evt)
       }
